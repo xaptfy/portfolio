@@ -546,7 +546,7 @@ export default function Home() {
               className="font-medium"
               style={{ fontSize: 32, lineHeight: "90%", color: "#0F0F0F" }}
             >
-              Более 3 лет
+              3+ года
             </span>
             <span
               className="font-medium"
