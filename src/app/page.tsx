@@ -54,7 +54,7 @@ const SOCIAL_LINKS = [
   {
     icon: "/icons/document.svg",
     label: "Document",
-    href: "#",
+    href: "https://drive.google.com/file/d/12oNKvnTw5xf8VSCUt2XJgqWb7fA-HVhb/view?usp=sharing",
     external: false,
     size: 28,
   },
