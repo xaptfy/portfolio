@@ -546,13 +546,13 @@ export default function Home() {
               className="font-medium"
               style={{ fontSize: 32, lineHeight: "90%", color: "#0F0F0F" }}
             >
-              3 года
+              Более 3 лет
             </span>
             <span
               className="font-medium"
               style={{ fontSize: 16, lineHeight: "110%", color: "rgba(15,15,15,0.6)" }}
             >
-              8 месяцев
+              опыт
             </span>
           </div>
         </div>
