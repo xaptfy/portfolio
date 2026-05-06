@@ -16,10 +16,10 @@ const CANVAS_GRID = {
 } as const;
 
 const PREVIEW_ASSETS: Record<CollectionYear, string[]> = {
-  "2023": ["/case-previews/2023/1.svg", "/case-previews/2023/2.svg"],
-  "2024": ["/case-previews/2024/1.svg", "/case-previews/2024/2.svg", "/case-previews/2024/3.svg"],
-  "2025": ["/case-previews/2025/1.svg", "/case-previews/2025/2.svg", "/case-previews/2025/3.svg"],
-  "2026": ["/case-previews/2026/1.svg", "/case-previews/2026/2.svg", "/case-previews/2026/3.svg"],
+  "2023": ["/case-previews/2023/1.png", "/case-previews/2023/2.png"],
+  "2024": ["/case-previews/2024/1.png", "/case-previews/2024/2.png", "/case-previews/2024/3.png"],
+  "2025": ["/case-previews/2025/1.png", "/case-previews/2025/2.png", "/case-previews/2025/3.png"],
+  "2026": ["/case-previews/2026/1.png", "/case-previews/2026/2.png", "/case-previews/2026/3.png"],
 };
 
 const PREVIEW_LINKS: Record<CollectionYear, string[]> = {
