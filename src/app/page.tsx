@@ -322,7 +322,7 @@ function FloatingFolder({
 
         {/* 4 — Label on top of front */}
         <div
-          className="pointer-events-none absolute bottom-0 left-1/2 z-[40] flex -translate-x-1/2 flex-col items-center justify-center gap-0.5 px-3"
+          className="pointer-events-none absolute bottom-0 left-1/2 z-[40] flex -translate-x-1/2 translate-y-3 flex-col items-center justify-center gap-0.5 px-3"
           style={{ width: FOLDER_BEFORE.w, height: FOLDER_BEFORE.h }}
         >
           <p
