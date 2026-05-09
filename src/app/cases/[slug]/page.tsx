@@ -487,7 +487,7 @@ export default function CasePage({ params }: { params: Promise<{ slug: string }>
             />
             <CornerMarks />
 
-            <div className="relative z-[2] flex flex-col items-center gap-4 pt-5 pb-6">
+            <div className="relative z-[2] flex flex-col items-center gap-4 pt-10 pb-6">
               <h1 className="w-full px-4 text-center font-medium text-white" style={{ fontSize: 40, lineHeight: "110%" }}>
                 {data.title}
               </h1>
@@ -518,14 +518,14 @@ export default function CasePage({ params }: { params: Promise<{ slug: string }>
           </div>
         </section>
 
-        <section className="flex min-w-0 flex-col overflow-hidden lg:h-full lg:min-h-0 lg:flex-1">
+        <section className="flex w-full min-w-0 flex-col overflow-hidden lg:h-full lg:min-h-0 lg:flex-1">
   <div
     role="region"
     aria-label="Screenshots"
     className={
       isVerticalCase
         ? "flex h-full min-h-0 w-full min-w-0 flex-col items-stretch gap-4 overflow-y-auto overflow-x-hidden pb-2 pt-2 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
-        : "flex h-full min-h-0 w-full min-w-0 flex-row flex-nowrap items-end justify-start gap-2 overflow-x-auto overflow-y-hidden pb-2 pt-11 [scrollbar-width:none] [-ms-overflow-style:none] [-webkit-overflow-scrolling:touch] [&::-webkit-scrollbar]:hidden"
+        : "flex h-[94dvh] min-h-[546px] w-full min-w-0 snap-x snap-mandatory flex-row flex-nowrap items-end justify-start gap-2 overflow-x-auto overflow-y-hidden px-0 pb-2 pt-4 [scrollbar-width:none] [-ms-overflow-style:none] [-webkit-overflow-scrolling:touch] touch-pan-x [&::-webkit-scrollbar]:hidden lg:h-full lg:min-h-0 lg:pt-11"
     }
   >
             {data.images.map((raw, idx) => {
@@ -539,10 +539,10 @@ export default function CasePage({ params }: { params: Promise<{ slug: string }>
                     isWide
                       ? isVerticalCase
                         ? "m-0 flex w-full shrink-0 overflow-hidden rounded-[40px] shadow-[0_12px_40px_rgba(0,0,0,0.35)]"
-                      : "m-0 flex h-[min(748px,calc(100vh-12rem))] w-fit shrink-0 snap-start overflow-hidden rounded-[40px] shadow-[0_12px_40px_rgba(0,0,0,0.35)] lg:h-full"
+                        : "m-0 flex h-full w-auto shrink-0 snap-center overflow-hidden rounded-[40px] shadow-[0_12px_40px_rgba(0,0,0,0.35)]"
                       : isVerticalCase
                         ? "m-0 w-full shrink-0 overflow-hidden rounded-[40px] shadow-[0_12px_40px_rgba(0,0,0,0.35)]"
-                        : "m-0 flex h-full shrink-0 snap-start"
+                        : "m-0 flex h-full w-auto shrink-0 snap-center overflow-hidden rounded-[40px] shadow-[0_12px_40px_rgba(0,0,0,0.35)]"
                   }
                 >
                   {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -555,11 +555,11 @@ export default function CasePage({ params }: { params: Promise<{ slug: string }>
                       isWide
                         ? isVerticalCase
                           ? "m-0 h-auto w-full rounded-none bg-transparent object-contain"
-                          : "m-0 h-full w-auto max-w-none rounded-none bg-transparent object-contain"
+                          : "m-0 h-full w-auto max-w-none rounded-[40px] bg-transparent object-contain"
                         : isVerticalCase
                           ? "h-auto w-full rounded-[40px] object-cover"
-                          : "h-full w-auto shrink-0 rounded-[40px] object-cover shadow-[0_12px_40px_rgba(0,0,0,0.35)]"
-                                            }
+                          : "h-full w-auto max-w-none rounded-[40px] object-contain"
+                    }
                     loading={idx === 0 ? "eager" : "lazy"}
                     draggable={false}
                   />
