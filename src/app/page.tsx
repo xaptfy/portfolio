@@ -1,9 +1,10 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Menu } from "lucide-react";
+import { FolderOpen, List } from "lucide-react";
 import { useEffect, useState } from "react";
 
+type HomeViewMode = "folders" | "desktop";
 type CollectionYear = "2023" | "2024" | "2025" | "2026";
 
 const ease = [0.22, 1, 0.36, 1] as const;
@@ -27,6 +28,65 @@ const PREVIEW_LINKS: Record<CollectionYear, string[]> = {
   "2024": ["/cases/seamm", "/cases/itmo", "/cases/vk"],
   "2025": ["/cases/crypto", "/cases/ozon-tech", "/cases/vtb"],
   "2026": ["/cases/pragmatica-vk", "/cases/pragmatica-vk", "/cases/pragmatica-vk"],
+};
+
+const DESKTOP_CASES: Record<
+  CollectionYear,
+  { title: string; href: string; color: string }[]
+> = {
+  "2026": [
+    {
+      title: "Pragmatica x VK",
+      href: "/cases/pragmatica-vk",
+      color: "#FFFFFF",
+    },
+  ],
+  "2025": [
+    {
+      title: "Ozon Tech",
+      href: "/cases/ozon-tech",
+      color: "#005BFE",
+    },
+    {
+      title: "Криптоброкер",
+      href: "/cases/crypto",
+      color: "#7AEB86",
+    },
+    {
+      title: "ВТБ",
+      href: "/cases/vtb",
+      color: "#0066FF",
+    },
+    {
+      title: "Тендеры",
+      href: "/cases/tender",
+      color: "#C8D0FF",
+    },
+  ],
+  "2024": [
+    {
+      title: "Seamm",
+      href: "/cases/seamm",
+      color: "#29E1BB",
+    },
+    {
+      title: "ITMO",
+      href: "/cases/itmo",
+      color: "#D7FF25",
+    },
+    {
+      title: "Mail.ru",
+      href: "/cases/vk",
+      color: "#6197FF",
+    },
+  ],
+  "2023": [
+    {
+      title: "Казино NDA",
+      href: "/cases/casino",
+      color: "#99A5FC",
+    },
+  ],
 };
 
 const SOCIAL_LINKS = [
@@ -110,6 +170,7 @@ function FolderPreviews({
 }) {
   const assets = PREVIEW_ASSETS[year];
   const links = PREVIEW_LINKS[year];
+  const previewSize = 1.25;
   const isSingle = assets.length === 1;
 
   const slots = isSingle
@@ -191,7 +252,7 @@ function FolderPreviews({
   return (
     <motion.div
       className="pointer-events-none absolute left-1/2 z-[20] -translate-x-1/2"
-      style={{ bottom: FOLDER_BEFORE.h - 78, width: 226, height: 172 }}
+      style={{ bottom: FOLDER_BEFORE.h - 64, width: 226, height: 172 }}
       animate={{ y: lift }}
       transition={{ duration: 0.4, ease }}
     >
@@ -206,7 +267,7 @@ function FolderPreviews({
           aria-label={`Open case ${year}-${i + 1}`}
           className="absolute bottom-0 left-1/2"
           style={{
-            marginLeft: -slot.width / 2,
+            marginLeft: -(slot.width * previewSize) / 2,
             transformOrigin: "bottom center",
             pointerEvents: isHovered ? "auto" : "none",
           }}
@@ -223,7 +284,7 @@ function FolderPreviews({
             src={src}
             alt=""
             className="block h-auto max-w-none drop-shadow-[0_8px_22px_rgba(0,0,0,0.4)]"
-            style={{ width: slot.width }}
+            style={{ width: slot.width * previewSize }}
             draggable={false}
           />
         </motion.a>
@@ -255,6 +316,117 @@ const FOLDER_POSITIONS: Record<CollectionYear, { left: string; top: string }> = 
     top: "calc(50% - 327px / 2 + 101.5px)",
   },
 };
+
+function DesktopFileIcon({ color }: { color: string }) {
+  return (
+    <div
+      className="relative shrink-0"
+      style={{
+        width: 36,
+        height: 55,
+      }}
+    >
+      <div
+        className="absolute inset-0"
+        style={{
+          background: color,
+          borderRadius: "2px 0 2px 2px",
+          clipPath: "polygon(0 0, 58% 0, 100% 27%, 100% 100%, 0 100%)",
+          boxShadow: "0px 1px 4px rgba(0, 0, 0, 0.4)",
+        }}
+      />
+      <div
+        className="absolute right-0 top-0"
+        style={{
+          width: 15,
+          height: 15,
+          background: "rgba(0, 0, 0, 0.18)",
+          clipPath: "polygon(0 0, 100% 100%, 100% 0)",
+        }}
+      />
+    </div>
+  );
+}
+
+function DesktopCaseView({
+  left,
+  top,
+}: {
+  left: number;
+  top: number;
+}) {
+  const years: CollectionYear[] = ["2026", "2025", "2024", "2023"];
+
+  return (
+    <motion.div
+      className="pointer-events-auto absolute z-[20]"
+      style={{
+        left,
+        top,
+        width: 828,
+      }}
+      initial={{ opacity: 0, y: 12, scale: 0.98 }}
+      animate={{ opacity: 1, y: 0, scale: 1 }}
+      transition={{ duration: 0.35, ease }}
+    >
+      <div className="flex w-full flex-col" style={{ gap: 40 }}>
+        {years.map((year) => (
+          <section key={year} className="flex w-full flex-col" style={{ gap: 24 }}>
+            <div className="flex w-full flex-col" style={{ gap: 6 }}>
+              <div className="flex h-[18px] items-center px-4">
+                <p
+                  className="font-semibold"
+                  style={{
+                    fontSize: 16,
+                    lineHeight: "110%",
+                    color: "#9B9B9A",
+                  }}
+                >
+                  {year}
+                </p>
+              </div>
+
+              <div
+                className="h-px w-full"
+                style={{ background: "#444341" }}
+              />
+            </div>
+
+            <div className="flex flex-wrap items-start" style={{ gap: 14 }}>
+              {DESKTOP_CASES[year].map((item) => (
+                <motion.a
+                  key={item.href}
+                  href={item.href}
+                  className="flex flex-col items-center gap-3 px-2 text-center"
+                  style={{
+                    width: 95,
+                    minHeight: 80,
+                    color: "#FFFFFF",
+                  }}
+                  whileHover={{ y: -4, scale: 1.04 }}
+                  whileTap={{ scale: 0.96 }}
+                >
+                  <DesktopFileIcon color={item.color} />
+
+                  <span
+                    className="font-medium"
+                    style={{
+                      fontSize: 12,
+                      lineHeight: "110%",
+                      color: "#FFFFFF",
+                    }}
+                  >
+                    {item.title}
+                  </span>
+                </motion.a>
+              ))}
+            </div>
+          </section>
+        ))}
+      </div>
+    </motion.div>
+  );
+}
 
 function FloatingFolder({
   year,
@@ -347,11 +519,31 @@ const COLLECTIONS: CollectionYear[] = ["2025", "2026", "2024", "2023"];
 
 export default function Home() {
   const [hoverYear, setHoverYear] = useState<CollectionYear | null>(null);
+  const [viewMode, setViewMode] = useState<HomeViewMode>("folders");
+  useEffect(() => {
+    const savedViewMode = sessionStorage.getItem("homeViewMode");
+  
+    if (savedViewMode === "folders" || savedViewMode === "desktop") {
+      setViewMode(savedViewMode);
+    }
+  }, []);
   const sidebarScale = useSidebarScale(800);
   const vw = useViewportWidth();
   const isNarrow = vw < 1024;
   const mobileSidebarScale = Math.min(1, Math.max(0.64, (vw - 24) / 383));
   const mobileFolderScale = Math.min(1, Math.max(0.72, (vw - 24) / 260));
+
+  const DESKTOP_GAP = 40;
+  const DESKTOP_TOP = 80;
+  const SOCIAL_TOP = 32;
+  const DESKTOP_CONTENT_WIDTH = 828;
+  const DESKTOP_SHIFT_LEFT = 100;
+
+  const desktopStart = 383 * sidebarScale + DESKTOP_GAP;
+  const desktopLeft =
+    desktopStart +
+    Math.max(0, (vw - desktopStart - DESKTOP_CONTENT_WIDTH) / 2) -
+    DESKTOP_SHIFT_LEFT;
 
   useEffect(() => {
     if (isNarrow) return;
@@ -385,8 +577,19 @@ export default function Home() {
         className="pointer-events-auto z-[60] flex gap-3"
         style={
           isNarrow
-            ? { justifyContent: "center", paddingTop: 20, paddingBottom: 14 }
-            : { position: "fixed", top: 48, right: 48 }
+            ? {
+                position: "relative",
+                width: `${383 * mobileSidebarScale}px`,
+                margin: "0 auto",
+                justifyContent: "space-between",
+                paddingTop: 16,
+                paddingBottom: 12,
+              }
+            : {
+                position: "fixed",
+                top: 28,
+                right: 40,
+              }
         }
       >
         {SOCIAL_LINKS.map(({ icon, label, href, external, size }) => (
@@ -421,27 +624,55 @@ export default function Home() {
       </div>
 
       {!isNarrow && (
-      <motion.button
+        <motion.button
         type="button"
-        aria-label="Меню"
-        className="pointer-events-auto fixed z-[60] flex items-center justify-center rounded-full text-white"
-        style={{
-          width: 52,
-          height: 52,
-          right: 48,
-          bottom: 48,
-          background: "rgba(217,217,217,0.1)",
+        aria-label={
+          viewMode === "folders"
+            ? "Показать рабочий стол"
+            : "Показать папки"
+        }
+        className="pointer-events-auto z-[60] flex items-center justify-center rounded-full text-white"
+        style={
+          isNarrow
+            ? {
+                position: "absolute",
+                right: 28,
+                top: 690,
+                width: 64,
+                height: 64,
+                background: "#0F0F0F",
+                boxShadow: "0 12px 32px rgba(0,0,0,0.28)",
+              }
+            : {
+                position: "fixed",
+                width: 52,
+                height: 52,
+                right: 48,
+                bottom: 48,
+                background: "rgba(217,217,217,0.1)",
+              }
+        }
+        onClick={() => {
+          setViewMode((mode) => {
+            const nextMode = mode === "folders" ? "desktop" : "folders";
+            sessionStorage.setItem("homeViewMode", nextMode);
+            return nextMode;
+          });
         }}
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
       >
-        <Menu className="size-[22px]" strokeWidth={1.5} />
+        {viewMode === "folders" ? (
+          <List className={isNarrow ? "size-[34px]" : "size-[26px]"} strokeWidth={1.75} />
+        ) : (
+          <FolderOpen className={isNarrow ? "size-[30px]" : "size-[25px]"} strokeWidth={1.5} />
+        )}
       </motion.button>
       )}
 
       {/* Folders on canvas */}
-      {!isNarrow && (
-      <div className="pointer-events-none absolute inset-0 z-[10]">
+      {!isNarrow && viewMode === "folders" && (
+        <div className="pointer-events-none absolute inset-0 z-[10]">
         {COLLECTIONS.map((year) => {
           const pos = FOLDER_POSITIONS[year];
           const fh = year === "2023" ? 327 : 345;
@@ -464,7 +695,9 @@ export default function Home() {
         })}
       </div>
       )}
-
+      {!isNarrow && viewMode === "desktop" && (
+  <DesktopCaseView left={desktopLeft} top={DESKTOP_TOP} />
+)}
       {/* Left sidebar — Figma: 383×800; clip box matches scaled height so it fits in 100vh */}
       <aside
         className="z-[50] flex flex-col justify-end overflow-hidden"
@@ -597,33 +830,61 @@ export default function Home() {
         </div>
       </aside>
 
-      {isNarrow && (
-        <div className="relative z-[20] flex w-full flex-col items-center px-3 pb-8 pt-4" style={{ gap: 14 }}>
-          {COLLECTIONS.map((year) => {
-            const h = year === "2023" ? 327 : 345;
-            return (
-              <div
-                key={year}
-                className="relative flex w-full justify-center overflow-visible"
-                style={{ height: h * mobileFolderScale }}
-                onMouseEnter={() => setHoverYear(year)}
-                onMouseLeave={() => setHoverYear((prev) => (prev === year ? null : prev))}
-              >
-                <div
-                  style={{
-                    width: 233,
-                    height: h,
-                    transform: `scale(${mobileFolderScale})`,
-                    transformOrigin: "top center",
-                  }}
-                >
-                  <FloatingFolder year={year} isHovered={hoverYear === year} />
-                </div>
-              </div>
-            );
-          })}
+      {isNarrow && viewMode === "folders" && (
+  <div
+    className="relative z-[20] flex w-full flex-col items-center px-3 pb-8 pt-4"
+    style={{ gap: 14 }}
+  >
+    {COLLECTIONS.map((year) => {
+      const h = year === "2023" ? 327 : 345;
+
+      return (
+        <div
+          key={year}
+          className="relative flex w-full justify-center overflow-visible"
+          style={{ height: h * mobileFolderScale }}
+          onMouseEnter={() => setHoverYear(year)}
+          onMouseLeave={() =>
+            setHoverYear((prev) => (prev === year ? null : prev))
+          }
+        >
+          <div
+            style={{
+              width: 233,
+              height: h,
+              transform: `scale(${mobileFolderScale})`,
+              transformOrigin: "top center",
+            }}
+          >
+            <FloatingFolder year={year} isHovered={hoverYear === year} />
+          </div>
         </div>
-      )}
+      );
+    })}
+  </div>
+)}
+
+{isNarrow && viewMode === "desktop" && (
+  <div
+    className="relative z-[20] w-full px-4 pb-10 pt-8"
+    style={{
+      overflowX: "auto",
+      WebkitOverflowScrolling: "touch",
+    }}
+  >
+    <div
+      className="relative"
+      style={{
+        width: 828,
+        minHeight: 632,
+        transform: `scale(${Math.min(1, (vw - 32) / 828)})`,
+        transformOrigin: "top left",
+      }}
+    >
+      <DesktopCaseView left={0} top={0} />
+    </div>
+  </div>
+)}
     </main>
   );
 }
