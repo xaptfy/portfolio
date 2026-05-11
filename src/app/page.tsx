@@ -4,8 +4,10 @@ import { motion } from "framer-motion";
 import { FolderOpen, List } from "lucide-react";
 import { useEffect, useState } from "react";
 
+
 type HomeViewMode = "folders" | "desktop";
 type CollectionYear = "2023" | "2024" | "2025" | "2026";
+type Lang = "ru" | "en";
 
 const ease = [0.22, 1, 0.36, 1] as const;
 
@@ -14,6 +16,33 @@ const CANVAS_GRID = {
   backgroundImage:
     "radial-gradient(circle, rgba(217,217,217,0.1) 2px, transparent 2px)",
   backgroundSize: "36px 36px",
+} as const;
+
+const T = {
+  ru: {
+    name: "Арина Быковская",
+    role: "Product Designer",
+    experienceValue: "3+ года",
+    experienceLabel: "опыт",
+    worked: "Работала тут",
+    studied: "Училась тут",
+    caseCollection: "Case Collection",
+    showDesktop: "Показать рабочий стол",
+    showFolders: "Показать папки",
+    switchLang: "Switch to English",
+  },
+  en: {
+    name: "Arina Bykovskaya",
+    role: "Product Designer",
+    experienceValue: "3+ years",
+    experienceLabel: "experience",
+    worked: "Worked here",
+    studied: "Studied here",
+    caseCollection: "Case Collection",
+    showDesktop: "Show desktop",
+    showFolders: "Show folders",
+    switchLang: "Переключить на русский",
+  },
 } as const;
 
 const PREVIEW_ASSETS: Record<CollectionYear, string[]> = {
@@ -32,57 +61,91 @@ const PREVIEW_LINKS: Record<CollectionYear, string[]> = {
 
 const DESKTOP_CASES: Record<
   CollectionYear,
-  { title: string; href: string; color: string }[]
+  {
+    title: {
+      ru: string;
+      en: string;
+    };
+    href: string;
+    color: string;
+  }[]
 > = {
   "2026": [
     {
-      title: "Pragmatica x VK",
+      title: {
+        ru: "Pragmatica x VK",
+        en: "Pragmatica x VK",
+      },
       href: "/cases/pragmatica-vk",
       color: "#FFFFFF",
     },
   ],
   "2025": [
     {
-      title: "Ozon Tech",
+      title: {
+        ru: "Ozon Tech",
+        en: "Ozon Tech",
+      },
       href: "/cases/ozon-tech",
       color: "#005BFE",
     },
     {
-      title: "Криптоброкер",
+      title: {
+        ru: "Криптоброкер",
+        en: "Crypto Broker",
+      },
       href: "/cases/crypto",
       color: "#7AEB86",
     },
     {
-      title: "ВТБ",
+      title: {
+        ru: "ВТБ",
+        en: "VTB",
+      },
       href: "/cases/vtb",
       color: "#0066FF",
     },
     {
-      title: "Тендеры",
+      title: {
+        ru: "Тендеры",
+        en: "Tenders",
+      },
       href: "/cases/tender",
       color: "#C8D0FF",
     },
   ],
   "2024": [
     {
-      title: "Seamm",
+      title: {
+        ru: "Seamm",
+        en: "Seamm",
+      },
       href: "/cases/seamm",
       color: "#29E1BB",
     },
     {
-      title: "ITMO",
+      title: {
+        ru: "ITMO",
+        en: "ITMO",
+      },
       href: "/cases/itmo",
       color: "#D7FF25",
     },
     {
-      title: "Mail.ru",
+      title: {
+        ru: "Mail.ru",
+        en: "Mail.ru",
+      },
       href: "/cases/vk",
       color: "#6197FF",
     },
   ],
   "2023": [
     {
-      title: "Казино NDA",
+      title: {
+        ru: "Казино NDA",
+        en: "Casino NDA",
+      },
       href: "/cases/casino",
       color: "#99A5FC",
     },
@@ -324,23 +387,26 @@ function DesktopFileIcon({ color }: { color: string }) {
       style={{
         width: 36,
         height: 55,
+        filter: "drop-shadow(0px 10px 18px rgba(0, 0, 0, 0.28))",
       }}
     >
+      {/* основной файл */}
       <div
         className="absolute inset-0"
         style={{
           background: color,
-          borderRadius: "2px 0 2px 2px",
-          clipPath: "polygon(0 0, 58% 0, 100% 27%, 100% 100%, 0 100%)",
-          boxShadow: "0px 1px 4px rgba(0, 0, 0, 0.4)",
+          borderRadius: "4px 0 4px 4px",
+          clipPath: "polygon(0 0, 70% 0, 100% 22%, 100% 100%, 0 100%)",
         }}
       />
+
+      {/* уголок — просто чуть темнее, без дурацкой тени */}
       <div
         className="absolute right-0 top-0"
         style={{
-          width: 15,
-          height: 15,
-          background: "rgba(0, 0, 0, 0.18)",
+          width: 11,
+          height: 13,
+          background: "rgba(0, 0, 0, 0.1)",
           clipPath: "polygon(0 0, 100% 100%, 100% 0)",
         }}
       />
@@ -351,20 +417,25 @@ function DesktopFileIcon({ color }: { color: string }) {
 function DesktopCaseView({
   left,
   top,
+  language,
+  isMobile,
 }: {
   left: number;
   top: number;
+  language: "ru" | "en";
+  isMobile: boolean;
 }) {
+  
   const years: CollectionYear[] = ["2026", "2025", "2024", "2023"];
 
   return (
     <motion.div
-      className="pointer-events-auto absolute z-[20]"
-      style={{
-        left,
-        top,
-        width: 828,
-      }}
+  className="pointer-events-auto absolute z-[20]"
+  style={{
+    left,
+    top,
+    width: 828,
+  }}
       initial={{ opacity: 0, y: 12, scale: 0.98 }}
       animate={{ opacity: 1, y: 0, scale: 1 }}
       transition={{ duration: 0.35, ease }}
@@ -416,7 +487,96 @@ function DesktopCaseView({
                       color: "#FFFFFF",
                     }}
                   >
-                    {item.title}
+                    {item.title[language]}
+                  </span>
+                </motion.a>
+              ))}
+            </div>
+          </section>
+        ))}
+      </div>
+    </motion.div>
+  );
+}
+
+function MobileDesktopCaseView({
+  language,
+}: {
+  language: Lang;
+}) {
+  const years: CollectionYear[] = ["2026", "2025", "2024", "2023"];
+
+  return (
+    <motion.div
+      className="w-full"
+      initial={{ opacity: 0, y: 12, scale: 0.98 }}
+      animate={{ opacity: 1, y: 0, scale: 1 }}
+      transition={{ duration: 0.35, ease }}
+    >
+      <div className="flex w-full flex-col" style={{ gap: 40 }}>
+        {years.map((year) => (
+          <section key={year} className="flex w-full flex-col" style={{ gap: 20 }}>
+            <div className="flex w-full flex-col" style={{ gap: 8 }}>
+              <div className="flex h-[18px] items-center px-1">
+                <p
+                  className="font-semibold"
+                  style={{
+                    fontSize: 18,
+                    lineHeight: "110%",
+                    color: "#9B9B9A",
+                  }}
+                >
+                  {year}
+                </p>
+              </div>
+
+              <div
+                className="h-px w-full"
+                style={{ background: "#444341" }}
+              />
+            </div>
+
+            <div
+              className="grid"
+              style={{
+                gridTemplateColumns: "repeat(3, minmax(0, 1fr))",
+                rowGap: 28,
+                columnGap: 14,
+              }}
+            >
+              {DESKTOP_CASES[year].map((item) => (
+                <motion.a
+                  key={item.href}
+                  href={item.href}
+                  className="flex flex-col items-center text-center"
+                  style={{
+                    gap: 10,
+                    color: "#FFFFFF",
+                  }}
+                  whileTap={{ scale: 0.96 }}
+                >
+                  <div
+  className="flex items-center justify-center"
+  style={{
+    width: 92,
+    height: 112,
+  }}
+>
+  <div style={{ transform: "scale(1.55)", transformOrigin: "center" }}>
+    <DesktopFileIcon color={item.color} />
+  </div>
+</div>
+
+                  <span
+                    className="font-medium"
+                    style={{
+                      fontSize: 14,
+                      lineHeight: "115%",
+                      color: "#FFFFFF",
+                      maxWidth: 120,
+                    }}
+                  >
+                    {item.title[language]}
                   </span>
                 </motion.a>
               ))}
@@ -520,11 +680,18 @@ const COLLECTIONS: CollectionYear[] = ["2025", "2026", "2024", "2023"];
 export default function Home() {
   const [hoverYear, setHoverYear] = useState<CollectionYear | null>(null);
   const [viewMode, setViewMode] = useState<HomeViewMode>("folders");
+  const [lang, setLang] = useState<Lang>("ru");
+  const t = T[lang];
   useEffect(() => {
     const savedViewMode = sessionStorage.getItem("homeViewMode");
+    const savedLang = sessionStorage.getItem("homeLang");
   
     if (savedViewMode === "folders" || savedViewMode === "desktop") {
       setViewMode(savedViewMode);
+    }
+  
+    if (savedLang === "ru" || savedLang === "en") {
+      setLang(savedLang);
     }
   }, []);
   const sidebarScale = useSidebarScale(800);
@@ -577,19 +744,22 @@ export default function Home() {
         className="pointer-events-auto z-[60] flex gap-3"
         style={
           isNarrow
-            ? {
-                position: "relative",
-                width: `${383 * mobileSidebarScale}px`,
-                margin: "0 auto",
-                justifyContent: "space-between",
-                paddingTop: 16,
-                paddingBottom: 12,
-              }
-            : {
-                position: "fixed",
-                top: 28,
-                right: 40,
-              }
+          ? {
+              position: "relative",
+              width: `${383 * mobileSidebarScale}px`,
+              margin: "0 auto",
+              justifyContent: "space-between",
+              paddingTop: 16,
+              paddingBottom: 12,
+              paddingLeft: 20,
+              paddingRight: 20,
+              boxSizing: "border-box",
+            }
+          : {
+              position: "fixed",
+              top: 48,
+              right: 48,
+            }
         }
       >
         {SOCIAL_LINKS.map(({ icon, label, href, external, size }) => (
@@ -623,52 +793,70 @@ export default function Home() {
         ))}
       </div>
 
-      {!isNarrow && (
-        <motion.button
-        type="button"
-        aria-label={
-          viewMode === "folders"
-            ? "Показать рабочий стол"
-            : "Показать папки"
-        }
-        className="pointer-events-auto z-[60] flex items-center justify-center rounded-full text-white"
-        style={
-          isNarrow
-            ? {
-                position: "absolute",
-                right: 28,
-                top: 690,
-                width: 64,
-                height: 64,
-                background: "#0F0F0F",
-                boxShadow: "0 12px 32px rgba(0,0,0,0.28)",
-              }
-            : {
-                position: "fixed",
-                width: 52,
-                height: 52,
-                right: 48,
-                bottom: 48,
-                background: "rgba(217,217,217,0.1)",
-              }
-        }
-        onClick={() => {
-          setViewMode((mode) => {
-            const nextMode = mode === "folders" ? "desktop" : "folders";
-            sessionStorage.setItem("homeViewMode", nextMode);
-            return nextMode;
-          });
-        }}
-        whileHover={{ scale: 1.05 }}
-        whileTap={{ scale: 0.95 }}
-      >
-        {viewMode === "folders" ? (
-          <List className={isNarrow ? "size-[34px]" : "size-[26px]"} strokeWidth={1.75} />
-        ) : (
-          <FolderOpen className={isNarrow ? "size-[30px]" : "size-[25px]"} strokeWidth={1.5} />
-        )}
-      </motion.button>
-      )}
+      <div
+  className="fixed z-[80] flex items-center gap-3"
+  style={{
+    right: isNarrow ? 28 : 48,
+    bottom: isNarrow ? 28 : 48,
+  }}
+>
+  <motion.button
+    type="button"
+    aria-label={t.switchLang}
+    className="pointer-events-auto flex items-center justify-center rounded-full text-white"
+    style={{
+      width: 52,
+      height: 52,
+      background: isNarrow ? "#0F0F0F" : "rgba(217,217,217,0.1)",
+      borderRadius: 100,
+      boxShadow: isNarrow ? "0 12px 32px rgba(0,0,0,0.35)" : undefined,
+      fontSize: 14,
+      fontWeight: 600,
+      lineHeight: "100%",
+    }}
+    onClick={() => {
+      setLang((current) => {
+        const nextLang = current === "ru" ? "en" : "ru";
+        sessionStorage.setItem("homeLang", nextLang);
+        return nextLang;
+      });
+    }}
+    whileHover={isNarrow ? undefined : { scale: 1.05 }}
+    whileTap={{ scale: 0.95 }}
+  >
+    {lang === "ru" ? "EN" : "RU"}
+  </motion.button>
+
+  <motion.button
+    type="button"
+    aria-label={
+      viewMode === "folders" ? t.showDesktop : t.showFolders
+    }
+    className="pointer-events-auto flex items-center justify-center rounded-full text-white"
+    style={{
+      width: 52,
+      height: 52,
+      background: isNarrow ? "#0F0F0F" : "rgba(217,217,217,0.1)",
+      borderRadius: 100,
+      boxShadow: isNarrow ? "0 12px 32px rgba(0,0,0,0.35)" : undefined,
+    }}
+    onClick={() => {
+      setViewMode((mode) => {
+        const nextMode = mode === "folders" ? "desktop" : "folders";
+        sessionStorage.setItem("homeViewMode", nextMode);
+        return nextMode;
+      });
+    }}
+    whileHover={isNarrow ? undefined : { scale: 1.05 }}
+    whileTap={{ scale: 0.95 }}
+  >
+    {viewMode === "folders" ? (
+      <List className="size-[26px]" strokeWidth={1.75} />
+    ) : (
+      <FolderOpen className="size-[25px]" strokeWidth={1.5} />
+    )}
+  </motion.button>
+</div>
 
       {/* Folders on canvas */}
       {!isNarrow && viewMode === "folders" && (
@@ -696,7 +884,12 @@ export default function Home() {
       </div>
       )}
       {!isNarrow && viewMode === "desktop" && (
-  <DesktopCaseView left={desktopLeft} top={DESKTOP_TOP} />
+  <DesktopCaseView
+  left={desktopLeft}
+  top={DESKTOP_TOP}
+  language={lang}
+  isMobile={isNarrow}
+/>
 )}
       {/* Left sidebar — Figma: 383×800; clip box matches scaled height so it fits in 100vh */}
       <aside
@@ -765,13 +958,13 @@ export default function Home() {
                 color: "#0F0F0F",
               }}
             >
-              Арина Быковская
+              {t.name}
             </h1>
             <p
               className="text-center font-medium"
               style={{ fontSize: 16, lineHeight: "90%", color: "rgba(15,15,15,0.6)" }}
             >
-              Product Designer
+              {t.role}
             </p>
           </div>
           <div className="flex flex-col items-center gap-1">
@@ -779,13 +972,13 @@ export default function Home() {
               className="font-medium"
               style={{ fontSize: 32, lineHeight: "90%", color: "#0F0F0F" }}
             >
-              3+ года
+              {t.experienceValue}
             </span>
             <span
               className="font-medium"
               style={{ fontSize: 16, lineHeight: "110%", color: "rgba(15,15,15,0.6)" }}
             >
-              опыт
+              {t.experienceLabel}
             </span>
           </div>
         </div>
@@ -804,7 +997,7 @@ export default function Home() {
               className="text-center font-medium"
               style={{ fontSize: 24, lineHeight: "110%", color: "#0F0F0F" }}
             >
-              Работала тут
+              {t.worked}
             </h2>
             <div className="flex w-full justify-center gap-8">
               <LogoCell60 src="/logos/ozon.svg" label="Ozon Tech" />
@@ -817,7 +1010,7 @@ export default function Home() {
               className="text-center font-medium"
               style={{ fontSize: 24, lineHeight: "110%", color: "#0F0F0F" }}
             >
-              Училась тут
+              {t.studied}
             </h2>
             <div className="flex w-full justify-center gap-8">
               <LogoCell60 src="/logos/pragmatica.svg" label="Pragmatica" />
@@ -865,24 +1058,8 @@ export default function Home() {
 )}
 
 {isNarrow && viewMode === "desktop" && (
-  <div
-    className="relative z-[20] w-full px-4 pb-10 pt-8"
-    style={{
-      overflowX: "auto",
-      WebkitOverflowScrolling: "touch",
-    }}
-  >
-    <div
-      className="relative"
-      style={{
-        width: 828,
-        minHeight: 632,
-        transform: `scale(${Math.min(1, (vw - 32) / 828)})`,
-        transformOrigin: "top left",
-      }}
-    >
-      <DesktopCaseView left={0} top={0} />
-    </div>
+  <div className="relative z-[20] w-full px-6 pb-10 pt-8">
+    <MobileDesktopCaseView language={lang} />
   </div>
 )}
     </main>
