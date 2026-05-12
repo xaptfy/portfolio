@@ -658,14 +658,12 @@ function FloatingFolder({
           style={{ width: FOLDER_BEFORE.w, height: FOLDER_BEFORE.h }}
         >
           <p
-            className="text-center text-[18px] font-semibold leading-[110%]"
-            style={{ color: "#0F0F0F" }}
-          >
-            Case Collection
-          </p>
-          <p
-            className="text-center text-[14px] font-semibold leading-[110%]"
-            style={{ color: "#0F0F0F" }}
+            className="text-center font-semibold leading-[90%]"
+            style={{
+              color: "#0F0F0F",
+              fontSize: 28,
+              letterSpacing: "-0.05em",
+            }}
           >
             {year}
           </p>
@@ -675,7 +673,7 @@ function FloatingFolder({
   );
 }
 
-const COLLECTIONS: CollectionYear[] = ["2025", "2026", "2024", "2023"];
+const COLLECTIONS: CollectionYear[] = ["2026", "2025", "2024", "2023"];
 
 export default function Home() {
   const [hoverYear, setHoverYear] = useState<CollectionYear | null>(null);
