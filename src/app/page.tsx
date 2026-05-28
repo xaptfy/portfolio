@@ -1,5 +1,6 @@
 "use client";
 
+import SlotLoader from "./components/SlotLoader";
 import { motion } from "framer-motion";
 import { FolderOpen, List } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -69,15 +70,31 @@ const DESKTOP_CASES: Record<
   }[]
 > = {
   "2026": [
-    {
-      title: {
-        ru: "Pragmatica x VK",
-        en: "Pragmatica x VK",
-      },
-      href: "/cases/pragmatica-vk",
-      color: "#FFFFFF",
+  {
+    title: {
+      ru: "OTP-верификация",
+      en: "Banking case",
     },
-  ],
+    href: "/cases/otr",
+    color: "#FFFFFF",
+  },
+  {
+    title: {
+      ru: "Pragmatica x VK",
+      en: "Pragmatica x VK",
+    },
+    href: "/cases/pragmatica-vk",
+    color: "#3B82F6",
+  },
+  {
+    title: {
+      ru: "Petrix",
+      en: "Petrix",
+    },
+    href: "/cases/petrix",
+    color: "#E774BF",
+  },
+],
   "2025": [
     {
       title: {
@@ -677,6 +694,12 @@ export default function Home() {
   const [hoverYear, setHoverYear] = useState<CollectionYear | null>(null);
   const [viewMode, setViewMode] = useState<HomeViewMode>("folders");
   const [lang, setLang] = useState<Lang>("en");
+
+  const [showLoader, setShowLoader] = useState(() => {
+    if (typeof window === "undefined") return false;
+    return sessionStorage.getItem("loaderShown") !== "true";
+  });
+
   const t = T[lang];
   useEffect(() => {
     const savedViewMode = sessionStorage.getItem("homeViewMode");
@@ -722,8 +745,18 @@ export default function Home() {
   }, [isNarrow]);
 
   return (
-    <main
-      className="relative isolate font-sans selection:bg-white/20"
+    <>
+      {showLoader ? (
+        <SlotLoader
+          onFinish={() => {
+            sessionStorage.setItem("loaderShown", "true");
+            setShowLoader(false);
+          }}
+        />
+      ) : null}
+  
+      <main
+        className="relative isolate font-sans selection:bg-white/20"
       style={{
         width: "100vw",
         height: isNarrow ? "auto" : "100vh",
@@ -1076,5 +1109,6 @@ export default function Home() {
   </div>
 )}
     </main>
+  </>
   );
 }
