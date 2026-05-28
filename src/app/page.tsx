@@ -22,6 +22,7 @@ const T = {
   ru: {
     name: "Арина Быковская",
     role: "Product Designer",
+    description: "Проектирую сложные B2B/B2C продукты: упрощаю сценарии и помогаю интерфейсам работать на метрики",
     worked: "Работала тут",
     studied: "Училась тут",
     caseCollection: "Case Collection",
@@ -32,6 +33,7 @@ const T = {
   en: {
     name: "Arina Bykovskaya",
     role: "Product Designer",
+    description: "I design complex B2B/B2C products: simplify user flows and help interfaces work for metrics",
     worked: "Worked here",
     studied: "Studied here",
     caseCollection: "Case Collection",
@@ -674,7 +676,7 @@ const COLLECTIONS: CollectionYear[] = ["2026", "2025", "2024", "2023"];
 export default function Home() {
   const [hoverYear, setHoverYear] = useState<CollectionYear | null>(null);
   const [viewMode, setViewMode] = useState<HomeViewMode>("folders");
-  const [lang, setLang] = useState<Lang>("ru");
+  const [lang, setLang] = useState<Lang>("en");
   const t = T[lang];
   useEffect(() => {
     const savedViewMode = sessionStorage.getItem("homeViewMode");
@@ -688,7 +690,7 @@ export default function Home() {
       setLang(savedLang);
     }
   }, []);
-  const sidebarScale = useSidebarScale(800);
+  const sidebarScale = 1;
   const vw = useViewportWidth();
   const isNarrow = vw < 1024;
   const mobileSidebarScale = Math.min(1, Math.max(0.64, (vw - 24) / 383));
@@ -887,40 +889,45 @@ export default function Home() {
 )}
       {/* Left sidebar — Figma: 383×800; clip box matches scaled height so it fits in 100vh */}
       <aside
-        className="z-[50] flex flex-col justify-end overflow-hidden"
-        style={{
-          position: isNarrow ? "relative" : "absolute",
-          left: isNarrow ? undefined : 0,
-          bottom: isNarrow ? undefined : 0,
-          width: isNarrow ? "100%" : 383 * sidebarScale,
-          height: isNarrow ? "auto" : "100vh",
-          maxHeight: isNarrow ? "none" : "100vh",
-          alignItems: isNarrow ? "center" : undefined,
-          paddingLeft: isNarrow ? 12 : 0,
-          paddingRight: isNarrow ? 12 : 0,
-        }}
-      >
-        <div
-          className="overflow-hidden"
-          style={{
-            width: isNarrow ? 383 * mobileSidebarScale : 383 * sidebarScale,
-            height: isNarrow ? 800 * mobileSidebarScale : 800 * sidebarScale,
-          }}
-        >
-          <div
-            className="flex flex-col"
-            style={{
-              width: 383,
-              height: 800,
-              padding: 4,
-              gap: 2,
-              transform: `scale(${isNarrow ? mobileSidebarScale : sidebarScale})`,
-              transformOrigin: "top left",
-            }}
-          >
+  className="z-[50] flex flex-col overflow-hidden"
+  style={{
+    position: isNarrow ? "relative" : "absolute",
+    left: isNarrow ? undefined : 0,
+    top: isNarrow ? undefined : 48,
+    bottom: isNarrow ? undefined : 48,
+    width: isNarrow ? "100%" : 383,
+    height: isNarrow ? "auto" : "calc(100vh - 96px)",
+    maxHeight: isNarrow ? "none" : "calc(100vh - 96px)",
+    alignItems: isNarrow ? "center" : undefined,
+    paddingLeft: isNarrow ? 12 : 0,
+    paddingRight: isNarrow ? 12 : 0,
+  }}
+>
+<div
+  className="overflow-hidden"
+  style={{
+    width: isNarrow ? 383 * mobileSidebarScale : 383,
+    height: isNarrow ? 800 * mobileSidebarScale : "100%",
+  }}
+>
+<div
+  className="flex flex-col"
+  style={{
+    width: 383,
+    height: isNarrow ? 800 : "100%",
+    padding: 4,
+    gap: 2,
+    transform: isNarrow ? `scale(${mobileSidebarScale})` : undefined,
+    transformOrigin: "top left",
+  }}
+>
         <div
           className="relative shrink-0 overflow-hidden"
-          style={{ width: 375, height: 196, borderRadius: 40 }}
+          style={{ width: 375, 
+            height: 196,
+            flex: 1,
+ 
+            borderRadius: 40 }}
         >
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
@@ -982,7 +989,7 @@ export default function Home() {
     fontWeight: 400,
   }}
 >
-  Проектирую сложные B2B/B2C продукты: упрощаю сценарии и помогаю интерфейсам работать на метрики
+{t.description}
 </p>
           
           
@@ -992,12 +999,13 @@ export default function Home() {
           className="flex shrink-0 flex-col justify-between overflow-hidden bg-white"
           style={{
             width: 375,
+            
             height: 348,
             padding: "32px 40px",
             borderRadius: 40,
           }}
         >
-          <div className="flex flex-col items-center" style={{ gap: 24 }}>
+          <div className="flex flex-col items-center" style={{ gap: 16 }}>
             <h2
               className="text-center font-medium"
               style={{ fontSize: 24, lineHeight: "110%", color: "#0F0F0F" }}
@@ -1010,7 +1018,7 @@ export default function Home() {
               <LogoCell60 src="/logos/ids.svg" label="IDS" />
             </div>
           </div>
-          <div className="flex flex-col items-center" style={{ gap: 24 }}>
+          <div className="flex flex-col items-center" style={{ gap: 16 }}>
             <h2
               className="text-center font-medium"
               style={{ fontSize: 24, lineHeight: "110%", color: "#0F0F0F" }}
