@@ -9,6 +9,12 @@ import { useEffect, useState } from "react";
 type HomeViewMode = "folders" | "desktop";
 type CollectionYear = "2023" | "2024" | "2025" | "2026";
 type Lang = "ru" | "en";
+type CaseImageEntry =
+  | string
+  | {
+      src: string;
+      variant?: "regular" | "wide";
+    };
 
 const ease = [0.22, 1, 0.36, 1] as const;
 
@@ -198,6 +204,97 @@ const SOCIAL_LINKS = [
   },
 ] as const;
 
+type WorkPreviewKey = "ozon" | "vk" | "ids";
+
+const WORK_PREVIEWS: Record<
+  WorkPreviewKey,
+  {
+    title: string;
+    description: string;
+    tags: string[];
+    href: string;
+    sections: { title: string; text: string }[];
+    images: CaseImageEntry[];
+  }
+> = {
+  ozon: {
+    title: "Ozon Tech",
+    description:
+      "Работала продуктовым дизайнером в команде Оформления: занималась доменами чекаута, геосервисов и Select, а также поддерживала задачи смежных доменов",
+    tags: ["B2C", "B2B"],
+    href: "/cases/ozon-tech",
+    sections: [
+      {
+        title: "— Ozon Select",
+        text: "Адаптировала около 1000 экранов чекаута и геосервисов под новое визуальное решение, обновляла токены, формы и компоненты, сопровождала внедрение в разработке",
+      },
+      {
+        title: "— Чаевые сотрудникам ПВЗ",
+        text: "Прорабатывала сценарий добавления чаевых в пользовательский путь и поддерживала задачи смежного продуктового домена",
+      },
+      {
+        title: "— Геосервисы",
+        text: "Работала над списком ПВЗ на карте, участвовала в редизайне пинов и доработке сценариев выбора точки получения",
+      },
+    ],
+    images: [
+      { src: "/cases/ozon-tech/1.png", variant: "regular" },
+      { src: "/cases/ozon-tech/2.png", variant: "regular" },
+      { src: "/cases/ozon-tech/3.png", variant: "wide" },
+      { src: "/cases/ozon-tech/4.png", variant: "regular" },
+      { src: "/cases/ozon-tech/5.png", variant: "regular" },
+      { src: "/cases/ozon-tech/6.png", variant: "regular" },
+      { src: "/cases/ozon-tech/7.png", variant: "regular" },
+      { src: "/cases/ozon-tech/8.png", variant: "regular" },
+      { src: "/cases/ozon-tech/9.png", variant: "regular" },
+    ],
+  },
+
+  vk: {
+    title: "Mail.ru",
+    description:
+      "Работала над новым видом сервиса почты Mail.ru: переосмысляла вход, навигацию и доступ к ключевым действиям",
+    tags: ["B2C"],
+    href: "/cases/vk",
+    sections: [
+      {
+        title: "— Дискавери",
+        text: "Разобрала текущий пользовательский путь, главный экран и сценарий входа, чтобы найти точки трения",
+      },
+      {
+        title: "— Редизайн",
+        text: "Подготовила обновлённые экраны с более понятной навигацией и усиленными акцентами на важных действиях",
+      },
+    ],
+    images: [
+      { src: "/cases/vk/1.png", variant: "regular" },
+      { src: "/cases/vk/2.png", variant: "regular" },
+      { src: "/cases/vk/3.png", variant: "regular" },
+      { src: "/cases/vk/4.png", variant: "regular" },
+      { src: "/cases/vk/5.png", variant: "regular" },
+    ],
+  },
+
+  ids: {
+    title: "Casino NDA",
+    description:
+      "Проектировала онбординг и первые игровые сценарии для онлайн-геймблинга",
+    tags: ["B2C", "NDA"],
+    href: "/cases/casino",
+    sections: [
+      {
+        title: "— Онбординг",
+        text: "Сократила путь новичка, убрала лишние шаги и сделала первый игровой опыт понятнее",
+      },
+      {
+        title: "— Первый депозит",
+        text: "Переработала флоу пополнения и снизила трение перед первой игровой сессией",
+      },
+    ],
+    images: ["/cases/casino/1.png"],
+  },
+};
+
 function useSidebarScale(maxHeight: number) {
   const [scale, setScale] = useState(1);
   useEffect(() => {
@@ -223,16 +320,209 @@ function useViewportWidth() {
   return vw;
 }
 
-function LogoCell60({ src, label }: { src: string; label: string }) {
-  return (
-    <div className="flex flex-col items-center gap-2 text-center">
-      <div className="flex size-[60px] shrink-0 items-center">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src={src} alt="" className="max-h-[60px] max-w-[60px] object-contain" loading="lazy" />
+function LogoCell60({
+  src,
+  label,
+  onClick,
+}: {
+  src: string;
+  label: string;
+  onClick?: () => void;
+}) {
+  const content = (
+    <>
+      <div className="flex size-[60px] shrink-0 items-center justify-center">
+        <img
+          src={src}
+          alt=""
+          className="max-h-[60px] max-w-[60px] object-contain"
+          loading="lazy"
+        />
       </div>
-      <span className="max-w-[100px] text-[12px]" style={{ color: "rgba(15,15,15,0.6)", lineHeight: "130%" }}>
+      <span
+        className="max-w-[100px] text-[12px]"
+        style={{ color: "rgba(15,15,15,0.6)", lineHeight: "130%" }}
+      >
         {label}
       </span>
+    </>
+  );
+
+  if (!onClick) {
+    return <div className="flex flex-col items-center gap-2 text-center">{content}</div>;
+  }
+
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className="flex cursor-pointer flex-col items-center gap-2 text-center transition-transform hover:scale-[1.04] active:scale-[0.96]"
+      style={{ background: "transparent", border: "none", padding: 0 }}
+    >
+      {content}
+    </button>
+  );
+}
+
+function WorkPreviewModal({
+  preview,
+  onClose,
+}: {
+  preview: (typeof WORK_PREVIEWS)[WorkPreviewKey];
+  onClose: () => void;
+}) {
+  const [isOpen, setIsOpen] = useState(false);
+  return (
+<div
+  className="fixed inset-0 z-[200] flex items-center justify-center bg-[#0F0F0F]/55 px-6 backdrop-blur-[10px]"
+  onClick={onClose}
+>
+<div
+  onClick={(event) => event.stopPropagation()}
+  className="relative flex h-[580px] w-full max-w-[948px] gap-1 overflow-hidden bg-[#0F0F0F]"
+          style={{ borderRadius: 44 }}
+      >
+        <button
+          type="button"
+          onClick={onClose}
+          className="fixed right-16 top-16 z-[220] flex size-[52px] items-center justify-center rounded-full bg-white text-[#0F0F0F] transition-transform hover:scale-105 active:scale-95"
+          aria-label="Закрыть"
+        >
+          <span className="text-[34px] leading-none">×</span>
+        </button>
+
+        <div
+          className="flex w-[444px] shrink-0 flex-col justify-between p-1"
+          style={{ borderRadius: 44 }}
+        >
+          <div
+            className="flex h-full flex-col justify-between overflow-hidden p-[24px_4px_4px]"
+            style={{
+              background: "rgba(255,255,255,0.1)",
+              borderRadius: 40,
+            }}
+          >
+            <div className="flex flex-col items-center gap-3 px-5 pt-8 text-center">
+              <h2
+                className="text-white"
+                style={{
+                  fontSize: 40,
+                  lineHeight: "110%",
+                  fontWeight: 500,
+                  letterSpacing: "-0.04em",
+                }}
+              >
+                {preview.title}
+              </h2>
+
+              <p
+                style={{
+                  maxWidth: 374,
+                  fontSize: 16,
+                  lineHeight: "110%",
+                  color: "rgba(255,255,255,0.8)",
+                }}
+              >
+                {preview.description}
+              </p>
+
+              <div className="flex gap-2">
+                {preview.tags.map((tag) => (
+                  <span
+                    key={tag}
+                    className="rounded-full px-4 py-2 text-[14px] font-medium text-white"
+                    style={{ background: "rgba(255,255,255,0.1)", lineHeight: "90%" }}
+                  >
+                    {tag}
+                  </span>
+                ))}
+              </div>
+            </div>
+
+            <div
+              className="flex flex-col gap-4 overflow-hidden bg-white p-7"
+              
+                style={{
+                  minHeight: 82,
+                  maxHeight: 317,
+                  borderRadius: 36,
+                }}
+      
+              
+            >
+              <button
+  type="button"
+  onClick={() => setIsOpen((value) => !value)}
+  className="flex w-full items-center justify-between"
+  style={{ background: "transparent", border: "none", padding: 0 }}
+>
+  <p
+    className="text-[#0F0F0F]"
+    style={{ fontSize: 20, lineHeight: "110%", fontWeight: 500 }}
+  >
+    Что сделала?
+  </p>
+  <span
+    className="text-[#0F0F0F]"
+    style={{ fontSize: 24, lineHeight: "110%", fontWeight: 500 }}
+  >
+    {isOpen ? "−" : "+"}
+  </span>
+</button>
+
+{isOpen ? (
+  <div className="flex flex-col gap-4 overflow-y-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+    {preview.sections.map((section) => (
+      <div key={section.title} className="flex flex-col gap-0.5">
+        <p
+          className="text-[#0F0F0F]"
+          style={{ fontSize: 16, lineHeight: "110%", fontWeight: 500 }}
+        >
+          {section.title}
+        </p>
+        <p
+          style={{
+            fontSize: 16,
+            lineHeight: "110%",
+            fontWeight: 500,
+            color: "rgba(15,15,15,0.5)",
+          }}
+        >
+          {section.text}
+        </p>
+      </div>
+    ))}
+  </div>
+) : null}
+            </div>
+          </div>
+        </div>
+
+        <a
+          href={preview.href}
+          className="flex h-full min-w-0 flex-1 gap-2 overflow-x-auto overflow-y-hidden px-0 py-11 pr-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+        >
+          {preview.images.map((item, index) => {
+  const src = typeof item === "string" ? item : item.src;
+  const variant =
+    typeof item === "string" ? "regular" : item.variant ?? "regular";
+
+  return (
+    <img
+      key={src}
+      src={src}
+      alt={`${preview.title} preview ${index + 1}`}
+      className={
+        variant === "wide"
+          ? "h-full w-auto max-w-none shrink-0 rounded-[40px] object-contain"
+          : "h-full w-auto shrink-0 rounded-[40px] object-contain"
+      }
+      draggable={false}
+    />
+  );
+})}
+        </a>
+      </div>
     </div>
   );
 }
@@ -694,6 +984,7 @@ export default function Home() {
   const [hoverYear, setHoverYear] = useState<CollectionYear | null>(null);
   const [viewMode, setViewMode] = useState<HomeViewMode>("folders");
   const [lang, setLang] = useState<Lang>("en");
+  const [activeWorkPreview, setActiveWorkPreview] = useState<WorkPreviewKey | null>(null);
 
   const [showLoader, setShowLoader] = useState(() => {
     if (typeof window === "undefined") return false;
@@ -1046,9 +1337,21 @@ export default function Home() {
               {t.worked}
             </h2>
             <div className="flex w-full justify-center gap-8">
-              <LogoCell60 src="/logos/ozon.svg" label="Ozon Tech" />
-              <LogoCell60 src="/logos/vk.svg" label="VK" />
-              <LogoCell60 src="/logos/ids.svg" label="IDS" />
+            <LogoCell60
+  src="/logos/ozon.svg"
+  label="Ozon Tech"
+  onClick={() => setActiveWorkPreview("ozon")}
+/>
+<LogoCell60
+  src="/logos/vk.svg"
+  label="VK"
+  onClick={() => setActiveWorkPreview("vk")}
+/>
+<LogoCell60
+  src="/logos/ids.svg"
+  label="IDS"
+  onClick={() => setActiveWorkPreview("ids")}
+/>
             </div>
           </div>
           <div className="flex flex-col items-center" style={{ gap: 12 }}>
@@ -1108,6 +1411,12 @@ export default function Home() {
     <MobileDesktopCaseView language={lang} />
   </div>
 )}
+{activeWorkPreview ? (
+  <WorkPreviewModal
+    preview={WORK_PREVIEWS[activeWorkPreview]}
+    onClose={() => setActiveWorkPreview(null)}
+  />
+) : null}
     </main>
   </>
   );
