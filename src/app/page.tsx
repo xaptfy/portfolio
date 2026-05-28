@@ -22,8 +22,6 @@ const T = {
   ru: {
     name: "Арина Быковская",
     role: "Product Designer",
-    experienceValue: "3+ года",
-    experienceLabel: "опыт",
     worked: "Работала тут",
     studied: "Училась тут",
     caseCollection: "Case Collection",
@@ -34,8 +32,6 @@ const T = {
   en: {
     name: "Arina Bykovskaya",
     role: "Product Designer",
-    experienceValue: "3+ years",
-    experienceLabel: "experience",
     worked: "Worked here",
     studied: "Studied here",
     caseCollection: "Case Collection",
@@ -56,7 +52,7 @@ const PREVIEW_LINKS: Record<CollectionYear, string[]> = {
   "2023": ["/cases/casino", "/cases/tender"],
   "2024": ["/cases/seamm", "/cases/itmo", "/cases/vk"],
   "2025": ["/cases/crypto", "/cases/ozon-tech", "/cases/vtb"],
-  "2026": ["/cases/pragmatica-vk", "/cases/pragmatica-vk", "/cases/pragmatica-vk"],
+  "2026": ["/cases/otr", "/cases/pragmatica-vk", "/cases/petrix"],
 };
 
 const DESKTOP_CASES: Record<
@@ -924,7 +920,7 @@ export default function Home() {
           >
         <div
           className="relative shrink-0 overflow-hidden"
-          style={{ width: 375, height: 179, borderRadius: 40 }}
+          style={{ width: 375, height: 196, borderRadius: 40 }}
         >
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
@@ -941,44 +937,55 @@ export default function Home() {
           className="flex shrink-0 flex-col items-center justify-center bg-white"
           style={{
             width: 375,
-            height: 257,
-            padding: "32px 40px",
+            height: 240,
+            padding: "28px 28px",
             borderRadius: 40,
-            gap: 28,
+            
           }}
-        >
-          <div className="flex flex-col items-center gap-2">
+        > 
+          <div
+    className="flex flex-col items-center text-center"
+    style={{ gap: 6 }}
+  >
+
             <h1
               className="text-center font-medium"
               style={{
-                fontSize: 40,
+                fontSize: 36,
                 lineHeight: "110%",
                 color: "#0F0F0F",
+                fontWeight: 500,
+        letterSpacing: "-0.05em",
               }}
             >
               {t.name}
             </h1>
+            
             <p
               className="text-center font-medium"
-              style={{ fontSize: 16, lineHeight: "90%", color: "rgba(15,15,15,0.6)" }}
+              style={{ fontSize: 16, 
+                lineHeight: "100%", 
+                color: "rgba(15,15,15,0.52)",
+                fontWeight: 500
+              }}
             >
               {t.role}
             </p>
-          </div>
-          <div className="flex flex-col items-center gap-1">
-            <span
-              className="font-medium"
-              style={{ fontSize: 32, lineHeight: "90%", color: "#0F0F0F" }}
-            >
-              {t.experienceValue}
-            </span>
-            <span
-              className="font-medium"
-              style={{ fontSize: 16, lineHeight: "110%", color: "rgba(15,15,15,0.6)" }}
-            >
-              {t.experienceLabel}
-            </span>
-          </div>
+            </div>
+            <div style={{ height: 28 }} />
+            <p
+  className="mx-auto text-center"
+  style={{
+    fontSize: 18,
+    lineHeight: "120%",
+    color: "rgba(15,15,15,0.6)",
+    fontWeight: 400,
+  }}
+>
+  Проектирую сложные B2B/B2C продукты: упрощаю сценарии и помогаю интерфейсам работать на метрики
+</p>
+          
+          
         </div>
 
         <div
