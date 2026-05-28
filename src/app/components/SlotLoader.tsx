@@ -42,14 +42,15 @@ export default function SlotLoader({ onFinish }: SlotLoaderProps) {
     };
   }, [onFinish]);
 
-  return (
-    <div
-      className="fixed inset-0 z-[9999] flex items-center justify-center bg-[#0F0F0F]/90 backdrop-blur-[18px] transition-opacity duration-500"
-      style={{
-        opacity: isVisible ? 1 : 0,
-      }}
-    >
-      <div className="flex gap-8">
+
+    return (
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-[#0F0F0F] backdrop-blur-[18px]">
+          <div
+            className="flex gap-8 transition-opacity duration-500"
+            style={{
+              opacity: isVisible ? 1 : 0,
+            }}
+          >
         {numbers.map((number, index) => {
           const prev = number === 0 ? 9 : number - 1;
           const next = number === 9 ? 0 : number + 1;
