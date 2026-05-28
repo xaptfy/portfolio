@@ -3,9 +3,10 @@
 import { AnimatePresence, motion } from "framer-motion";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { use, useMemo, useState } from "react";
+import { use, useEffect, useMemo, useState } from "react";
 
 const ease = [0.22, 1, 0.36, 1] as const;
+type Lang = "ru" | "en";
 
 export type CaseSection = {
   title: string;
@@ -33,36 +34,8 @@ export type CaseStudy = {
     layout?: CaseLayout;
 };
 
-export const CASES: Record<string, CaseStudy> = {
-  "otr": {
-  slug: "otr",
-  title: "Banking case",
-  description:
-    "Спроектировала OTP-flow для подтверждения критической операции в мобильном финтех-продукте",
-  tags: ["Fintech", "B2С"],
-  sections: [
-    {
-      title: "— Контекст",
-      text:
-        "OTP появляется в конце чувствительного сценария, где ошибка может привести к финансовым или пользовательским рискам. Поэтому решение проектировалось не как отдельный экран, а как система состояний: ввод кода, ожидание SMS, повторная отправка, ошибки, лимиты и блокировки.",
-    },
-    {
-      title: "— Решение",
-      text:
-        "Проработала основной экран ввода 6-значного кода, автоподстановку, вставку из буфера, таймер повторной отправки, состояния неверного и просроченного кода, лимиты попыток и блокировку при подозрительной активности. Отдельно продумала сценарий, когда SMS не приходит: понятный статус, повторная отправка, проверка номера и подсказки без лишней тревожности.",
-    },
-    {
-      title: "— Логика",
-      text:
-        "Ввод сделан максимально быстрым и предсказуемым: автофокус, 6 ячеек, поддержка вставки кода и явные состояния системы. Пользователь всегда понимает, что происходит, почему действие недоступно и что можно сделать дальше.",
-    },
-    {
-      title: "— Результат",
-      text:
-        "Получился устойчивый сценарий подтверждения операции: пользователь быстрее проходит flow, продукт сохраняет контроль над рисками, а проблемные состояния не превращаются в тупики. Решение можно оценивать через completion rate, ошибки ввода, resend-запросы и обращения в поддержку по причине «код не приходит».",
-    },
-  ],
-  images: [
+const CASE_IMAGES = {
+  otr: [
     { src: "/cases/otr/1.png", variant: "regular" },
     { src: "/cases/otr/2.png", variant: "regular" },
     { src: "/cases/otr/3.png", variant: "regular" },
@@ -73,101 +46,120 @@ export const CASES: Record<string, CaseStudy> = {
     { src: "/cases/otr/8.png", variant: "regular" },
     { src: "/cases/otr/9.png", variant: "regular" },
     { src: "/cases/otr/10.png", variant: "regular" },
+  ] satisfies CaseImageEntry[],
 
-  ],
+  pragmaticaVk: [
+    "/cases/pragmatica-vk/1.png",
+    "/cases/pragmatica-vk/2.png",
+    "/cases/pragmatica-vk/3.png",
+    "/cases/pragmatica-vk/4.png",
+    "/cases/pragmatica-vk/5.png",
+    "/cases/pragmatica-vk/6.png",
+    "/cases/pragmatica-vk/7.png",
+  ] satisfies CaseImageEntry[],
+
+  ozonTech: [
+    { src: "/cases/ozon-tech/1.png", variant: "regular" },
+    { src: "/cases/ozon-tech/2.png", variant: "regular" },
+    { src: "/cases/ozon-tech/3.png", variant: "wide" },
+    { src: "/cases/ozon-tech/4.png", variant: "regular" },
+    { src: "/cases/ozon-tech/5.png", variant: "regular" },
+    { src: "/cases/ozon-tech/6.png", variant: "regular" },
+    { src: "/cases/ozon-tech/7.png", variant: "regular" },
+    { src: "/cases/ozon-tech/8.png", variant: "regular" },
+    { src: "/cases/ozon-tech/9.png", variant: "regular" },
+  ] satisfies CaseImageEntry[],
+};
+
+
+export const CASES_EN: Record<string, CaseStudy> = {
+  "otr": {
+    slug: "otr",
+    title: "Banking case",
+    description:
+      "Designed an OTP flow for confirming a critical operation in a mobile fintech product.",
+    tags: ["Fintech", "B2C"],
+    sections: [
+      {
+        title: "— Context",
+        text:
+          "OTP appears at the end of a sensitive flow where a mistake can lead to financial or user risks. I approached the solution not as a single input screen, but as a system of states: code entry, SMS waiting, resend, errors, limits and blocking.",
+      },
+      {
+        title: "— Solution",
+        text:
+          "Designed the main 6-digit code input screen, autofill, paste support, resend timer, invalid and expired code states, attempt limits and suspicious activity blocking. Also covered the case when the SMS does not arrive: clear status, resend logic, phone number check and calm hints.",
+      },
+      {
+        title: "— UX logic",
+        text:
+          "The input flow is fast and predictable: autofocus, 6 separate cells, paste support and clear system states. At every step, the user understands what is happening, why an action is unavailable and what they can do next.",
+      },
+      {
+        title: "— Result",
+        text:
+          "The result is a resilient confirmation flow: users can complete the operation faster, while the product keeps risk under control and edge states do not become dead ends. The solution can be measured through completion rate, input errors, resend requests and support tickets related to missing SMS codes.",
+      },
+    ],
+    images: CASE_IMAGES.otr,
   },
 
   "pragmatica-vk": {
     slug: "pragmatica-vk",
-    title: "Pragmatica x VK",
+    title: "Pragmatica × VK",
     description:
-      "Участвовала в дизайн-кемпе Pragmatica × VK: за месяц проработала два продуктовых кейса в формате спринтов — от концепции до презентации и итераций по фидбеку менторов",
+      "Took part in the Pragmatica × VK design camp: worked on two product cases in sprint format — from concept and presentation to iterations based on mentor feedback.",
     tags: ["Camp", "B2C"],
     sections: [
       {
-        title: "— «Мои питомцы» во ВКонтакте",
+        title: "— VK Pets",
         text:
-          "Сделала редизайн 4 ключевых экранов раздела: переосмыслила структуру, визуальный язык и пользовательские сценарии, чтобы сервис лучше встраивался в экосистему VK",
+          "Redesigned 4 key screens of the VK Pets section: reworked the structure, visual language and user scenarios to make the service feel more consistent within the VK ecosystem.",
       },
       {
-        title: "— Музыкальный плеер эпох",
+        title: "— Music Player Through Eras",
         text:
-          "Спроектировала мини-приложение, которое переносит эстетику винила, кассет и iPod Classic в современный интерфейс. Сохранила эмоциональность ретро-устройств, но собрала сценарий на привычных UI-паттернах",
+          "Designed a mini app that brings the aesthetics of vinyl, cassette players and iPod Classic into a modern interface. The concept preserves the emotional feel of retro devices while using familiar contemporary UI patterns.",
       },
     ],
-    images: [
-      "/cases/pragmatica-vk/1.png",
-      "/cases/pragmatica-vk/2.png",
-      "/cases/pragmatica-vk/3.png",
-      "/cases/pragmatica-vk/4.png",
-      "/cases/pragmatica-vk/5.png",
-      "/cases/pragmatica-vk/6.png",
-      "/cases/pragmatica-vk/7.png",
-    ],
+    images: CASE_IMAGES.pragmaticaVk,
   },
 
   "ozon-tech": {
     slug: "ozon-tech",
     title: "Ozon Tech",
     description:
-      "Работала продуктовым дизайнером в команде Оформления: проектировала сценарии оформления заказа, геосервисов и смежных продуктовых доменов. Участвовала в крупных визуальных обновлениях, улучшала пользовательские flow и сопровождала решения до внедрения в разработку",
+      "Worked as a product designer in the Checkout team: designed order placement flows, geoservices and adjacent product scenarios. Contributed to large visual updates, improved user flows and supported solutions through development.",
     tags: ["E-commerce", "B2C", "Checkout", "Geo"],
     sections: [
       {
         title: "— Ozon Select",
         text:
-          "Адаптировала около 1000 экранов чекаута и геосервисов под новое визуальное решение: обновляла токены, формы и компоненты, проверяла консистентность интерфейсов и сопровождала внедрение в разработке.",
+          "Adapted around 1,000 checkout and geoservices screens to a new visual system. Updated tokens, forms and components, checked interface consistency and supported implementation during development.",
       },
       {
-        title: "— Чаевые сотрудникам ПВЗ",
+        title: "— Tips for pickup point staff",
         text:
-          "Прорабатывала сценарий добавления чаевых в пользовательский путь: продумывала точки входа, состояния, ограничения и интеграцию механики в оформление заказа.",
+          "Worked on the tipping mechanic for pickup point staff inside the user journey. Defined entry points, states, limitations and integration logic within the checkout flow.",
       },
       {
-        title: "— Список ПВЗ на карте",
+        title: "— Pickup points on the map",
         text:
-          "Участвовала в проработке сценария выбора пункта выдачи на карте: помогала улучшить читаемость списка, работу с геоданными и навигацию между картой и карточками ПВЗ.",
+          "Contributed to improving the pickup point selection scenario on the map. Worked on list readability, geodata logic and navigation between the map and pickup point cards.",
       },
     ],
-    images: [
-      { src: "/cases/ozon-tech/1.png", variant: "regular" },
-      { src: "/cases/ozon-tech/2.png", variant: "regular" },
-      { src: "/cases/ozon-tech/3.png", variant: "wide" },
-      { src: "/cases/ozon-tech/4.png", variant: "regular" },
-      { src: "/cases/ozon-tech/5.png", variant: "regular" },
-      { src: "/cases/ozon-tech/6.png", variant: "regular" },
-      { src: "/cases/ozon-tech/7.png", variant: "regular" },
-      { src: "/cases/ozon-tech/8.png", variant: "regular" },
-      { src: "/cases/ozon-tech/9.png", variant: "regular" },
-    ],
+    images: CASE_IMAGES.ozonTech, 
   },
 
   "vtb": {
     slug: "vtb",
-    title: "ВТБ",
-    description:
-      "Работала продуктовым дизайнером в команде Оформления: занималась доменами чекаута, геосервисов и Select, а также поддерживала задачи в смежных доменах",
-    tags: ["B2C"],
+    title: "VTB",
+    description: "Designed a family finance concept for a banking product.",
+    tags: ["B2C", "Fintech"],
     sections: [
       {
-        title: "— Семейный счёт",
-        text:
-          "Проработала концепцию семейного счёта: сценарии совместного баланса, трат, целей и детского профиля внутри банковского приложения.",
-      },
-      {
-        title: "— Кешбэк и категории",
-        text:
-          "Спроектировала экран выбора категорий кешбэка: упростила механику выбора, визуально усилила активные категории и сделала сценарий понятнее для пользователя.",
-      },
-      {
-        title: "— Детский профиль",
-        text:
-          "Продумала логику детского счёта: баланс, пополнение, траты и цели, чтобы родитель мог контролировать финансы ребёнка в понятном интерфейсе.",
-      },
-      {
-        title: "— Совместные цели",
-        text:
-          "Разработала сценарии накоплений для семьи: отображение прогресса, участников цели и действий по пополнению.",
+        title: "— Concept",
+        text: "Worked on family account scenarios, shared goals, child profile and cashback category selection inside a banking app.",
       },
     ],
     images: [
@@ -180,30 +172,13 @@ export const CASES: Record<string, CaseStudy> = {
 
   "crypto": {
     slug: "crypto",
-    title: "Криптоброкер",
-    description:
-      "Концептила приложение криптоброкера для крупного банка: проектировала ключевые сценарии покупки, обмена и хранения цифровых активов для новичков и опытных пользователей",
-    tags: ["B2C", "B2B"],
+    title: "Crypto Broker",
+    description: "Designed key flows for buying, exchanging and storing digital assets inside a banking ecosystem.",
+    tags: ["B2C", "Fintech"],
     sections: [
       {
-        title: "— Исследование пользователей",
-        text:
-          "Провела интервью с новичками и опытными пользователями, выявила барьеры первой покупки: страх ошибки, непонимание комиссий, рисков и терминов.",
-      },
-      {
-        title: "— Ключевые сценарии криптоброкера",
-        text:
-          "Спроектировала онбординг, покупку, обмен и хранение цифровых активов внутри банковской экосистемы.",
-      },
-      {
-        title: "— Финансовые детали и безопасность",
-        text:
-          "Упростила подачу комиссий, итоговой суммы, ограничений и рисков, чтобы пользователь понимал, что происходит на каждом шаге.",
-      },
-      {
-        title: "— Тестирование и доработка",
-        text:
-          "Провела UX-тесты, доработала онбординг, шаг подтверждения и детали операции.",
+        title: "— Product logic",
+        text: "Worked on onboarding, first purchase, exchange flow, operation details and risk communication for both beginners and experienced users.",
       },
     ],
     images: [
@@ -215,30 +190,13 @@ export const CASES: Record<string, CaseStudy> = {
 
   "tender": {
     slug: "tender",
-    title: "Тендеры",
-    description:
-      "Проектировала сервис для работы с тендерами в рамках госзаказа",
+    title: "Tenders",
+    description: "Designed a B2B service for working with public procurement tenders.",
     tags: ["B2B"],
     sections: [
       {
-        title: "— Структура сервиса",
-        text:
-          "Спроектировала основную логику продукта: каталог тендеров, карточку закупки, фильтры, статусы, личный кабинет и рабочие сценарии пользователя.",
-      },
-      {
-        title: "— Ключевые сценарии",
-        text:
-          "Проработала путь от поиска тендера до просмотра деталей, сохранения, подготовки заявки и отслеживания статуса.",
-      },
-      {
-        title: "— Интерфейсы и состояния",
-        text:
-          "Отрисовала основные экраны, таблицы, формы, пустые состояния, ошибки, статусы и сложные сценарии взаимодействия.",
-      },
-      {
-        title: "— Передача в разработку",
-        text:
-          "Подготовила макеты, спецификации и UI-состояния для разработки, сопровождала вопросы команды на этапе реализации.",
+        title: "— Service structure",
+        text: "Designed the core product logic: tender catalog, filters, tender card, statuses, personal account and key work scenarios.",
       },
     ],
     images: [
@@ -251,34 +209,12 @@ export const CASES: Record<string, CaseStudy> = {
   "seamm": {
     slug: "seamm",
     title: "Seamm",
-    description:
-      "Концептила экран Product Details для SEAMM — digital fashion стартапа, где пользователь может взаимодействовать с цифровой одеждой",
+    description: "Designed a Product Details screen for a digital fashion startup.",
     tags: ["B2C"],
     sections: [
       {
-        title: "— Приоритизация функций",
-        text:
-          "Разделила действия по важности и вывела AR-примерку и перенос в игры в основные CTA.",
-      },
-      {
-        title: "— Структура экрана",
-        text:
-          "Пересобрала Product Details: усилила hero-зону с 3D-визуалом, сгруппировала действия и инфоблоки.",
-      },
-      {
-        title: "— Ключевые сценарии",
-        text:
-          "Проработала AR-примерку, transfer to games, кастомизацию, подарок другому пользователю, digital passport и order tracking.",
-      },
-      {
-        title: "— Состояния и микротексты",
-        text:
-          "Добавила подсказки, подтверждения и error states для сложных действий вроде передачи владения и переноса в игру.",
-      },
-      {
-        title: "— Результат",
-        text:
-          "Ключевые функции стали заметнее и быстрее доступны, а экран начал работать не только как карточка товара, но и как центр управления digital-fashion объектом.",
+        title: "— Product details",
+        text: "Reworked the screen structure, highlighted key actions and made AR try-on, transfer to games and digital asset management easier to access.",
       },
     ],
     images: [
@@ -297,34 +233,12 @@ export const CASES: Record<string, CaseStudy> = {
     slug: "itmo",
     title: "ITMO",
     layout: "vertical",
-    description:
-      "Лидировала дизайн-команду, занимающуюся редизайном сайта курсов повышения квалификации ИТМО",
+    description: "Led a design team working on the redesign of ITMO’s continuing education website.",
     tags: ["B2C", "Education"],
     sections: [
       {
-        title: "— Лидирование и коммуникация",
-        text:
-          "Координировала работу дизайн-команды, общалась с заказчиками и разработчиками, уточняла требования и помогала принимать продуктовые решения.",
-      },
-      {
-        title: "— Арт-дирекшн и интерфейс",
-        text:
-          "Курировала 3D-модели, иконки, моушн и анимации, а также разработала дизайн статей и полезных материалов для сотрудников.",
-      },
-      {
-        title: "— Дизайн-концепции",
-        text:
-          "Разработала два варианта дизайна: один по брендбуку ИТМО, второй — как уникальную визуальную концепцию.",
-      },
-      {
-        title: "— Исследование и структура сервиса",
-        text:
-          "Проводила интервью, анализировала данные и строила CJM, чтобы понять потребности сотрудников и студентов ИТМО.",
-      },
-      {
-        title: "— Результат",
-        text:
-          "Разработали обновлённый дизайн сайта, который объединяет курсы повышения квалификации ИТМО в единую платформу. Проект находится в разработке, параллельно продолжается доработка связанных сервисов и проверка актуальности курсов.",
+        title: "— Design leadership",
+        text: "Coordinated the design team, worked with stakeholders and developers, clarified requirements and helped shape product decisions.",
       },
     ],
     images: [
@@ -337,29 +251,12 @@ export const CASES: Record<string, CaseStudy> = {
   "vk": {
     slug: "vk",
     title: "Mail.ru",
-    description:
-      "Работала над новым видом сервиса почты Mail.ru: концептила обновлённый пользовательский опыт, упрощала вход в аккаунт, навигацию и доступ к ключевым действиям",
+    description: "Worked on a redesigned Mail.ru email experience.",
     tags: ["B2C"],
     sections: [
       {
-        title: "— Дискавери и анализ продукта",
-        text:
-          "Разобрала текущий пользовательский путь, изучила главный экран, сценарий входа и доступность ключевых функций, чтобы понять, где пользователь теряет время или не доходит до нужного действия.",
-      },
-      {
-        title: "— Проблемы и точки трения",
-        text:
-          "Выявила основные боли: неочевидный быстрый вход в аккаунт, сложный поиск кнопки «Написать» и перегруженность главного экрана дополнительными функциями.",
-      },
-      {
-        title: "— UX-гипотезы и сценарии",
-        text:
-          "Сформулировала гипотезы для улучшения ключевых сценариев: ускорить вход, сделать создание письма заметнее и сократить путь до основных действий в приложении.",
-      },
-      {
-        title: "— Редизайн ключевых экранов",
-        text:
-          "Подготовила обновлённые экраны с более понятной навигацией, усиленными акцентами на важных действиях и очищенной структурой главного экрана.",
+        title: "— Redesign",
+        text: "Analyzed the current user journey and redesigned key screens to simplify login, navigation and access to core actions.",
       },
     ],
     images: [
@@ -373,30 +270,13 @@ export const CASES: Record<string, CaseStudy> = {
 
   "casino": {
     slug: "casino",
-    title: "Казино NDA",
-    description:
-      "Проектировала онбординг и первые игровые сценарии для онлайн-геймблинга",
+    title: "Casino NDA",
+    description: "Designed onboarding and first-game scenarios for an online gaming product.",
     tags: ["B2C", "NDA"],
     sections: [
       {
-        title: "— Онбординг новичков",
-        text:
-          "Сократила путь с 7 до 3 шагов, убрала лишние поля и добавила прогресс, увеличив конверсию.",
-      },
-      {
-        title: "— Безопасный первый опыт",
-        text:
-          "Спроектировала механику бесплатного демо-раунда без депозита, чтобы пользователь мог попробовать продукт без лишнего риска.",
-      },
-      {
-        title: "— Сценарий первого депозита",
-        text:
-          "Переработала флоу пополнения, объединила авторизацию и создание кошелька, снизив drop-off при создании кошелька.",
-      },
-      {
-        title: "— Визуальный язык и главный экран",
-        text:
-          "Убрала визуальный шум, выстроила иерархию и смягчила агрессивный визуал, что помогло расширить охват продукта.",
+        title: "— First user experience",
+        text: "Simplified onboarding, reduced friction before the first session and reworked the first deposit scenario.",
       },
     ],
     images: [
@@ -404,6 +284,13 @@ export const CASES: Record<string, CaseStudy> = {
     ],
   },
 };
+
+export const CASES_RU: Record<string, CaseStudy> = {
+  ...CASES_EN,
+};
+
+
+
 
 function normalizedCaseImage(entry: CaseImageEntry): { src: string; variant: CaseImageVariant } {
   if (typeof entry === "string") {
@@ -430,19 +317,27 @@ function CornerMarks() {
   );
 }
 
-function CollapsibleWhatIDidCard({ sections }: { sections: CaseSection[] }) {
-  const [open, setOpen] = useState(false);
+function CollapsibleWhatIDidCard({
+  sections,
+  lang,
+}: {
+  sections: CaseSection[];
+  lang: Lang;
+}) {
+    const [open, setOpen] = useState(false);
 
   return (
     <div
-      className="flex w-full shrink-0 flex-col"
-      style={{
-        maxWidth: 428,
-        gap: 16,
-        borderRadius: 36,
-        background: "#FFFFFF",
-        padding: 28,
-      }}
+  className="flex w-full min-h-0 shrink flex-col"
+  style={{
+    maxWidth: 428,
+    gap: 16,
+    borderRadius: 36,
+    background: "#FFFFFF",
+    padding: 28,
+    maxHeight: "100%",
+  }}
+
     >
       <button
         type="button"
@@ -453,9 +348,9 @@ function CollapsibleWhatIDidCard({ sections }: { sections: CaseSection[] }) {
       >
         <span
           className="font-medium text-[#0F0F0F]"
-          style={{ fontSize: 16, lineHeight: "110%" }}
+          style={{ fontSize: 24, lineHeight: "130%", fontWeight: 500 }}
         >
-          Что сделала?
+          {lang === "ru" ? "Что сделала?" : "What I did"}
         </span>
         <span className="text-xl font-medium leading-none text-[#0F0F0F]" aria-hidden>
           {open ? "−" : "+"}
@@ -465,20 +360,24 @@ function CollapsibleWhatIDidCard({ sections }: { sections: CaseSection[] }) {
       <AnimatePresence initial={false}>
         {open ? (
           <motion.div
-            key="sections"
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: "auto", opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.4, ease }}
-            style={{ overflow: "hidden" }}
-          >
-            <div style={{ gap: 16 }} className="flex flex-col pb-px pt-px">
+          key="sections"
+          initial={{ height: 0, opacity: 0 }}
+          animate={{ height: "auto", opacity: 1 }}
+          exit={{ height: 0, opacity: 0 }}
+          transition={{ duration: 0.4, ease }}
+          className="min-h-0 overflow-y-auto [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
+          style={{
+            maxHeight: "calc(100vh - 400px)",
+            paddingBottom: 56,
+          }}
+        >
+            <div style={{ gap: 24 }} className="flex flex-col pb-px pt-px">
               {sections.map((s, i) => (
                 <div key={i} className="flex flex-col gap-2">
-                  <p className="font-medium text-[#0F0F0F]" style={{ fontSize: 16 }}>
+                  <p className="font-medium text-[#0F0F0F]" style={{ fontSize: 20, lineHeight: "130%" }}>
                     {s.title}
                   </p>
-                  <p className="font-medium" style={{ fontSize: 16, lineHeight: "110%", color: "rgba(15,15,15,0.5)" }}>
+                  <p className="font-medium" style={{ fontSize: 18, lineHeight: "130%", color: "rgba(15,15,15,0.5)", fontWeight: 400, }}>
                     {s.text}
                   </p>
                 </div>
@@ -493,7 +392,22 @@ function CollapsibleWhatIDidCard({ sections }: { sections: CaseSection[] }) {
 
 export default function CasePage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = use(params);
-  const data = useMemo(() => CASES[slug], [slug]);
+  const [lang, setLang] = useState<Lang>("en");
+
+  useEffect(() => {
+    const savedLang = sessionStorage.getItem("homeLang");
+
+    if (savedLang === "ru" || savedLang === "en") {
+      setLang(savedLang);
+    } else {
+      sessionStorage.setItem("homeLang", "en");
+    }
+  }, []);
+
+  const data = useMemo(() => {
+    const source = lang === "ru" ? CASES_RU : CASES_EN;
+    return source[slug] ?? CASES_EN[slug] ?? CASES_RU[slug];
+  }, [slug, lang]);
 
   if (!data) {
   notFound();
@@ -514,8 +428,8 @@ export default function CasePage({ params }: { params: Promise<{ slug: string }>
           style={{ borderRadius: 44, padding: 4 }}
         >
           <div
-  className="relative flex min-h-0 shrink-0 flex-col justify-between overflow-y-auto [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden lg:h-full"
-  style={{
+  className="relative flex min-h-0 shrink-0 flex-col justify-between overflow-hidden lg:h-full"
+style={{
     width: "100%",
     maxWidth: 436,
     minHeight: 792,
@@ -527,7 +441,7 @@ export default function CasePage({ params }: { params: Promise<{ slug: string }>
 >
             <Link
               href="/"
-              aria-label="Вернуться на главную"
+              aria-label={lang === "ru" ? "Вернуться на главную" : "Back to home"}
               className="absolute inset-x-0 top-0 z-[5] h-[120px] rounded-[40px] rounded-b-none bg-transparent [-webkit-tap-highlight-color:transparent] outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-white/50"
             />
             <CornerMarks />
@@ -540,7 +454,7 @@ export default function CasePage({ params }: { params: Promise<{ slug: string }>
                 {data.description}
               </p>
               <div className="flex flex-wrap justify-center gap-2 px-2">
-                {data.tags.map((t) => (
+              {data.tags.map((t: string) => (
                   <span
                     key={t}
                     className="rounded-[100px] font-normal text-white"
@@ -558,7 +472,7 @@ export default function CasePage({ params }: { params: Promise<{ slug: string }>
             </div>
 
             <div className="relative z-[2] flex w-full flex-col items-center px-px pb-[2px]">
-              <CollapsibleWhatIDidCard sections={data.sections} />
+            <CollapsibleWhatIDidCard sections={data.sections} lang={lang} />
             </div>
           </div>
         </section>
@@ -573,7 +487,7 @@ export default function CasePage({ params }: { params: Promise<{ slug: string }>
         : "flex h-[94dvh] min-h-[546px] w-full min-w-0 snap-x snap-mandatory flex-row flex-nowrap items-end justify-start gap-2 overflow-x-auto overflow-y-hidden px-0 pb-2 pt-4 [scrollbar-width:none] [-ms-overflow-style:none] [-webkit-overflow-scrolling:touch] touch-pan-x [&::-webkit-scrollbar]:hidden lg:h-full lg:min-h-0 lg:pt-11"
     }
   >
-            {data.images.map((raw, idx) => {
+            {data.images.map((raw: CaseImageEntry, idx: number) => {
               const { src, variant } = normalizedCaseImage(raw);
               const isWide = variant === "wide";
 
@@ -614,7 +528,35 @@ export default function CasePage({ params }: { params: Promise<{ slug: string }>
           </div>
         </section>
       </div>
-
+      <div
+  className="fixed bottom-8 right-8 z-[80] flex items-center gap-3"
+>
+  <motion.button
+    type="button"
+    aria-label={lang === "ru" ? "Switch to English" : "Переключить на русский"}
+    className="pointer-events-auto flex items-center justify-center rounded-full text-white"
+    style={{
+      width: 52,
+      height: 52,
+      background: "rgba(217,217,217,0.1)",
+      borderRadius: 100,
+      fontSize: 14,
+      fontWeight: 600,
+      lineHeight: "100%",
+    }}
+    onClick={() => {
+      setLang((current) => {
+        const nextLang = current === "ru" ? "en" : "ru";
+        sessionStorage.setItem("homeLang", nextLang);
+        return nextLang;
+      });
+    }}
+    whileHover={{ scale: 1.05 }}
+    whileTap={{ scale: 0.95 }}
+  >
+    {lang === "ru" ? "EN" : "RU"}
+  </motion.button>
+</div>
     </main>
   );
 }

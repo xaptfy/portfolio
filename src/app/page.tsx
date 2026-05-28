@@ -213,7 +213,7 @@ function LogoCell60({ src, label }: { src: string; label: string }) {
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img src={src} alt="" className="max-h-[60px] max-w-[60px] object-contain" loading="lazy" />
       </div>
-      <span className="max-w-[100px] text-[12px]" style={{ color: "rgba(15,15,15,0.6)", lineHeight: "110%" }}>
+      <span className="max-w-[100px] text-[12px]" style={{ color: "rgba(15,15,15,0.6)", lineHeight: "130%" }}>
         {label}
       </span>
     </div>
@@ -447,7 +447,7 @@ function DesktopCaseView({
                   className="font-semibold"
                   style={{
                     fontSize: 16,
-                    lineHeight: "110%",
+                    lineHeight: "130%",
                     color: "#9B9B9A",
                   }}
                 >
@@ -481,7 +481,7 @@ function DesktopCaseView({
                     className="font-medium"
                     style={{
                       fontSize: 12,
-                      lineHeight: "110%",
+                      lineHeight: "130%",
                       color: "#FFFFFF",
                     }}
                   >
@@ -520,7 +520,7 @@ function MobileDesktopCaseView({
                   className="font-semibold"
                   style={{
                     fontSize: 18,
-                    lineHeight: "110%",
+                    lineHeight: "130%",
                     color: "#9B9B9A",
                   }}
                 >
@@ -944,7 +944,7 @@ export default function Home() {
           className="flex shrink-0 flex-col items-center justify-center bg-white"
           style={{
             width: 375,
-            height: 240,
+            height: 210,
             padding: "28px 28px",
             borderRadius: 40,
             
@@ -959,7 +959,7 @@ export default function Home() {
               className="text-center font-medium"
               style={{
                 fontSize: 36,
-                lineHeight: "110%",
+                lineHeight: "130%",
                 color: "#0F0F0F",
                 fontWeight: 500,
         letterSpacing: "-0.05em",
@@ -1000,15 +1000,15 @@ export default function Home() {
           style={{
             width: 375,
             
-            height: 348,
-            padding: "32px 40px",
+            height: 330,
+            padding: "28px 40px",
             borderRadius: 40,
           }}
         >
-          <div className="flex flex-col items-center" style={{ gap: 16 }}>
+          <div className="flex flex-col items-center" style={{ gap: 12 }}>
             <h2
               className="text-center font-medium"
-              style={{ fontSize: 24, lineHeight: "110%", color: "#0F0F0F" }}
+              style={{ fontSize: 24, lineHeight: "130%", color: "#0F0F0F" }}
             >
               {t.worked}
             </h2>
@@ -1018,10 +1018,10 @@ export default function Home() {
               <LogoCell60 src="/logos/ids.svg" label="IDS" />
             </div>
           </div>
-          <div className="flex flex-col items-center" style={{ gap: 16 }}>
+          <div className="flex flex-col items-center" style={{ gap: 12 }}>
             <h2
               className="text-center font-medium"
-              style={{ fontSize: 24, lineHeight: "110%", color: "#0F0F0F" }}
+              style={{ fontSize: 24, lineHeight: "130%", color: "#0F0F0F" }}
             >
               {t.studied}
             </h2>
