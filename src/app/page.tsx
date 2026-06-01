@@ -198,7 +198,7 @@ const SOCIAL_LINKS = [
   {
     icon: "/icons/document.svg",
     label: "Document",
-    href: "hhttps://drive.google.com/drive/folders/1x_S6CWJrHiZfxYIT-Uc6WgP9INVPwqHW?usp=drive_link",
+    href: "https://drive.google.com/drive/folders/1x_S6CWJrHiZfxYIT-Uc6WgP9INVPwqHW?usp=sharing",
     external: false,
     size: 28,
   },
