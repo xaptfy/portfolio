@@ -1,4 +1,6 @@
+"use client";
 import Link from "next/link";
+import { useEffect, useState } from "react";
 
 
 const DOT_GRID = {
@@ -9,6 +11,15 @@ const DOT_GRID = {
 } as const;
 
 export default function NotFound() {
+  const [lang, setLang] = useState<"ru" | "en">("ru");
+
+useEffect(() => {
+  const savedLang = sessionStorage.getItem("homeLang");
+
+  if (savedLang === "ru" || savedLang === "en") {
+    setLang(savedLang);
+  }
+}, []);
   return (
     <main
       className="flex min-h-screen w-full items-center justify-center px-6 text-white"
@@ -31,9 +42,10 @@ export default function NotFound() {
             letterSpacing: "-0.04em",
           }}
         >
-          Пока тут не заехал кейс,
-          <br />
-          но ты можешь поиграть
+          {lang === "en"
+  ? "Case coming soon. Meanwhile, you can play a game."
+  : "Пока тут не заехал кейс, но ты можешь поиграть"}
+          
         </h1>
 
         <Link
@@ -46,7 +58,7 @@ export default function NotFound() {
     letterSpacing: "-0.04em",
   }}
 >
-  Играть
+{lang === "en" ? "Play" : "Играть"}
 </Link>
 
         <Link
@@ -59,7 +71,7 @@ export default function NotFound() {
             letterSpacing: "-0.04em",
           }}
         >
-          На главную
+          {lang === "en" ? "Back to Home" : "На главную"}
         </Link>
       </div>
     </main>

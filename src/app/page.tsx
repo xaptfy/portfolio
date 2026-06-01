@@ -209,8 +209,14 @@ type WorkPreviewKey = "ozon" | "vk" | "ids";
 const WORK_PREVIEWS: Record<
   WorkPreviewKey,
   {
-    title: string;
-    description: string;
+    title: {
+      ru: string;
+      en: string;
+    };
+    description: {
+      ru: string;
+      en: string;
+    };
     tags: string[];
     href: string;
     sections: { title: string; text: string }[];
@@ -218,9 +224,14 @@ const WORK_PREVIEWS: Record<
   }
 > = {
   ozon: {
-    title: "Ozon Tech",
-    description:
-      "Работала продуктовым дизайнером в команде Оформления: занималась доменами чекаута, геосервисов и Select, а также поддерживала задачи смежных доменов",
+    title: {
+      ru: "Ozon Tech",
+      en: "Ozon Tech",
+    },
+    description: {
+      ru: "Работала продуктовым дизайнером в команде Оформления: занималась доменами чекаута, геосервисов и Select, а также поддерживала задачи смежных доменов",
+      en: "Worked as a Product Designer in the Checkout team: owned checkout, geo services and Select flows, and supported adjacent product domains",
+    },
     tags: ["B2C", "B2B"],
     href: "/cases/ozon-tech",
     sections: [
@@ -251,9 +262,14 @@ const WORK_PREVIEWS: Record<
   },
 
   vk: {
-    title: "Mail.ru",
-    description:
-      "Работала над новым видом сервиса почты Mail.ru: переосмысляла вход, навигацию и доступ к ключевым действиям",
+    title: {
+      ru: "Mail.ru",
+      en: "Mail.ru",
+    },
+    description: {
+      ru: "Работала над новым видом сервиса почты Mail.ru: переосмысляла вход, навигацию и доступ к ключевым действиям",
+      en: "Worked on a new Mail.ru experience: redesigned sign-in, navigation and access to key actions",
+    },
     tags: ["B2C"],
     href: "/cases/vk",
     sections: [
@@ -276,9 +292,14 @@ const WORK_PREVIEWS: Record<
   },
 
   ids: {
-    title: "Casino NDA",
-    description:
-      "Проектировала онбординг и первые игровые сценарии для онлайн-геймблинга",
+    title: {
+      ru: "Casino NDA",
+      en: "Casino NDA",
+    },
+    description: {
+      ru: "Проектировала онбординг и первые игровые сценарии для онлайн-геймблинга",
+      en: "Designed onboarding and first-session flows for an online gambling product",
+    },
     tags: ["B2C", "NDA"],
     href: "/cases/casino",
     sections: [
@@ -340,11 +361,15 @@ function LogoCell60({
         />
       </div>
       <span
-        className="max-w-[100px] text-[12px]"
-        style={{ color: "rgba(15,15,15,0.6)", lineHeight: "130%" }}
-      >
-        {label}
-      </span>
+  className="max-w-[100px] text-[14px]"
+  style={{
+    color: "rgba(15,15,15,0.6)",
+    lineHeight: "130%",
+    fontWeight: 500,
+  }}
+>
+  {label}
+</span>
     </>
   );
 
@@ -367,36 +392,44 @@ function LogoCell60({
 function WorkPreviewModal({
   preview,
   onClose,
+  lang,
 }: {
   preview: (typeof WORK_PREVIEWS)[WorkPreviewKey];
   onClose: () => void;
+  lang: Lang;
 }) {
-  const [isOpen, setIsOpen] = useState(false);
+
   return (
-<div
-  className="fixed inset-0 z-[200] flex items-center justify-center bg-[#0F0F0F]/55 px-6 backdrop-blur-[10px]"
-  onClick={onClose}
->
-<div
-  onClick={(event) => event.stopPropagation()}
-  className="relative flex h-[580px] w-full max-w-[948px] gap-1 overflow-hidden bg-[#0F0F0F]"
-          style={{ borderRadius: 44 }}
+    <div
+      className="fixed inset-0 z-[200] flex items-center justify-center bg-[#0F0F0F]/55 px-6 backdrop-blur-[10px]"
+      onClick={onClose}
+    >
+      <div
+        onClick={(event) => event.stopPropagation()}
+        className="
+          relative flex w-full max-w-[948px]
+          overflow-hidden bg-[#0F0F0F]
+          md:h-[580px] md:flex-row md:gap-1
+          max-md:h-[calc(100vh-48px)]
+          max-md:flex-col
+        "
+        style={{ borderRadius: 44 }}
       >
         <button
           type="button"
           onClick={onClose}
-          className="fixed right-16 top-16 z-[220] flex size-[52px] items-center justify-center rounded-full bg-white text-[#0F0F0F] transition-transform hover:scale-105 active:scale-95"
+          className="absolute right-4 top-4 z-[220] flex size-[44px] items-center justify-center rounded-full bg-white text-[#0F0F0F] transition-transform hover:scale-105 active:scale-95"
           aria-label="Закрыть"
         >
-          <span className="text-[34px] leading-none">×</span>
+          <span className="text-[26px] leading-none">×</span>
         </button>
 
         <div
-          className="flex w-[444px] shrink-0 flex-col justify-between p-1"
+          className="flex w-full shrink-0 flex-col justify-between p-1 md:w-[444px]"
           style={{ borderRadius: 44 }}
         >
           <div
-            className="flex h-full flex-col justify-between overflow-hidden p-[24px_4px_4px]"
+            className="flex h-full flex-col overflow-hidden p-[24px_4px_4px]"
             style={{
               background: "rgba(255,255,255,0.1)",
               borderRadius: 40,
@@ -412,7 +445,7 @@ function WorkPreviewModal({
                   letterSpacing: "-0.04em",
                 }}
               >
-                {preview.title}
+                {preview.title[lang]}
               </h2>
 
               <p
@@ -423,7 +456,7 @@ function WorkPreviewModal({
                   color: "rgba(255,255,255,0.8)",
                 }}
               >
-                {preview.description}
+                {preview.description[lang]}
               </p>
 
               <div className="flex gap-2">
@@ -431,96 +464,64 @@ function WorkPreviewModal({
                   <span
                     key={tag}
                     className="rounded-full px-4 py-2 text-[14px] font-medium text-white"
-                    style={{ background: "rgba(255,255,255,0.1)", lineHeight: "90%" }}
+                    style={{
+                      background: "rgba(255,255,255,0.1)",
+                      lineHeight: "90%",
+                    }}
                   >
                     {tag}
                   </span>
                 ))}
               </div>
+              <div style={{ height: 20 }} />
             </div>
 
-            <div
-              className="flex flex-col gap-4 overflow-hidden bg-white p-7"
-              
-                style={{
-                  minHeight: 82,
-                  maxHeight: 317,
-                  borderRadius: 36,
-                }}
-      
-              
+            <a
+              href={preview.href}
+              className="mx-4 mb-4 mt-auto flex h-[58px] items-center justify-center bg-white text-[#0F0F0F] no-underline transition-transform hover:scale-[1.01] active:scale-[0.98]"
+              style={{
+                borderRadius: 999,
+                fontSize: 18,
+                lineHeight: "110%",
+                fontWeight: 500,
+              }}
             >
-              <button
-  type="button"
-  onClick={() => setIsOpen((value) => !value)}
-  className="flex w-full items-center justify-between"
-  style={{ background: "transparent", border: "none", padding: 0 }}
->
-  <p
-    className="text-[#0F0F0F]"
-    style={{ fontSize: 20, lineHeight: "110%", fontWeight: 500 }}
-  >
-    Что сделала?
-  </p>
-  <span
-    className="text-[#0F0F0F]"
-    style={{ fontSize: 24, lineHeight: "110%", fontWeight: 500 }}
-  >
-    {isOpen ? "−" : "+"}
-  </span>
-</button>
-
-{isOpen ? (
-  <div className="flex flex-col gap-4 overflow-y-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-    {preview.sections.map((section) => (
-      <div key={section.title} className="flex flex-col gap-0.5">
-        <p
-          className="text-[#0F0F0F]"
-          style={{ fontSize: 16, lineHeight: "110%", fontWeight: 500 }}
-        >
-          {section.title}
-        </p>
-        <p
-          style={{
-            fontSize: 16,
-            lineHeight: "110%",
-            fontWeight: 500,
-            color: "rgba(15,15,15,0.5)",
-          }}
-        >
-          {section.text}
-        </p>
-      </div>
-    ))}
-  </div>
-) : null}
-            </div>
+              {lang === "ru" ? "Посмотреть кейс →" : "View case →"}
+            </a>
           </div>
         </div>
 
         <a
           href={preview.href}
-          className="flex h-full min-w-0 flex-1 gap-2 overflow-x-auto overflow-y-hidden px-0 py-11 pr-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+          className="
+            flex min-w-0 flex-1 gap-2
+            overflow-x-auto overflow-y-hidden
+            px-2 py-3
+            md:h-full md:px-0 md:py-11 md:pr-2
+            max-md:h-[260px]
+            [scrollbar-width:none]
+            [&::-webkit-scrollbar]:hidden
+          "
         >
           {preview.images.map((item, index) => {
-  const src = typeof item === "string" ? item : item.src;
-  const variant =
-    typeof item === "string" ? "regular" : item.variant ?? "regular";
+            const src = typeof item === "string" ? item : item.src;
+            const variant =
+              typeof item === "string" ? "regular" : item.variant ?? "regular";
 
-  return (
-    <img
-      key={src}
-      src={src}
-      alt={`${preview.title} preview ${index + 1}`}
-      className={
-        variant === "wide"
-          ? "h-full w-auto max-w-none shrink-0 rounded-[40px] object-contain"
-          : "h-full w-auto shrink-0 rounded-[40px] object-contain"
-      }
-      draggable={false}
-    />
-  );
-})}
+            return (
+              <img
+                key={src}
+                src={src}
+                alt={`${preview.title} preview ${index + 1}`}
+                className={
+                  variant === "wide"
+                    ? "h-full w-auto max-w-none shrink-0 rounded-[24px] object-contain"
+                    : "h-full w-auto shrink-0 rounded-[24px] object-contain"
+                }
+                draggable={false}
+              />
+            );
+          })}
         </a>
       </div>
     </div>
@@ -1413,9 +1414,10 @@ export default function Home() {
 )}
 {activeWorkPreview ? (
   <WorkPreviewModal
-    preview={WORK_PREVIEWS[activeWorkPreview]}
-    onClose={() => setActiveWorkPreview(null)}
-  />
+  preview={WORK_PREVIEWS[activeWorkPreview]}
+  onClose={() => setActiveWorkPreview(null)}
+  lang={lang}
+/>
 ) : null}
     </main>
   </>

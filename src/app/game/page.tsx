@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 
+
 const DOT_GRID = {
   backgroundColor: "#0F0F0F",
   backgroundImage:
@@ -17,12 +18,22 @@ type Brick = {
   active: boolean;
 };
 
+
 type GameStatus = "idle" | "playing" | "lost" | "won";
 
 export default function GamePage() {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
   const [gameStatus, setGameStatus] = useState<GameStatus>("idle");
+  const [score, setScore] = useState(0);
+const [bestScore, setBestScore] = useState(0);
+const scoreRef = useRef(0);
+const bestScoreRef = useRef(0);
+  const lang =
+  typeof window !== "undefined" &&
+  sessionStorage.getItem("homeLang") === "en"
+    ? "en"
+    : "ru";
 
   const statusRef = useRef<GameStatus>("idle");
   const animationRef = useRef<number | null>(null);
@@ -33,6 +44,7 @@ export default function GamePage() {
     x: 0,
     y: 0,
   });
+
 
   const ballRef = useRef({
     x: 0,
@@ -62,24 +74,38 @@ export default function GamePage() {
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
+    const best = localStorage.getItem("bestScore");
+
+    if (best) {
+      const value = Number(best);
+    
+      setBestScore(value);
+      bestScoreRef.current = value;
+    }
+
     const dpr = window.devicePixelRatio || 1;
 
     const resize = () => {
       const width = window.innerWidth;
       const height = window.innerHeight;
-
-      widthRef.current = width;
-      heightRef.current = height;
+  
+widthRef.current = width;
+heightRef.current = height;
 
       canvas.width = width * dpr;
       canvas.height = height * dpr;
+      
       canvas.style.width = `${width}px`;
       canvas.style.height = `${height}px`;
 
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
       const paddle = paddleRef.current;
-      paddle.y = height - 96;
+      paddle.width = width < 768 ? 160 : 280;
+paddle.y = height - 96;if (paddle.x + paddle.width > width - 24) {
+  paddle.x = width - paddle.width - 24;
+}
+      
 
       if (paddle.x === 0) {
         paddle.x = width / 2 - paddle.width / 2;
@@ -101,24 +127,40 @@ export default function GamePage() {
       const width = widthRef.current;
       const bricks: Brick[] = [];
 
-      const r = 13;
-      const gap = 14;
-      const startX = 36;
-      const startY = 54;
-      const rows = 8;
+      const isMobile = width < 768;
 
-      const cols = Math.floor((width - startX * 2) / (r * 2 + gap));
+const r = isMobile ? 13 : 10;
+const gap = isMobile ? 14 : 24;
 
-      for (let row = 0; row < rows; row++) {
-        for (let col = 0; col < cols; col++) {
-          bricks.push({
-            x: startX + col * (r * 2 + gap) + r,
-            y: startY + row * (r * 2 + gap) + r,
-            r,
-            active: true,
-          });
-        }
-      }
+const startY = isMobile ? 18 : 90;
+const rows = isMobile ? 8 : 9;
+
+const step = r * 2 + gap;
+const cols = isMobile ? 8 : Math.ceil((width - 160) / step);
+
+const totalWidth =
+  (cols - 1) * step + r * 2;
+
+const startX =
+  (width - totalWidth) / 2;
+
+
+for (let row = 0; row < rows; row++) {
+  const rowShift = row % 2 === 0 ? 0 : step * 0.35;
+const currentCols =
+  row % 2 === 0
+    ? cols
+    : cols - 1;
+
+for (let col = 0; col < currentCols; col++) {
+    bricks.push({
+      x: startX + col * step + rowShift + r,
+      y: startY + row * step + r,
+      r,
+      active: true,
+    });
+  }
+}
 
       bricksRef.current = bricks;
     };
@@ -139,7 +181,11 @@ export default function GamePage() {
       ball.dy = -5;
 
       createBricks();
-      setStatus("idle");
+
+scoreRef.current = 0;
+setScore(0);
+
+setStatus("idle");
     };
 
     resetGameRef.current = resetGame;
@@ -262,6 +308,10 @@ export default function GamePage() {
 
         if (distance < ball.r + brick.r) {
           brick.active = false;
+        
+          scoreRef.current += 1;
+setScore(scoreRef.current);
+        
           ball.dy *= -1;
           break;
         }
@@ -272,6 +322,19 @@ export default function GamePage() {
       }
 
       if (ball.y - ball.r > height) {
+        const finalScore = scoreRef.current;
+      
+        if (finalScore > bestScoreRef.current) {
+          bestScoreRef.current = finalScore;
+      
+          setBestScore(finalScore);
+      
+          localStorage.setItem(
+            "bestScore",
+            String(finalScore)
+          );
+        }
+      
         setStatus("lost");
       }
     };
@@ -332,8 +395,19 @@ export default function GamePage() {
 
       {gameStatus === "lost" ? (
         <div className="fixed inset-0 z-30 flex items-center justify-center bg-black/55 backdrop-blur-[12px]">
+          <Link
+  href="/"
+  className="absolute right-8 top-8 text-white/70 transition-opacity hover:text-white"
+  style={{
+    fontSize: 52,
+    lineHeight: 1,
+    fontWeight: 300,
+  }}
+>
+  ×
+</Link>
           <div className="flex w-full max-w-[520px] flex-col items-center px-6 text-center text-white">
-          <div className="mb-8 overflow-hidden rounded-[40px]">
+          <div className="mb-6 overflow-hidden rounded-[40px]">
   <video
     src="/game/game-over.mp4"
     className="h-auto w-[280px] object-cover md:w-[360px]"
@@ -345,42 +419,88 @@ export default function GamePage() {
 </div>
 
             <h2
-              className="mb-12 font-medium"
+              className="mb-6 font-medium"
               style={{
                 fontSize: "clamp(32px, 4vw, 44px)",
                 lineHeight: "110%",
                 letterSpacing: "-0.04em",
               }}
             >
-              Айййй
+              {lang === "en" ? "Game Over" : "Айййй"}
             </h2>
+            <div className="mb-6 text-center">
+  <p
+    style={{
+      fontSize: 18,
+      opacity: 0.6,
+      marginBottom: 4,
+    }}
+  >
+    Score
+  </p>
+
+  <p
+    style={{
+      fontSize: 32,
+      fontWeight: 500,
+      lineHeight: "100%",
+      marginBottom: 16,
+    }}
+  >
+    {score}
+  </p>
+
+  <p
+    style={{
+      fontSize: 18,
+      opacity: 0.6,
+      marginBottom: 4,
+    }}
+  >
+    Best
+  </p>
+
+  <p
+    style={{
+      fontSize: 32,
+      fontWeight: 500,
+      lineHeight: "100%",
+    }}
+  >
+    {bestScore}
+  </p>
+</div>
 
             <button
               type="button"
               onClick={handleRestart}
-              className="mb-10 flex h-[76px] w-full max-w-[400px] items-center justify-center rounded-full bg-white text-[#0F0F0F] transition-transform hover:scale-[1.02] active:scale-[0.98]"
+              className="mb-4 flex h-[76px] w-full max-w-[400px] items-center justify-center rounded-full bg-white text-[#0F0F0F] transition-transform hover:scale-[1.02] active:scale-[0.98]"
               style={{
-                fontSize: 28,
+                fontSize: 24,
                 lineHeight: "110%",
                 fontWeight: 500,
                 letterSpacing: "-0.04em",
               }}
             >
-              Играть снова
+              {lang === "en" ? "Play Again" : "Играть снова"}
             </button>
-
-            <Link
-              href="/"
-              className="text-white transition-opacity hover:opacity-70"
-              style={{
-                fontSize: 28,
-                lineHeight: "110%",
-                fontWeight: 500,
-                letterSpacing: "-0.04em",
-              }}
-            >
-              На главную
-            </Link>
+            <a
+  href="https://t.me/xaptfy"
+  target="_blank"
+  rel="noreferrer"
+  className="flex h-[76px] w-full max-w-[400px] items-center justify-center rounded-full border border-white/25 text-white transition-all hover:bg-white/5 hover:border-white/40"
+  style={{
+    fontSize: 22,
+    lineHeight: "110%",
+    fontWeight: 500,
+    letterSpacing: "-0.04em",
+  }}
+>
+  {lang === "en"
+    ? "Invite me to your team →"
+    : "Позови меня в свою команду →"}
+</a>
+            
           </div>
         </div>
       ) : null}
@@ -396,13 +516,13 @@ export default function GamePage() {
                 letterSpacing: "-0.04em",
               }}
             >
-              Ура, ты победила
+              {lang === "en" ? "You Win" : "Ура, ты победил (-а)"}
             </h2>
 
             <button
               type="button"
               onClick={handleRestart}
-              className="mb-10 flex h-[76px] w-full max-w-[400px] items-center justify-center rounded-full bg-white text-[#0F0F0F] transition-transform hover:scale-[1.02] active:scale-[0.98]"
+              className="mb-6 flex h-[76px] w-full max-w-[400px] items-center justify-center rounded-full bg-white text-[#0F0F0F] transition-transform hover:scale-[1.02] active:scale-[0.98]"
               style={{
                 fontSize: 28,
                 lineHeight: "110%",
@@ -410,21 +530,8 @@ export default function GamePage() {
                 letterSpacing: "-0.04em",
               }}
             >
-              Играть снова
+              {lang === "en" ? "Play" : "Играть снова"}
             </button>
-
-            <Link
-              href="/"
-              className="text-white transition-opacity hover:opacity-70"
-              style={{
-                fontSize: 28,
-                lineHeight: "110%",
-                fontWeight: 500,
-                letterSpacing: "-0.04em",
-              }}
-            >
-              На главную
-            </Link>
           </div>
         </div>
       ) : null}
