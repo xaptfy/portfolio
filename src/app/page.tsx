@@ -1031,11 +1031,10 @@ export default function Home() {
   const folderAdaptiveScale = isShortDesktop
     ? Math.max(0.5, Math.min(0.66, vh / 950))
     : Math.max(0.72, Math.min(1, vh / 900));
-    
+
   const mobileSidebarScale = Math.min(1, Math.max(0.64, (vw - 24) / 383));
   const mobileFolderScale = Math.min(1, Math.max(0.72, (vw - 24) / 260));
 
-  const folderSpread = Math.max(0, Math.min(40, (vw - 1440) / 10));
   const DESKTOP_GAP = 40;
   const DESKTOP_TOP = 80;
   const SOCIAL_TOP = 32;
@@ -1215,40 +1214,51 @@ export default function Home() {
               bottom: 88,
             }}
           >
-            {COLLECTIONS.map((year, index) => {
-              const pos = FOLDER_POSITIONS[year];
-              const fh = isShortDesktop ? 345 : year === "2023" ? 327 : 345;
+            <div
+              className="pointer-events-none relative h-full"
+              style={{
+                width: "min(100%, 1160px)",
+                height: "100%",
+                margin: "0 auto",
+              }}
+            >
+              {COLLECTIONS.map((year, index) => {
+                const pos = FOLDER_POSITIONS[year];
+                const fh = isShortDesktop ? 345 : year === "2023" ? 327 : 345;
 
-              const shortDesktopStyle = isShortDesktop
-                ? {
-                  left: `calc(50% - ${(COLLECTIONS.length * 233 + (COLLECTIONS.length - 1) * 72) * folderAdaptiveScale}px / 2 + ${index * (233 + 72) * folderAdaptiveScale}px)`,
-                  top: `calc(50% - ${345 * folderAdaptiveScale}px / 2 + 28px)`,
-                  transform: `scale(${folderAdaptiveScale})`,
-                  transformOrigin: "top left",
-                }
-                : {
-                  left: `calc(${pos.left} - 200px)`,
-                  top: pos.top,
-                  transform: `scale(${folderAdaptiveScale})`,
-                  transformOrigin: "center center",
-                };
+                const shortDesktopStyle = isShortDesktop
+                  ? {
+                    left: `calc(50% - ${(COLLECTIONS.length * 233 + (COLLECTIONS.length - 1) * 72) *
+                      folderAdaptiveScale
+                      }px / 2 + ${index * (233 + 72) * folderAdaptiveScale}px)`,
+                    top: `calc(50% - ${345 * folderAdaptiveScale}px / 2 + 28px)`,
+                    transform: `scale(${folderAdaptiveScale})`,
+                    transformOrigin: "top left",
+                  }
+                  : {
+                    left: `calc(${pos.left} - 200px)`,
+                    top: pos.top,
+                    transform: `scale(${folderAdaptiveScale})`,
+                    transformOrigin: "center center",
+                  };
 
-              return (
-                <div
-                  key={year}
-                  className="pointer-events-auto absolute"
-                  style={{
-                    ...shortDesktopStyle,
-                    width: 233,
-                    height: fh,
-                  }}
-                  onMouseEnter={() => setHoverYear(year)}
-                  onMouseLeave={() => setHoverYear((h) => (h === year ? null : h))}
-                >
-                  <FloatingFolder year={year} isHovered={hoverYear === year} />
-                </div>
-              );
-            })}
+                return (
+                  <div
+                    key={year}
+                    className="pointer-events-auto absolute"
+                    style={{
+                      ...shortDesktopStyle,
+                      width: 233,
+                      height: fh,
+                    }}
+                    onMouseEnter={() => setHoverYear(year)}
+                    onMouseLeave={() => setHoverYear((h) => (h === year ? null : h))}
+                  >
+                    <FloatingFolder year={year} isHovered={hoverYear === year} />
+                  </div>
+                );
+              })}
+            </div>
           </div>
         )}
         {!isNarrow && viewMode === "desktop" && (
