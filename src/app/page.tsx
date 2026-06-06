@@ -12,9 +12,9 @@ type Lang = "ru" | "en";
 type CaseImageEntry =
   | string
   | {
-      src: string;
-      variant?: "regular" | "wide";
-    };
+    src: string;
+    variant?: "regular" | "wide";
+  };
 
 const ease = [0.22, 1, 0.36, 1] as const;
 
@@ -76,31 +76,31 @@ const DESKTOP_CASES: Record<
   }[]
 > = {
   "2026": [
-  {
-    title: {
-      ru: "OTP-верификация",
-      en: "Banking case",
+    {
+      title: {
+        ru: "OTP-верификация",
+        en: "Banking case",
+      },
+      href: "/cases/otr",
+      color: "#FFFFFF",
     },
-    href: "/cases/otr",
-    color: "#FFFFFF",
-  },
-  {
-    title: {
-      ru: "Pragmatica x VK",
-      en: "Pragmatica x VK",
+    {
+      title: {
+        ru: "Pragmatica x VK",
+        en: "Pragmatica x VK",
+      },
+      href: "/cases/pragmatica-vk",
+      color: "#3B82F6",
     },
-    href: "/cases/pragmatica-vk",
-    color: "#3B82F6",
-  },
-  {
-    title: {
-      ru: "Petrix",
-      en: "Petrix",
+    {
+      title: {
+        ru: "Petrix",
+        en: "Petrix",
+      },
+      href: "/cases/petrix",
+      color: "#E774BF",
     },
-    href: "/cases/petrix",
-    color: "#E774BF",
-  },
-],
+  ],
   "2025": [
     {
       title: {
@@ -341,6 +341,19 @@ function useViewportWidth() {
   return vw;
 }
 
+function useViewportHeight() {
+  const [vh, setVh] = useState(900);
+
+  useEffect(() => {
+    const update = () => setVh(window.innerHeight);
+    update();
+    window.addEventListener("resize", update);
+    return () => window.removeEventListener("resize", update);
+  }, []);
+
+  return vh;
+}
+
 function LogoCell60({
   src,
   label,
@@ -361,15 +374,15 @@ function LogoCell60({
         />
       </div>
       <span
-  className="max-w-[100px] text-[14px]"
-  style={{
-    color: "rgba(15,15,15,0.6)",
-    lineHeight: "130%",
-    fontWeight: 500,
-  }}
->
-  {label}
-</span>
+        className="max-w-[100px] text-[14px]"
+        style={{
+          color: "rgba(15,15,15,0.6)",
+          lineHeight: "130%",
+          fontWeight: 500,
+        }}
+      >
+        {label}
+      </span>
     </>
   );
 
@@ -543,7 +556,7 @@ function FolderPreviews({
   const isSingle = assets.length === 1;
 
   const slots = isSingle
-  ? [
+    ? [
       {
         x: 0,
         rotate: 0,
@@ -553,7 +566,7 @@ function FolderPreviews({
       },
     ]
     : year === "2023"
-    ? [
+      ? [
         {
           x: isHovered ? -78 : -34,
           rotate: isHovered ? 0 : -3,
@@ -569,8 +582,8 @@ function FolderPreviews({
           scale: isHovered ? 1.12 : 1,
         },
       ]
-    : year === "2024"
-      ? [
+      : year === "2024"
+        ? [
           {
             x: isHovered ? -136 : -42,
             rotate: isHovered ? 0 : -7,
@@ -593,7 +606,7 @@ function FolderPreviews({
             scale: isHovered ? 1.18 : 1,
           },
         ]
-      : [
+        : [
           {
             x: isHovered ? -118 : -42,
             rotate: isHovered ? 0 : -7,
@@ -616,7 +629,7 @@ function FolderPreviews({
             scale: isHovered ? 1.18 : 1,
           },
         ];
-            
+
 
   return (
     <motion.div
@@ -630,36 +643,36 @@ function FolderPreviews({
         if (!slot) return null;
 
         return (
-        <motion.a
-          key={src}
-          href={links[i] ?? "#"}
-          aria-label={`Open case ${year}-${i + 1}`}
-          className="absolute bottom-0 left-1/2"
-          style={{
-            marginLeft: -(slot.width * previewSize) / 2,
-            transformOrigin: "bottom center",
-            pointerEvents: isHovered ? "auto" : "none",
-          }}
-          animate={{
-            x: slot.x,
-            y: slot.y,
-            rotate: slot.rotate,
-            scale: slot.scale,
-          }}
-          transition={{ duration: 0.4, ease }}
-        >
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src={src}
-            alt=""
-            className="block h-auto max-w-none drop-shadow-[0_8px_22px_rgba(0,0,0,0.4)]"
-            style={{ width: slot.width * previewSize }}
-            draggable={false}
-          />
-        </motion.a>
+          <motion.a
+            key={src}
+            href={links[i] ?? "#"}
+            aria-label={`Open case ${year}-${i + 1}`}
+            className="absolute bottom-0 left-1/2"
+            style={{
+              marginLeft: -(slot.width * previewSize) / 2,
+              transformOrigin: "bottom center",
+              pointerEvents: isHovered ? "auto" : "none",
+            }}
+            animate={{
+              x: slot.x,
+              y: slot.y,
+              rotate: slot.rotate,
+              scale: slot.scale,
+            }}
+            transition={{ duration: 0.4, ease }}
+          >
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={src}
+              alt=""
+              className="block h-auto max-w-none drop-shadow-[0_8px_22px_rgba(0,0,0,0.4)]"
+              style={{ width: slot.width * previewSize }}
+              draggable={false}
+            />
+          </motion.a>
         );
       })}
-  </motion.div>
+    </motion.div>
   );
 }
 
@@ -669,20 +682,20 @@ const FOLDER_AFTER = { w: 199, h: 178 } as const;
 
 const FOLDER_POSITIONS: Record<CollectionYear, { left: string; top: string }> = {
   "2025": {
-    left: "calc(50% - 233px / 2 - 54.5px)",
+    left: "calc(50% - 233px / 2 - 24.5px)",
     top: "calc(50% - 345px / 2 - 115.5px)",
   },
   "2026": {
     left: "calc(50% - 233px / 2 + 326.5px)",
-    top: "calc(50% - 345px / 2 - 199.5px)",
+    top: "calc(50% - 345px / 2 - 180px)",
   },
   "2024": {
     left: "calc(50% - 232px / 2 + 107px)",
-    top: "calc(50% - 345px / 2 + 191.5px)",
+    top: "calc(50% - 345px / 2 + 161.5px)",
   },
   "2023": {
     left: "calc(50% - 233px / 2 + 434.5px)",
-    top: "calc(50% - 327px / 2 + 101.5px)",
+    top: "calc(50% - 327px / 2 + 71.5px)",
   },
 };
 
@@ -731,17 +744,17 @@ function DesktopCaseView({
   language: "ru" | "en";
   isMobile: boolean;
 }) {
-  
+
   const years: CollectionYear[] = ["2026", "2025", "2024", "2023"];
 
   return (
     <motion.div
-  className="pointer-events-auto absolute z-[20]"
-  style={{
-    left,
-    top,
-    width: 828,
-  }}
+      className="pointer-events-auto absolute z-[20]"
+      style={{
+        left,
+        top,
+        width: 828,
+      }}
       initial={{ opacity: 0, y: 12, scale: 0.98 }}
       animate={{ opacity: 1, y: 0, scale: 1 }}
       transition={{ duration: 0.35, ease }}
@@ -862,16 +875,16 @@ function MobileDesktopCaseView({
                   whileTap={{ scale: 0.96 }}
                 >
                   <div
-  className="flex items-center justify-center"
-  style={{
-    width: 92,
-    height: 112,
-  }}
->
-  <div style={{ transform: "scale(1.55)", transformOrigin: "center" }}>
-    <DesktopFileIcon color={item.color} />
-  </div>
-</div>
+                    className="flex items-center justify-center"
+                    style={{
+                      width: 92,
+                      height: 112,
+                    }}
+                  >
+                    <div style={{ transform: "scale(1.55)", transformOrigin: "center" }}>
+                      <DesktopFileIcon color={item.color} />
+                    </div>
+                  </div>
 
                   <span
                     className="font-medium"
@@ -987,30 +1000,42 @@ export default function Home() {
   const [lang, setLang] = useState<Lang>("en");
   const [activeWorkPreview, setActiveWorkPreview] = useState<WorkPreviewKey | null>(null);
 
-  const [showLoader, setShowLoader] = useState(() => {
-    if (typeof window === "undefined") return false;
-    return sessionStorage.getItem("loaderShown") !== "true";
-  });
+  const [mounted, setMounted] = useState(false);
+  const [showLoader, setShowLoader] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+    setShowLoader(sessionStorage.getItem("loaderShown") !== "true");
+  }, []);
 
   const t = T[lang];
   useEffect(() => {
     const savedViewMode = sessionStorage.getItem("homeViewMode");
     const savedLang = sessionStorage.getItem("homeLang");
-  
+
     if (savedViewMode === "folders" || savedViewMode === "desktop") {
       setViewMode(savedViewMode);
     }
-  
+
     if (savedLang === "ru" || savedLang === "en") {
       setLang(savedLang);
     }
   }, []);
-  const sidebarScale = 1;
+  const sidebarScale = useSidebarScale(900);
   const vw = useViewportWidth();
+  const vh = useViewportHeight();
+
   const isNarrow = vw < 1024;
+  const isShortDesktop = !isNarrow && vh < 650;
+
+  const folderAdaptiveScale = isShortDesktop
+    ? Math.max(0.5, Math.min(0.66, vh / 950))
+    : Math.max(0.72, Math.min(1, vh / 900));
+    
   const mobileSidebarScale = Math.min(1, Math.max(0.64, (vw - 24) / 383));
   const mobileFolderScale = Math.min(1, Math.max(0.72, (vw - 24) / 260));
 
+  const folderSpread = Math.max(0, Math.min(40, (vw - 1440) / 10));
   const DESKTOP_GAP = 40;
   const DESKTOP_TOP = 80;
   const SOCIAL_TOP = 32;
@@ -1038,7 +1063,7 @@ export default function Home() {
 
   return (
     <>
-      {showLoader ? (
+      {mounted && showLoader ? (
         <SlotLoader
           onFinish={() => {
             sessionStorage.setItem("loaderShown", "true");
@@ -1046,380 +1071,407 @@ export default function Home() {
           }}
         />
       ) : null}
-  
+
       <main
         className="relative isolate font-sans selection:bg-white/20"
-      style={{
-        width: "100vw",
-        height: isNarrow ? "auto" : "100vh",
-        minHeight: "100vh",
-        maxHeight: isNarrow ? "none" : "100vh",
-        overflowX: "hidden",
-        overflowY: isNarrow ? "auto" : "hidden",
-        ...CANVAS_GRID,
-        color: "#fff",
-      }}
-    >
-      {/* Social — right aligned, ~Figma spacing (12px gap), top 48px */}
-      <div
-        className="pointer-events-auto z-[60] flex gap-3"
-        style={
-          isNarrow
-          ? {
-              position: "relative",
-              width: `${383 * mobileSidebarScale}px`,
-              margin: "0 auto",
-              justifyContent: "space-between",
-              paddingTop: 16,
-              paddingBottom: 12,
-              paddingLeft: 20,
-              paddingRight: 20,
-              boxSizing: "border-box",
-            }
-          : {
-              position: "fixed",
-              top: 48,
-              right: 48,
-            }
-        }
+        style={{
+          width: "100vw",
+          height: isNarrow ? "auto" : "100vh",
+          minHeight: "100vh",
+          maxHeight: isNarrow ? "none" : "100vh",
+          overflowX: "hidden",
+          overflowY: isNarrow ? "auto" : "hidden",
+          ...CANVAS_GRID,
+          color: "#fff",
+        }}
       >
-        {SOCIAL_LINKS.map(({ icon, label, href, external, size }) => (
-          <motion.a
-            key={label}
-            href={href}
-            aria-label={label}
-            className="flex items-center justify-center rounded-full text-white"
+        {/* Social — right aligned, ~Figma spacing (12px gap), top 48px */}
+        <div
+          className="pointer-events-auto z-[60] flex gap-3"
+          style={
+            isNarrow
+              ? {
+                position: "relative",
+                width: `${383 * mobileSidebarScale}px`,
+                margin: "0 auto",
+                justifyContent: "space-between",
+                paddingTop: 16,
+                paddingBottom: 12,
+                paddingLeft: 20,
+                paddingRight: 20,
+                boxSizing: "border-box",
+              }
+              : {
+                position: "fixed",
+                top: 48,
+                right: 48,
+              }
+          }
+        >
+          {SOCIAL_LINKS.map(({ icon, label, href, external, size }) => (
+            <motion.a
+              key={label}
+              href={href}
+              aria-label={label}
+              className="flex items-center justify-center rounded-full text-white"
+              style={{
+                width: 52,
+                height: 52,
+                background: "rgba(217,217,217,0.1)",
+                borderRadius: 100,
+              }}
+              target={external ? "_blank" : undefined}
+              rel={external ? "noreferrer" : undefined}
+              whileHover={{ scale: 1.06 }}
+              whileTap={{ scale: 0.96 }}
+            >
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={icon}
+                alt=""
+                width={size}
+                height={size}
+                className="block object-contain"
+                style={{ filter: "brightness(0) invert(1)" }}
+                draggable={false}
+              />
+            </motion.a>
+          ))}
+        </div>
+
+        <div
+          className="fixed z-[80] flex items-center gap-3"
+          style={{
+            right: isNarrow ? 28 : 48,
+            bottom: isNarrow ? 28 : 48,
+          }}
+        >
+          <motion.button
+            type="button"
+            aria-label={t.switchLang}
+            className="pointer-events-auto flex items-center justify-center rounded-full text-white"
             style={{
               width: 52,
               height: 52,
-              background: "rgba(217,217,217,0.1)",
+              background: isNarrow ? "#0F0F0F" : "rgba(217,217,217,0.1)",
               borderRadius: 100,
+              boxShadow: isNarrow ? "0 12px 32px rgba(0,0,0,0.35)" : undefined,
+              fontSize: 14,
+              fontWeight: 600,
+              lineHeight: "100%",
             }}
-            target={external ? "_blank" : undefined}
-            rel={external ? "noreferrer" : undefined}
-            whileHover={{ scale: 1.06 }}
-            whileTap={{ scale: 0.96 }}
+            onClick={() => {
+              setLang((current) => {
+                const nextLang = current === "ru" ? "en" : "ru";
+                sessionStorage.setItem("homeLang", nextLang);
+                return nextLang;
+              });
+            }}
+            whileHover={isNarrow ? undefined : { scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
           >
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src={icon}
-              alt=""
-              width={size}
-              height={size}
-              className="block object-contain"
-              style={{ filter: "brightness(0) invert(1)" }}
-              draggable={false}
-            />
-          </motion.a>
-        ))}
-      </div>
+            {lang === "ru" ? "EN" : "RU"}
+          </motion.button>
 
-      <div
-  className="fixed z-[80] flex items-center gap-3"
-  style={{
-    right: isNarrow ? 28 : 48,
-    bottom: isNarrow ? 28 : 48,
-  }}
->
-  <motion.button
-    type="button"
-    aria-label={t.switchLang}
-    className="pointer-events-auto flex items-center justify-center rounded-full text-white"
-    style={{
-      width: 52,
-      height: 52,
-      background: isNarrow ? "#0F0F0F" : "rgba(217,217,217,0.1)",
-      borderRadius: 100,
-      boxShadow: isNarrow ? "0 12px 32px rgba(0,0,0,0.35)" : undefined,
-      fontSize: 14,
-      fontWeight: 600,
-      lineHeight: "100%",
-    }}
-    onClick={() => {
-      setLang((current) => {
-        const nextLang = current === "ru" ? "en" : "ru";
-        sessionStorage.setItem("homeLang", nextLang);
-        return nextLang;
-      });
-    }}
-    whileHover={isNarrow ? undefined : { scale: 1.05 }}
-    whileTap={{ scale: 0.95 }}
-  >
-    {lang === "ru" ? "EN" : "RU"}
-  </motion.button>
-
-  <motion.button
-    type="button"
-    aria-label={
-      viewMode === "folders" ? t.showDesktop : t.showFolders
-    }
-    className="pointer-events-auto flex items-center justify-center rounded-full text-white"
-    style={{
-      width: 52,
-      height: 52,
-      background: isNarrow ? "#0F0F0F" : "rgba(217,217,217,0.1)",
-      borderRadius: 100,
-      boxShadow: isNarrow ? "0 12px 32px rgba(0,0,0,0.35)" : undefined,
-    }}
-    onClick={() => {
-      setViewMode((mode) => {
-        const nextMode = mode === "folders" ? "desktop" : "folders";
-        sessionStorage.setItem("homeViewMode", nextMode);
-        return nextMode;
-      });
-    }}
-    whileHover={isNarrow ? undefined : { scale: 1.05 }}
-    whileTap={{ scale: 0.95 }}
-  >
-    {viewMode === "folders" ? (
-      <List className="size-[26px]" strokeWidth={1.75} />
-    ) : (
-      <FolderOpen className="size-[25px]" strokeWidth={1.5} />
-    )}
-  </motion.button>
-</div>
-
-      {/* Folders on canvas */}
-      {!isNarrow && viewMode === "folders" && (
-        <div className="pointer-events-none absolute inset-0 z-[10]">
-        {COLLECTIONS.map((year) => {
-          const pos = FOLDER_POSITIONS[year];
-          const fh = year === "2023" ? 327 : 345;
-          return (
-            <div
-              key={year}
-              className="pointer-events-auto absolute"
-              style={{
-                left: pos.left,
-                top: pos.top,
-                width: 233,
-                height: fh,
-              }}
-              onMouseEnter={() => setHoverYear(year)}
-              onMouseLeave={() => setHoverYear((h) => (h === year ? null : h))}
-            >
-              <FloatingFolder year={year} isHovered={hoverYear === year} />
-            </div>
-          );
-        })}
-      </div>
-      )}
-      {!isNarrow && viewMode === "desktop" && (
-  <DesktopCaseView
-  left={desktopLeft}
-  top={DESKTOP_TOP}
-  language={lang}
-  isMobile={isNarrow}
-/>
-)}
-      {/* Left sidebar — Figma: 383×800; clip box matches scaled height so it fits in 100vh */}
-      <aside
-  className="z-[50] flex flex-col overflow-hidden"
-  style={{
-    position: isNarrow ? "relative" : "absolute",
-    left: isNarrow ? undefined : 0,
-    top: isNarrow ? undefined : 48,
-    bottom: isNarrow ? undefined : 48,
-    width: isNarrow ? "100%" : 383,
-    height: isNarrow ? "auto" : "calc(100vh - 96px)",
-    maxHeight: isNarrow ? "none" : "calc(100vh - 96px)",
-    alignItems: isNarrow ? "center" : undefined,
-    paddingLeft: isNarrow ? 12 : 0,
-    paddingRight: isNarrow ? 12 : 0,
-  }}
->
-<div
-  className="overflow-hidden"
-  style={{
-    width: isNarrow ? 383 * mobileSidebarScale : 383,
-    height: isNarrow ? 800 * mobileSidebarScale : "100%",
-  }}
->
-<div
-  className="flex flex-col"
-  style={{
-    width: 383,
-    height: isNarrow ? 800 : "100%",
-    padding: 4,
-    gap: 2,
-    transform: isNarrow ? `scale(${mobileSidebarScale})` : undefined,
-    transformOrigin: "top left",
-  }}
->
-        <div
-          className="relative shrink-0 overflow-hidden"
-          style={{ width: 375, 
-            height: 196,
-            flex: 1,
- 
-            borderRadius: 40 }}
-        >
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src="/profile/arina.jpg"
-            alt="Арина Быковская"
-            className="absolute inset-0 h-full w-full object-cover"
-            width={375}
-            height={179}
-            decoding="async"
-          />
-        </div>
-
-        <div
-          className="flex shrink-0 flex-col items-center justify-center bg-white"
-          style={{
-            width: 375,
-            height: 210,
-            padding: "28px 28px",
-            borderRadius: 40,
-            
-          }}
-        > 
-          <div
-    className="flex flex-col items-center text-center"
-    style={{ gap: 6 }}
-  >
-
-            <h1
-              className="text-center font-medium"
-              style={{
-                fontSize: 36,
-                lineHeight: "130%",
-                color: "#0F0F0F",
-                fontWeight: 500,
-        letterSpacing: "-0.05em",
-              }}
-            >
-              {t.name}
-            </h1>
-            
-            <p
-              className="text-center font-medium"
-              style={{ fontSize: 16, 
-                lineHeight: "100%", 
-                color: "rgba(15,15,15,0.52)",
-                fontWeight: 500
-              }}
-            >
-              {t.role}
-            </p>
-            </div>
-            <div style={{ height: 28 }} />
-            <p
-  className="mx-auto text-center"
-  style={{
-    fontSize: 18,
-    lineHeight: "120%",
-    color: "rgba(15,15,15,0.6)",
-    fontWeight: 400,
-  }}
->
-{t.description}
-</p>
-          
-          
-        </div>
-
-        <div
-          className="flex shrink-0 flex-col justify-between overflow-hidden bg-white"
-          style={{
-            width: 375,
-            
-            height: 330,
-            padding: "28px 40px",
-            borderRadius: 40,
-          }}
-        >
-          <div className="flex flex-col items-center" style={{ gap: 12 }}>
-            <h2
-              className="text-center font-medium"
-              style={{ fontSize: 24, lineHeight: "130%", color: "#0F0F0F" }}
-            >
-              {t.worked}
-            </h2>
-            <div className="flex w-full justify-center gap-8">
-            <LogoCell60
-  src="/logos/ozon.svg"
-  label="Ozon Tech"
-  onClick={() => setActiveWorkPreview("ozon")}
-/>
-<LogoCell60
-  src="/logos/vk.svg"
-  label="VK"
-  onClick={() => setActiveWorkPreview("vk")}
-/>
-<LogoCell60
-  src="/logos/ids.svg"
-  label="IDS"
-  onClick={() => setActiveWorkPreview("ids")}
-/>
-            </div>
-          </div>
-          <div className="flex flex-col items-center" style={{ gap: 12 }}>
-            <h2
-              className="text-center font-medium"
-              style={{ fontSize: 24, lineHeight: "130%", color: "#0F0F0F" }}
-            >
-              {t.studied}
-            </h2>
-            <div className="flex w-full justify-center gap-8">
-              <LogoCell60 src="/logos/pragmatica.svg" label="Pragmatica" />
-              <LogoCell60 src="/logos/itmo.svg" label="ITMO" />
-              <LogoCell60 src="/logos/mtuci.svg" label="MTUCI" />
-            </div>
-          </div>
-        </div>
-        </div>
-        </div>
-      </aside>
-
-      {isNarrow && viewMode === "folders" && (
-  <div
-    className="relative z-[20] flex w-full flex-col items-center px-3 pb-8 pt-4"
-    style={{ gap: 14 }}
-  >
-    {COLLECTIONS.map((year) => {
-      const h = year === "2023" ? 327 : 345;
-
-      return (
-        <div
-          key={year}
-          className="relative flex w-full justify-center overflow-visible"
-          style={{ height: h * mobileFolderScale }}
-          onMouseEnter={() => setHoverYear(year)}
-          onMouseLeave={() =>
-            setHoverYear((prev) => (prev === year ? null : prev))
-          }
-        >
-          <div
+          <motion.button
+            type="button"
+            aria-label={
+              viewMode === "folders" ? t.showDesktop : t.showFolders
+            }
+            className="pointer-events-auto flex items-center justify-center rounded-full text-white"
             style={{
-              width: 233,
-              height: h,
-              transform: `scale(${mobileFolderScale})`,
-              transformOrigin: "top center",
+              width: 52,
+              height: 52,
+              background: isNarrow ? "#0F0F0F" : "rgba(217,217,217,0.1)",
+              borderRadius: 100,
+              boxShadow: isNarrow ? "0 12px 32px rgba(0,0,0,0.35)" : undefined,
+            }}
+            onClick={() => {
+              setViewMode((mode) => {
+                const nextMode = mode === "folders" ? "desktop" : "folders";
+                sessionStorage.setItem("homeViewMode", nextMode);
+                return nextMode;
+              });
+            }}
+            whileHover={isNarrow ? undefined : { scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+          >
+            {viewMode === "folders" ? (
+              <List className="size-[26px]" strokeWidth={1.75} />
+            ) : (
+              <FolderOpen className="size-[25px]" strokeWidth={1.5} />
+            )}
+          </motion.button>
+        </div>
+
+        {/* Folders on canvas */}
+        {!isNarrow && viewMode === "folders" && (
+          <div
+            className="pointer-events-none absolute z-[10]"
+            style={{
+              left: 383 * sidebarScale + 48,
+              right: 48,
+              top: 64,
+              bottom: 88,
             }}
           >
-            <FloatingFolder year={year} isHovered={hoverYear === year} />
-          </div>
-        </div>
-      );
-    })}
-  </div>
-)}
+            {COLLECTIONS.map((year, index) => {
+              const pos = FOLDER_POSITIONS[year];
+              const fh = isShortDesktop ? 345 : year === "2023" ? 327 : 345;
 
-{isNarrow && viewMode === "desktop" && (
-  <div className="relative z-[20] w-full px-6 pb-10 pt-8">
-    <MobileDesktopCaseView language={lang} />
-  </div>
-)}
-{activeWorkPreview ? (
-  <WorkPreviewModal
-  preview={WORK_PREVIEWS[activeWorkPreview]}
-  onClose={() => setActiveWorkPreview(null)}
-  lang={lang}
-/>
-) : null}
-    </main>
-  </>
+              const shortDesktopStyle = isShortDesktop
+                ? {
+                  left: `calc(50% - ${(COLLECTIONS.length * 233 + (COLLECTIONS.length - 1) * 72) * folderAdaptiveScale}px / 2 + ${index * (233 + 72) * folderAdaptiveScale}px)`,
+                  top: `calc(50% - ${345 * folderAdaptiveScale}px / 2 + 28px)`,
+                  transform: `scale(${folderAdaptiveScale})`,
+                  transformOrigin: "top left",
+                }
+                : {
+                  left: `calc(${pos.left} - 200px)`,
+                  top: pos.top,
+                  transform: `scale(${folderAdaptiveScale})`,
+                  transformOrigin: "center center",
+                };
+
+              return (
+                <div
+                  key={year}
+                  className="pointer-events-auto absolute"
+                  style={{
+                    ...shortDesktopStyle,
+                    width: 233,
+                    height: fh,
+                  }}
+                  onMouseEnter={() => setHoverYear(year)}
+                  onMouseLeave={() => setHoverYear((h) => (h === year ? null : h))}
+                >
+                  <FloatingFolder year={year} isHovered={hoverYear === year} />
+                </div>
+              );
+            })}
+          </div>
+        )}
+        {!isNarrow && viewMode === "desktop" && (
+          <DesktopCaseView
+            left={desktopLeft}
+            top={DESKTOP_TOP}
+            language={lang}
+            isMobile={isNarrow}
+          />
+        )}
+        {/* Left sidebar — Figma: 383×800; clip box matches scaled height so it fits in 100vh */}
+        <aside
+          className="z-[50] flex flex-col overflow-hidden"
+          style={{
+            position: isNarrow ? "relative" : "absolute",
+            left: isNarrow ? undefined : 0,
+            top: isNarrow ? undefined : "50%",
+            bottom: undefined,
+            transform: isNarrow ? undefined : "translateY(-50%)",
+            width: isNarrow ? "100%" : 383 * sidebarScale,
+            height: isNarrow ? "auto" : 800 * sidebarScale,
+            maxHeight: isNarrow ? "none" : 800 * sidebarScale,
+            alignItems: isNarrow ? "center" : undefined,
+            paddingLeft: isNarrow ? 12 : 0,
+            paddingRight: isNarrow ? 12 : 0,
+          }}
+        >
+          <div
+            className="overflow-hidden"
+            style={{
+              width: isNarrow ? 383 * mobileSidebarScale : 383 * sidebarScale,
+              height: isNarrow ? 800 * mobileSidebarScale : 800 * sidebarScale,
+            }}
+          >
+            <div
+              className="flex flex-col"
+              style={{
+                width: 383,
+                height: 800,
+                transform: `scale(${isNarrow ? mobileSidebarScale : sidebarScale})`,
+                padding: 4,
+                gap: 2,
+                transformOrigin: "top left",
+              }}
+            >
+              <div
+                className="relative shrink-0 overflow-hidden"
+                style={{
+                  width: 375,
+                  height: 196,
+                  minHeight: 196,
+                  flex: 1,
+
+                  borderRadius: 40
+                }}
+              >
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src="/profile/arina.jpg"
+                  alt="Арина Быковская"
+                  className="absolute inset-0 h-full w-full object-cover"
+                  width={375}
+                  height={179}
+                  decoding="async"
+                />
+              </div>
+
+              <div
+                className="flex shrink-0 flex-col items-center justify-center bg-white"
+                style={{
+                  width: 375,
+                  height: 210,
+                  padding: "28px 28px",
+                  borderRadius: 40,
+
+                }}
+              >
+                <div
+                  className="flex flex-col items-center text-center"
+                  style={{ gap: 6 }}
+                >
+
+                  <h1
+                    className="text-center font-medium"
+                    style={{
+                      fontSize: 36,
+                      lineHeight: "130%",
+                      color: "#0F0F0F",
+                      fontWeight: 500,
+                      letterSpacing: "-0.05em",
+                    }}
+                  >
+                    {t.name}
+                  </h1>
+
+                  <p
+                    className="text-center font-medium"
+                    style={{
+                      fontSize: 16,
+                      lineHeight: "100%",
+                      color: "rgba(15,15,15,0.52)",
+                      fontWeight: 500
+                    }}
+                  >
+                    {t.role}
+                  </p>
+                </div>
+                <div style={{ height: 28 }} />
+                <p
+                  className="mx-auto text-center"
+                  style={{
+                    fontSize: 18,
+                    lineHeight: "120%",
+                    color: "rgba(15,15,15,0.6)",
+                    fontWeight: 400,
+                  }}
+                >
+                  {t.description}
+                </p>
+
+
+              </div>
+
+              <div
+                className="flex shrink-0 flex-col justify-between overflow-hidden bg-white"
+                style={{
+                  width: 375,
+
+                  height: 330,
+                  padding: "28px 40px",
+                  borderRadius: 40,
+                }}
+              >
+                <div className="flex flex-col items-center" style={{ gap: 12 }}>
+                  <h2
+                    className="text-center font-medium"
+                    style={{ fontSize: 24, lineHeight: "130%", color: "#0F0F0F" }}
+                  >
+                    {t.worked}
+                  </h2>
+                  <div className="flex w-full justify-center gap-8">
+                    <LogoCell60
+                      src="/logos/ozon.svg"
+                      label="Ozon Tech"
+                      onClick={() => setActiveWorkPreview("ozon")}
+                    />
+                    <LogoCell60
+                      src="/logos/vk.svg"
+                      label="VK"
+                      onClick={() => setActiveWorkPreview("vk")}
+                    />
+                    <LogoCell60
+                      src="/logos/ids.svg"
+                      label="IDS"
+                      onClick={() => setActiveWorkPreview("ids")}
+                    />
+                  </div>
+                </div>
+                <div className="flex flex-col items-center" style={{ gap: 12 }}>
+                  <h2
+                    className="text-center font-medium"
+                    style={{ fontSize: 24, lineHeight: "130%", color: "#0F0F0F" }}
+                  >
+                    {t.studied}
+                  </h2>
+                  <div className="flex w-full justify-center gap-8">
+                    <LogoCell60 src="/logos/pragmatica.svg" label="Pragmatica" />
+                    <LogoCell60 src="/logos/itmo.svg" label="ITMO" />
+                    <LogoCell60 src="/logos/mtuci.svg" label="MTUCI" />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </aside>
+
+        {isNarrow && viewMode === "folders" && (
+          <div
+            className="relative z-[20] flex w-full flex-col items-center px-3 pb-8 pt-4"
+            style={{ gap: 14 }}
+          >
+            {COLLECTIONS.map((year) => {
+              const h = 345;
+
+              return (
+                <div
+                  key={year}
+                  className="relative flex w-full justify-center overflow-visible"
+                  style={{ height: h * mobileFolderScale }}
+                  onMouseEnter={() => setHoverYear(year)}
+                  onMouseLeave={() =>
+                    setHoverYear((prev) => (prev === year ? null : prev))
+                  }
+                >
+                  <div
+                    style={{
+                      width: 233,
+                      height: h,
+                      transform: `scale(${mobileFolderScale})`,
+                      transformOrigin: "top center",
+                    }}
+                  >
+                    <FloatingFolder year={year} isHovered={hoverYear === year} />
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
+
+        {isNarrow && viewMode === "desktop" && (
+          <div className="relative z-[20] w-full px-6 pb-10 pt-8">
+            <MobileDesktopCaseView language={lang} />
+          </div>
+        )}
+        {activeWorkPreview ? (
+          <WorkPreviewModal
+            preview={WORK_PREVIEWS[activeWorkPreview]}
+            onClose={() => setActiveWorkPreview(null)}
+            lang={lang}
+          />
+        ) : null}
+      </main>
+    </>
   );
 }
