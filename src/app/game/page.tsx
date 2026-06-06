@@ -1,7 +1,9 @@
 "use client";
 
 import Link from "next/link";
+import { Check } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+import { supabase } from "@/lib/supabase";
 
 
 const DOT_GRID = {
@@ -26,14 +28,24 @@ export default function GamePage() {
 
   const [gameStatus, setGameStatus] = useState<GameStatus>("idle");
   const [score, setScore] = useState(0);
-const [bestScore, setBestScore] = useState(0);
-const scoreRef = useRef(0);
-const bestScoreRef = useRef(0);
-  const lang =
-  typeof window !== "undefined" &&
-  sessionStorage.getItem("homeLang") === "en"
-    ? "en"
-    : "ru";
+  const scoreRef = useRef(0);
+  const [nickname, setNickname] = useState("");
+  const [saving, setSaving] = useState(false);
+  const [saved, setSaved] = useState(false);
+  const [topScores, setTopScores] = useState<
+    { nickname: string; score: number }[]
+  >([]);
+  const [lang, setLang] = useState<"ru" | "en">("en");
+
+  useEffect(() => {
+    const savedLang = sessionStorage.getItem("homeLang");
+
+    if (savedLang === "ru" || savedLang === "en") {
+      setLang(savedLang);
+    } else {
+      setLang("en");
+    }
+  }, []);
 
   const statusRef = useRef<GameStatus>("idle");
   const animationRef = useRef<number | null>(null);
@@ -74,27 +86,21 @@ const bestScoreRef = useRef(0);
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
-    const best = localStorage.getItem("bestScore");
 
-    if (best) {
-      const value = Number(best);
-    
-      setBestScore(value);
-      bestScoreRef.current = value;
-    }
+
 
     const dpr = window.devicePixelRatio || 1;
 
     const resize = () => {
       const width = window.innerWidth;
       const height = window.innerHeight;
-  
-widthRef.current = width;
-heightRef.current = height;
+
+      widthRef.current = width;
+      heightRef.current = height;
 
       canvas.width = width * dpr;
       canvas.height = height * dpr;
-      
+
       canvas.style.width = `${width}px`;
       canvas.style.height = `${height}px`;
 
@@ -102,10 +108,10 @@ heightRef.current = height;
 
       const paddle = paddleRef.current;
       paddle.width = width < 768 ? 160 : 280;
-paddle.y = height - 96;if (paddle.x + paddle.width > width - 24) {
-  paddle.x = width - paddle.width - 24;
-}
-      
+      paddle.y = height - 96; if (paddle.x + paddle.width > width - 24) {
+        paddle.x = width - paddle.width - 24;
+      }
+
 
       if (paddle.x === 0) {
         paddle.x = width / 2 - paddle.width / 2;
@@ -129,38 +135,38 @@ paddle.y = height - 96;if (paddle.x + paddle.width > width - 24) {
 
       const isMobile = width < 768;
 
-const r = isMobile ? 13 : 10;
-const gap = isMobile ? 14 : 24;
+      const r = isMobile ? 13 : 10;
+      const gap = isMobile ? 14 : 24;
 
-const startY = isMobile ? 18 : 90;
-const rows = isMobile ? 8 : 9;
+      const startY = isMobile ? 18 : 90;
+      const rows = isMobile ? 8 : 9;
 
-const step = r * 2 + gap;
-const cols = isMobile ? 8 : Math.ceil((width - 160) / step);
+      const step = r * 2 + gap;
+      const cols = isMobile ? 8 : Math.ceil((width - 160) / step);
 
-const totalWidth =
-  (cols - 1) * step + r * 2;
+      const totalWidth =
+        (cols - 1) * step + r * 2;
 
-const startX =
-  (width - totalWidth) / 2;
+      const startX =
+        (width - totalWidth) / 2;
 
 
-for (let row = 0; row < rows; row++) {
-  const rowShift = row % 2 === 0 ? 0 : step * 0.35;
-const currentCols =
-  row % 2 === 0
-    ? cols
-    : cols - 1;
+      for (let row = 0; row < rows; row++) {
+        const rowShift = row % 2 === 0 ? 0 : step * 0.35;
+        const currentCols =
+          row % 2 === 0
+            ? cols
+            : cols - 1;
 
-for (let col = 0; col < currentCols; col++) {
-    bricks.push({
-      x: startX + col * step + rowShift + r,
-      y: startY + row * step + r,
-      r,
-      active: true,
-    });
-  }
-}
+        for (let col = 0; col < currentCols; col++) {
+          bricks.push({
+            x: startX + col * step + rowShift + r,
+            y: startY + row * step + r,
+            r,
+            active: true,
+          });
+        }
+      }
 
       bricksRef.current = bricks;
     };
@@ -182,10 +188,13 @@ for (let col = 0; col < currentCols; col++) {
 
       createBricks();
 
-scoreRef.current = 0;
-setScore(0);
+      scoreRef.current = 0;
+      setScore(0);
 
-setStatus("idle");
+      setSaved(false);
+      setNickname("");
+
+      setStatus("idle");
     };
 
     resetGameRef.current = resetGame;
@@ -308,10 +317,10 @@ setStatus("idle");
 
         if (distance < ball.r + brick.r) {
           brick.active = false;
-        
+
           scoreRef.current += 1;
-setScore(scoreRef.current);
-        
+          setScore(scoreRef.current);
+
           ball.dy *= -1;
           break;
         }
@@ -323,18 +332,10 @@ setScore(scoreRef.current);
 
       if (ball.y - ball.r > height) {
         const finalScore = scoreRef.current;
-      
-        if (finalScore > bestScoreRef.current) {
-          bestScoreRef.current = finalScore;
-      
-          setBestScore(finalScore);
-      
-          localStorage.setItem(
-            "bestScore",
-            String(finalScore)
-          );
-        }
-      
+
+
+        loadTopScores();
+
         setStatus("lost");
       }
     };
@@ -354,11 +355,13 @@ setScore(scoreRef.current);
 
     resize();
     resetGame();
+    loadTopScores();
 
     window.addEventListener("resize", resize);
     window.addEventListener("mousemove", onMouseMove);
     window.addEventListener("touchmove", onTouchMove, { passive: true });
     window.addEventListener("click", onClick);
+
 
     loop();
 
@@ -376,6 +379,47 @@ setScore(scoreRef.current);
 
   const handleRestart = () => {
     resetGameRef.current?.();
+  };
+  const saveScore = async () => {
+    if (!nickname.trim()) return;
+
+    setSaving(true);
+    console.log("supabase", supabase);
+    console.log("url", process.env.NEXT_PUBLIC_SUPABASE_URL);
+    const { error } = await supabase
+
+      .from("game_scores")
+      .insert({
+        nickname: nickname.trim(),
+        score,
+      });
+
+    if (error) {
+      console.error("Save score error:", {
+        message: error.message,
+        code: error.code,
+        details: error.details,
+        hint: error.hint,
+      });
+    } else {
+      setSaved(true);
+      await loadTopScores();
+      (document.activeElement as HTMLElement)?.blur();
+    }
+
+    setSaving(false);
+  };
+
+  const loadTopScores = async () => {
+    const { data } = await supabase
+      .from("game_scores")
+      .select("nickname, score")
+      .order("score", { ascending: false })
+      .limit(10);
+
+    if (data) {
+      setTopScores(data);
+    }
   };
 
   return (
@@ -396,111 +440,145 @@ setScore(scoreRef.current);
       {gameStatus === "lost" ? (
         <div className="fixed inset-0 z-30 flex items-center justify-center bg-black/55 backdrop-blur-[12px]">
           <Link
-  href="/"
-  className="absolute right-8 top-8 text-white/70 transition-opacity hover:text-white"
-  style={{
-    fontSize: 52,
-    lineHeight: 1,
-    fontWeight: 300,
-  }}
->
-  ×
-</Link>
-          <div className="flex w-full max-w-[520px] flex-col items-center px-6 text-center text-white">
-          <div className="mb-6 overflow-hidden rounded-[40px]">
-  <video
-    src="/game/game-over.mp4"
-    className="h-auto w-[280px] object-cover md:w-[360px]"
-    autoPlay
-    loop
-    muted
-    playsInline
-  />
-</div>
+            href="/"
+            className="absolute right-8 top-8 z-40 text-white/70 transition-opacity hover:text-white"
+            style={{
+              fontSize: 52,
+              lineHeight: 1,
+              fontWeight: 300,
+            }}
+          >
+            ×
+          </Link>
 
-            <h2
-              className="mb-6 font-medium"
-              style={{
-                fontSize: "clamp(32px, 4vw, 44px)",
-                lineHeight: "110%",
-                letterSpacing: "-0.04em",
-              }}
-            >
-              {lang === "en" ? "Game Over" : "Айййй"}
-            </h2>
-            <div className="mb-6 text-center">
-  <p
-    style={{
-      fontSize: 18,
-      opacity: 0.6,
-      marginBottom: 4,
-    }}
-  >
-    Score
-  </p>
+          <div className="flex h-screen w-full max-w-[520px] flex-col items-center overflow-y-auto px-6 pb-12 pt-10 text-center text-white [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+            <div className="flex min-h-screen w-full flex-col items-center justify-center">
+              <div className="mb-6 overflow-hidden rounded-[40px]">
+                <video
+                  src="/game/game-over.mp4"
+                  className="h-auto w-[280px] object-cover md:w-[360px]"
+                  autoPlay
+                  loop
+                  muted
+                  playsInline
+                />
+              </div>
 
-  <p
-    style={{
-      fontSize: 32,
-      fontWeight: 500,
-      lineHeight: "100%",
-      marginBottom: 16,
-    }}
-  >
-    {score}
-  </p>
+              <h2
+                className="mb-6 font-medium"
+                style={{
+                  fontSize: "clamp(32px, 4vw, 44px)",
+                  lineHeight: "110%",
+                  letterSpacing: "-0.04em",
+                }}
+              >
+                Game Over
+              </h2>
 
-  <p
-    style={{
-      fontSize: 18,
-      opacity: 0.6,
-      marginBottom: 4,
-    }}
-  >
-    Best
-  </p>
+              <div className="mb-6 text-center">
+                <p style={{ fontSize: 18, opacity: 0.6, marginBottom: 4 }}>
+                  Score
+                </p>
 
-  <p
-    style={{
-      fontSize: 32,
-      fontWeight: 500,
-      lineHeight: "100%",
-    }}
-  >
-    {bestScore}
-  </p>
-</div>
+                <p
+                  style={{
+                    fontSize: 32,
+                    fontWeight: 500,
+                    lineHeight: "100%",
+                    marginBottom: 16,
+                  }}
+                >
+                  {score}
+                </p>
 
-            <button
-              type="button"
-              onClick={handleRestart}
-              className="mb-4 flex h-[76px] w-full max-w-[400px] items-center justify-center rounded-full bg-white text-[#0F0F0F] transition-transform hover:scale-[1.02] active:scale-[0.98]"
-              style={{
-                fontSize: 24,
-                lineHeight: "110%",
-                fontWeight: 500,
-                letterSpacing: "-0.04em",
-              }}
-            >
-              {lang === "en" ? "Play Again" : "Играть снова"}
-            </button>
-            <a
-  href="https://t.me/xaptfy"
-  target="_blank"
-  rel="noreferrer"
-  className="flex h-[76px] w-full max-w-[400px] items-center justify-center rounded-full border border-white/25 text-white transition-all hover:bg-white/5 hover:border-white/40"
-  style={{
-    fontSize: 22,
-    lineHeight: "110%",
-    fontWeight: 500,
-    letterSpacing: "-0.04em",
-  }}
->
-  {lang === "en"
-    ? "Invite me to your team →"
-    : "Позови меня в свою команду →"}
-</a>
-            
+                <div className="mb-6 flex h-[56px] w-full max-w-[400px] items-center rounded-full border border-white/20 bg-white/10 pl-5 pr-3">
+                  <input
+                    value={nickname}
+                    onChange={(e) => setNickname(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter" && nickname.trim() && !saved && !saving) {
+                        saveScore();
+                      }
+                    }}
+                    maxLength={20}
+                    placeholder="Nickname"
+                    className="h-full min-w-0 flex-1 bg-transparent text-white outline-none placeholder:text-white/40"
+                  />
+
+                  {!saved && nickname.trim() ? (
+                    <button
+                      type="button"
+                      onClick={saveScore}
+                      disabled={saving}
+                      className="ml-3 flex size-[34px] shrink-0 items-center justify-center rounded-full bg-white text-[#0F0F0F] transition-transform hover:scale-105 active:scale-95 disabled:opacity-40"
+                      aria-label="Save score"
+                    >
+                      {saving ? "…" : <Check size={16} strokeWidth={2.4} />}
+                    </button>
+                  ) : null}
+
+                  {saved ? (
+                    <span className="ml-3 flex size-[34px] shrink-0 items-center justify-center rounded-full bg-white/10 text-white">
+                      <Check size={16} strokeWidth={2.4} />
+                    </span>
+                  ) : null}
+                </div>
+              </div>
+
+              <button
+                type="button"
+                onClick={handleRestart}
+                className="mb-4 flex h-[76px] w-full max-w-[400px] items-center justify-center rounded-full bg-white text-[#0F0F0F] transition-transform hover:scale-[1.02] active:scale-[0.98]"
+                style={{
+                  fontSize: 24,
+                  lineHeight: "110%",
+                  fontWeight: 500,
+                  letterSpacing: "-0.04em",
+                }}
+              >
+                Play Again
+              </button>
+
+              <a
+                href="https://t.me/xaptfy"
+                target="_blank"
+                rel="noreferrer"
+                className="flex h-[76px] w-full max-w-[400px] items-center justify-center rounded-full border border-white/25 text-white transition-all hover:bg-white/5 hover:border-white/40"
+                style={{
+                  fontSize: 22,
+                  lineHeight: "110%",
+                  fontWeight: 500,
+                  letterSpacing: "-0.04em",
+                }}
+              >
+                Invite Me to Your Team →
+              </a>
+            </div>
+
+            <div className="w-full max-w-[400px] pb-12">
+              <h3
+                style={{
+                  fontSize: 24,
+                  fontWeight: 500,
+                  marginBottom: 16,
+                }}
+              >
+                Top 10
+              </h3>
+
+              <div className="flex flex-col gap-2">
+                {topScores.map((row, index) => (
+                  <div
+                    key={`${row.nickname}-${index}`}
+                    className="grid grid-cols-[40px_1fr_auto] items-center rounded-full bg-white/10 px-5 py-3"
+                  >
+                    <span className="text-left text-white/50">{index + 1}</span>
+                    <span className="text-left">{row.nickname}</span>
+                    <span>{row.score}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
         </div>
       ) : null}
@@ -516,7 +594,7 @@ setScore(scoreRef.current);
                 letterSpacing: "-0.04em",
               }}
             >
-              {lang === "en" ? "You Win" : "Ура, ты победил (-а)"}
+              You Win
             </h2>
 
             <button

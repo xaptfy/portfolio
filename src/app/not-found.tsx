@@ -13,13 +13,13 @@ const DOT_GRID = {
 export default function NotFound() {
   const [lang, setLang] = useState<"ru" | "en">("ru");
 
-useEffect(() => {
-  const savedLang = sessionStorage.getItem("homeLang");
+  useEffect(() => {
+    const savedLang = sessionStorage.getItem("homeLang");
 
-  if (savedLang === "ru" || savedLang === "en") {
-    setLang(savedLang);
-  }
-}, []);
+    if (savedLang === "ru" || savedLang === "en") {
+      setLang(savedLang);
+    }
+  }, []);
   return (
     <main
       className="flex min-h-screen w-full items-center justify-center px-6 text-white"
@@ -42,24 +42,21 @@ useEffect(() => {
             letterSpacing: "-0.04em",
           }}
         >
-          {lang === "en"
-  ? "Case coming soon. Meanwhile, you can play a game."
-  : "Пока тут не заехал кейс, но ты можешь поиграть"}
-          
+          Case coming soon. Meanwhile, you can play a game
         </h1>
 
         <Link
-  href="/game"
-  className="mb-10 flex h-[76px] w-full max-w-[400px] items-center justify-center rounded-full bg-white text-[#0F0F0F] transition-transform hover:scale-[1.02] active:scale-[0.98]"
-  style={{
-    fontSize: 28,
-    lineHeight: "110%",
-    fontWeight: 500,
-    letterSpacing: "-0.04em",
-  }}
->
-{lang === "en" ? "Play" : "Играть"}
-</Link>
+          href="/game"
+          className="mb-10 flex h-[76px] w-full max-w-[400px] items-center justify-center rounded-full bg-white text-[#0F0F0F] transition-transform hover:scale-[1.02] active:scale-[0.98]"
+          style={{
+            fontSize: 28,
+            lineHeight: "110%",
+            fontWeight: 500,
+            letterSpacing: "-0.04em",
+          }}
+        >
+          Play
+        </Link>
 
         <Link
           href="/"
@@ -71,7 +68,7 @@ useEffect(() => {
             letterSpacing: "-0.04em",
           }}
         >
-          {lang === "en" ? "Back to Home" : "На главную"}
+          Back to Home
         </Link>
       </div>
     </main>
