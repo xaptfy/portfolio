@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { Check } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-import { supabase } from "@/lib/supabase";
+import { getSupabase } from "@/lib/supabase";
 
 
 const DOT_GRID = {
@@ -382,18 +382,18 @@ export default function GamePage() {
   };
   const saveScore = async () => {
     if (!nickname.trim()) return;
-
+  
     setSaving(true);
-    console.log("supabase", supabase);
-    console.log("url", process.env.NEXT_PUBLIC_SUPABASE_URL);
+  
+    const supabase = getSupabase();
+  
     const { error } = await supabase
-
       .from("game_scores")
       .insert({
         nickname: nickname.trim(),
         score,
       });
-
+  
     if (error) {
       console.error("Save score error:", {
         message: error.message,
@@ -406,11 +406,13 @@ export default function GamePage() {
       await loadTopScores();
       (document.activeElement as HTMLElement)?.blur();
     }
-
+  
     setSaving(false);
   };
 
   const loadTopScores = async () => {
+    const supabase = getSupabase();
+
     const { data } = await supabase
       .from("game_scores")
       .select("nickname, score")
@@ -608,7 +610,7 @@ export default function GamePage() {
                 letterSpacing: "-0.04em",
               }}
             >
-              {lang === "en" ? "Play" : "Играть снова"}
+              Play Again
             </button>
           </div>
         </div>
