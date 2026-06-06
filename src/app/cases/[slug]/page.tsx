@@ -377,7 +377,7 @@ function CollapsibleWhatIDidCard({
                   <p className="font-medium text-[#0F0F0F]" style={{ fontSize: 20, lineHeight: "130%" }}>
                     {s.title}
                   </p>
-                  <p className="font-medium" style={{ fontSize: 18, lineHeight: "130%", color: "rgba(15,15,15,0.5)", fontWeight: 400, }}>
+                  <p className="font-medium" style={{ fontSize: 18, lineHeight: "130%", color: "rgba(14, 14, 14, 0.5)", fontWeight: 400, }}>
                     {s.text}
                   </p>
                 </div>
