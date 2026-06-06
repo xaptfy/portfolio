@@ -394,14 +394,7 @@ export default function GamePage() {
         score,
       });
   
-    if (error) {
-      console.error("Save score error:", {
-        message: error.message,
-        code: error.code,
-        details: error.details,
-        hint: error.hint,
-      });
-    } else {
+    if (!error) {
       setSaved(true);
       await loadTopScores();
       (document.activeElement as HTMLElement)?.blur();
@@ -412,16 +405,14 @@ export default function GamePage() {
 
   const loadTopScores = async () => {
     const supabase = getSupabase();
-
+  
     const { data } = await supabase
       .from("game_scores")
       .select("nickname, score")
       .order("score", { ascending: false })
       .limit(10);
-
-    if (data) {
-      setTopScores(data);
-    }
+  
+    if (data) setTopScores(data);
   };
 
   return (
