@@ -1,7 +1,7 @@
 "use client";
 
 import SlotLoader from "./components/SlotLoader";
-import { motion } from "framer-motion";
+import { animate, motion, useMotionValue } from "framer-motion";
 import { FolderOpen, List } from "lucide-react";
 import { useEffect, useState } from "react";
 
@@ -172,6 +172,241 @@ const DESKTOP_CASES: Record<
     },
   ],
 };
+const ROULETTE_CASES = [
+  {
+    id: "otr",
+    title: "Banking case",
+    href: "/cases/otr",
+    logo: "/logo/otp.svg",
+  },
+  {
+    id: "ozon",
+    title: "Ozon Tech",
+    href: "/cases/ozon-tech",
+    logo: "/logo/ozon.svg",
+  },
+  {
+    id: "vk",
+    title: "Pragmatica x VK",
+    href: "/cases/pragmatica-vk",
+    logo: "/logo/vk.svg",
+  },
+  {
+    id: "vtb",
+    title: "VTB",
+    href: "/cases/vtb",
+    logo: "/logo/vtb.svg",
+  },
+  {
+    id: "seamm",
+    title: "Seamm",
+    href: "/cases/seamm",
+    logo: "/logo/seamm.svg",
+  },
+  {
+    id: "itmo",
+    title: "ITMO",
+    href: "/cases/itmo",
+    logo: "/logo/itmo.svg",
+  },
+  {
+    id: "crypto",
+    title: "Crypto Broker",
+    href: "/cases/crypto",
+    logo: "/logo/crypto.svg",
+  },
+  {
+    id: "petrix",
+    title: "Petrix",
+    href: "/cases/petrix",
+    logo: "/logo/petrix.svg",
+  },
+  {
+    id: "tender",
+    title: "Tender B2B",
+    href: "/cases/tender",
+    logo: "/logo/tender.svg",
+  },
+] as const;
+
+function CaseRouletteIntro({
+  onClose,
+}: {
+  onClose: () => void;
+}) {
+  const rotation = useMotionValue(0);
+  const [isSpinning, setIsSpinning] = useState(false);
+  const [selectedTitle, setSelectedTitle] = useState<string | null>(null);
+
+  const itemSize = 162;
+  const radius = 390;
+  const center = 509;
+  const step = 360 / ROULETTE_CASES.length;
+
+  useEffect(() => {
+    if (isSpinning) return;
+
+    const idleSpin = animate(rotation, rotation.get() - 360, {
+      duration: 44,
+      ease: "linear",
+      repeat: Infinity,
+    });
+
+    return () => idleSpin.stop();
+  }, [isSpinning, rotation]);
+
+  const normalizeAngle = (angle: number) => ((angle % 360) + 360) % 360;
+
+  const handleSpin = async () => {
+    if (isSpinning) return;
+
+    setIsSpinning(true);
+
+    const selectedIndex = Math.floor(Math.random() * ROULETTE_CASES.length);
+    const selectedCase = ROULETTE_CASES[selectedIndex];
+
+    setSelectedTitle(selectedCase.title);
+
+    const current = rotation.get();
+    const currentMod = normalizeAngle(current);
+
+    // Чтобы выбранная иконка встала ровно наверх, под треугольник
+    const targetMod = normalizeAngle(-selectedIndex * step);
+
+    let closestTarget = current - (currentMod - targetMod);
+
+    if (closestTarget > current) {
+      closestTarget -= 360;
+    }
+
+    const finalRotation = closestTarget - 360 * 5;
+
+    await animate(rotation, finalRotation, {
+      duration: 3.6,
+      ease: [0.12, 0.82, 0.16, 1],
+    });
+
+    setTimeout(() => {
+      sessionStorage.setItem("introRouletteShown", "true");
+      window.location.href = selectedCase.href;
+    }, 650);
+  };
+
+  return (
+    <motion.section
+      className="fixed inset-0 z-[300] flex items-center justify-center overflow-hidden bg-[#030303]"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+    >
+      <div className="relative h-[800px] w-[1200px] overflow-hidden">
+        {/* Blur / затемнение — теперь ПОД иконками */}
+        <div className="pointer-events-none absolute inset-0 z-0 bg-black/55 backdrop-blur-[10px]" />
+        <div className="pointer-events-none absolute inset-0 z-[1] bg-[linear-gradient(180deg,rgba(3,3,3,0)_29.69%,#030303_95%)]" />
+
+        {/* Иконки — теперь НАД блюром */}
+        <motion.div
+          className="absolute left-1/2 top-[96px] z-[2] h-[1018px] w-[1018px] -translate-x-1/2"
+          style={{ rotate: rotation }}
+        >
+          {ROULETTE_CASES.map((item, index) => {
+            const angle = step * index - 90;
+            const rad = (angle * Math.PI) / 180;
+
+            const x = center + radius * Math.cos(rad) - itemSize / 2;
+            const y = center + radius * Math.sin(rad) - itemSize / 2;
+
+            return (
+              <motion.a
+                key={item.id}
+                href={item.href}
+                className="absolute flex items-center justify-center overflow-hidden shadow-[0_24px_80px_rgba(0,0,0,0.45)]"
+                style={{
+                  width: itemSize,
+                  height: itemSize,
+                  left: x,
+                  top: y,
+                  borderRadius: 56,
+                  rotate: angle + 90,
+                  background: "transparent",
+                }}
+                whileHover={isSpinning ? undefined : { scale: 1.04 }}
+                whileTap={isSpinning ? undefined : { scale: 0.96 }}
+              >
+                <img
+                  src={item.logo}
+                  alt={item.title}
+                  className="h-full w-full object-cover"
+                  draggable={false}
+                />
+              </motion.a>
+            );
+          })}
+        </motion.div>
+
+        {/* Затемнение снизу — поверх иконок, но без blur */}
+        <div className="pointer-events-none absolute inset-0 z-[3] bg-[linear-gradient(180deg,rgba(3,3,3,0)_35%,#030303_96%)]" />
+
+        <div
+          className="absolute left-1/2 top-[340px] z-20 -translate-x-1/2"
+        >
+          <div
+            className="h-0 w-0
+      border-l-[28px]
+      border-r-[28px]
+      border-b-[52px]
+      border-l-transparent
+      border-r-transparent
+      border-b-white"
+          />
+        </div>
+
+
+        <div className="absolute left-1/2 top-[430px] z-[5] flex w-[400px] -translate-x-1/2 flex-col items-center gap-8">
+          <div className="flex w-full flex-col items-center gap-3">
+            <h1 className="w-full text-center text-[32px] font-medium leading-[110%] text-white">
+              Designing complex digital products
+            </h1>
+
+            <p className="w-[374px] text-center text-[16px] font-normal leading-[110%] text-white/70">
+              Product designer focused on B2B/B2C products, fintech, AI-first tools and scalable user flows
+            </p>
+
+            {selectedTitle ? (
+              <p className="text-center text-[14px] font-medium leading-[110%] text-white/45">
+                {selectedTitle}
+              </p>
+            ) : null}
+          </div>
+
+          <motion.button
+            type="button"
+            onClick={handleSpin}
+            disabled={isSpinning}
+            className="flex h-[50px] items-center justify-center rounded-full bg-white px-8 text-[16px] font-medium leading-[110%] text-[#0E0E0E] disabled:pointer-events-none disabled:opacity-80"
+            whileHover={isSpinning ? undefined : { scale: 1.04 }}
+            whileTap={isSpinning ? undefined : { scale: 0.96 }}
+          >
+            {isSpinning ? "Choosing..." : "View projects"}
+          </motion.button>
+        </div>
+
+        <motion.button
+          type="button"
+          onClick={onClose}
+          className="absolute right-16 top-16 z-[6] flex h-[52px] w-[52px] items-center justify-center rounded-full bg-white text-[#0E0E0E]"
+          aria-label="Close intro"
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+        >
+          <span className="relative h-6 w-6">
+            <span className="absolute left-1/2 top-1/2 h-[2px] w-[20px] -translate-x-1/2 -translate-y-1/2 rotate-45 rounded-full bg-[#0E0E0E]" />
+            <span className="absolute left-1/2 top-1/2 h-[2px] w-[20px] -translate-x-1/2 -translate-y-1/2 -rotate-45 rounded-full bg-[#0E0E0E]" />
+          </span>
+        </motion.button>
+      </div>
+    </motion.section>
+  );
+}
 
 const SOCIAL_LINKS = [
   {
@@ -376,7 +611,7 @@ function LogoCell60({
       <span
         className="max-w-[100px] text-[14px]"
         style={{
-          color: "rgba(15,15,15,0.6)",
+          color: "rgba(14, 14, 14, 0.6)",
           lineHeight: "130%",
           fontWeight: 500,
         }}
@@ -387,14 +622,18 @@ function LogoCell60({
   );
 
   if (!onClick) {
-    return <div className="flex flex-col items-center gap-2 text-center">{content}</div>;
+    return (
+      <div className="flex w-full min-w-0 flex-col items-center gap-2 text-center">
+        {content}
+      </div>
+    );
   }
 
   return (
     <button
       type="button"
       onClick={onClick}
-      className="flex cursor-pointer flex-col items-center gap-2 text-center transition-transform hover:scale-[1.04] active:scale-[0.96]"
+      className="flex w-full min-w-0 cursor-pointer flex-col items-center gap-2 text-center transition-transform hover:scale-[1.04] active:scale-[0.96]"
       style={{ background: "transparent", border: "none", padding: 0 }}
     >
       {content}
@@ -1002,10 +1241,16 @@ export default function Home() {
 
   const [mounted, setMounted] = useState(false);
   const [showLoader, setShowLoader] = useState(false);
+  const [showIntroRoulette, setShowIntroRoulette] = useState(false);
 
   useEffect(() => {
     setMounted(true);
-    setShowLoader(sessionStorage.getItem("loaderShown") !== "true");
+
+    const loaderWasShown = sessionStorage.getItem("loaderShown") === "true";
+    const introWasShown = sessionStorage.getItem("introRouletteShown") === "true";
+
+    setShowLoader(!loaderWasShown);
+    setShowIntroRoulette(loaderWasShown && !introWasShown);
   }, []);
 
   const t = T[lang];
@@ -1067,6 +1312,16 @@ export default function Home() {
           onFinish={() => {
             sessionStorage.setItem("loaderShown", "true");
             setShowLoader(false);
+            setShowIntroRoulette(true);
+          }}
+        />
+      ) : null}
+
+      {mounted && showIntroRoulette ? (
+        <CaseRouletteIntro
+          onClose={() => {
+            sessionStorage.setItem("introRouletteShown", "true");
+            setShowIntroRoulette(false);
           }}
         />
       ) : null}
@@ -1137,6 +1392,8 @@ export default function Home() {
             </motion.a>
           ))}
         </div>
+        {/* Social — right aligned, ~Figma spacing (12px gap), top 48px */}ƒ
+
 
         <div
           className="fixed z-[80] flex items-center gap-3"
@@ -1359,7 +1616,7 @@ export default function Home() {
                     style={{
                       fontSize: 16,
                       lineHeight: "100%",
-                      color: "rgba(15,15,15,0.52)",
+                      color: "rgba(14, 14, 14, 0.52)",
                       fontWeight: 500
                     }}
                   >
@@ -1372,7 +1629,7 @@ export default function Home() {
                   style={{
                     fontSize: 18,
                     lineHeight: "120%",
-                    color: "rgba(15,15,15,0.6)",
+                    color: "rgba(14, 14, 14, 0.6)",
                     fontWeight: 400,
                   }}
                 >
@@ -1399,7 +1656,7 @@ export default function Home() {
                   >
                     {t.worked}
                   </h2>
-                  <div className="flex w-full justify-center gap-8">
+                  <div className="grid w-full grid-cols-3 items-start">
                     <LogoCell60
                       src="/logos/ozon.svg"
                       label="Ozon Tech"
@@ -1424,7 +1681,7 @@ export default function Home() {
                   >
                     {t.studied}
                   </h2>
-                  <div className="flex w-full justify-center gap-8">
+                  <div className="grid w-full grid-cols-3 items-start">
                     <LogoCell60 src="/logos/pragmatica.svg" label="Pragmatica" />
                     <LogoCell60 src="/logos/itmo.svg" label="ITMO" />
                     <LogoCell60 src="/logos/mtuci.svg" label="MTUCI" />
