@@ -9,12 +9,14 @@ import { useEffect, useState } from "react";
 type HomeViewMode = "folders" | "desktop";
 type CollectionYear = "2023" | "2024" | "2025" | "2026";
 type Lang = "ru" | "en";
+type IntroPhase = "loading" | "roulette" | "portfolio";
 type CaseImageEntry =
   | string
   | {
     src: string;
     variant?: "regular" | "wide";
   };
+
 
 const ease = [0.22, 1, 0.36, 1] as const;
 
@@ -185,17 +187,18 @@ const ROULETTE_CASES = [
     href: "/cases/ozon-tech",
     logo: "/logo/ozon.svg",
   },
-  {
-    id: "vk",
-    title: "Pragmatica x VK",
-    href: "/cases/pragmatica-vk",
-    logo: "/logo/vk.svg",
-  },
+
   {
     id: "vtb",
     title: "VTB",
     href: "/cases/vtb",
     logo: "/logo/vtb.svg",
+  }, 
+   {
+    id: "vk",
+    title: "Pragmatica x VK",
+    href: "/cases/pragmatica-vk",
+    logo: "/logo/vk.svg",
   },
   {
     id: "seamm",
@@ -204,17 +207,18 @@ const ROULETTE_CASES = [
     logo: "/logo/seamm.svg",
   },
   {
-    id: "itmo",
-    title: "ITMO",
-    href: "/cases/itmo",
-    logo: "/logo/itmo.svg",
-  },
-  {
     id: "crypto",
     title: "Crypto Broker",
     href: "/cases/crypto",
     logo: "/logo/crypto.svg",
   },
+  {
+    id: "itmo",
+    title: "ITMO",
+    href: "/cases/itmo",
+    logo: "/logo/itmo.svg",
+  },
+  
   {
     id: "petrix",
     title: "Petrix",
@@ -235,12 +239,14 @@ function CaseRouletteIntro({
   onClose: () => void;
 }) {
   const rotation = useMotionValue(0);
+  const viewportWidth = useViewportWidth();
+  const isMobile = viewportWidth < 768;
   const [isSpinning, setIsSpinning] = useState(false);
-  const [selectedTitle, setSelectedTitle] = useState<string | null>(null);
 
-  const itemSize = 162;
-  const radius = 390;
-  const center = 509;
+  const itemSize = isMobile ? 108 : 162;
+  const wheelSize = isMobile ? 720 : 1018;
+  const center = wheelSize / 2;
+  const radius = isMobile ? 270 : 390;
   const step = 360 / ROULETTE_CASES.length;
 
   useEffect(() => {
@@ -265,7 +271,6 @@ function CaseRouletteIntro({
     const selectedIndex = Math.floor(Math.random() * ROULETTE_CASES.length);
     const selectedCase = ROULETTE_CASES[selectedIndex];
 
-    setSelectedTitle(selectedCase.title);
 
     const current = rotation.get();
     const currentMod = normalizeAngle(current);
@@ -287,26 +292,31 @@ function CaseRouletteIntro({
     });
 
     setTimeout(() => {
-      sessionStorage.setItem("introRouletteShown", "true");
+      sessionStorage.setItem("portfolioIntroShown", "true");
       window.location.href = selectedCase.href;
     }, 650);
   };
 
   return (
     <motion.section
-      className="fixed inset-0 z-[300] flex items-center justify-center overflow-hidden bg-[#030303]"
+      className="fixed inset-0 z-[300] flex items-center justify-center overflow-hidden bg-[#030303] font-sans"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
     >
-      <div className="relative h-[800px] w-[1200px] overflow-hidden">
+      <div className="relative h-full w-full overflow-hidden md:h-[800px] md:w-[1200px]">
         {/* Blur / затемнение — теперь ПОД иконками */}
         <div className="pointer-events-none absolute inset-0 z-0 bg-black/55 backdrop-blur-[10px]" />
         <div className="pointer-events-none absolute inset-0 z-[1] bg-[linear-gradient(180deg,rgba(3,3,3,0)_29.69%,#030303_95%)]" />
 
         {/* Иконки — теперь НАД блюром */}
         <motion.div
-          className="absolute left-1/2 top-[96px] z-[2] h-[1018px] w-[1018px] -translate-x-1/2"
-          style={{ rotate: rotation }}
+          className="absolute left-1/2 z-[2] -translate-x-1/2"
+          style={{
+            top: isMobile ? 145 : 96,
+            width: wheelSize,
+            height: wheelSize,
+            rotate: rotation,
+          }}
         >
           {ROULETTE_CASES.map((item, index) => {
             const angle = step * index - 90;
@@ -325,7 +335,7 @@ function CaseRouletteIntro({
                   height: itemSize,
                   left: x,
                   top: y,
-                  borderRadius: 56,
+                  borderRadius: isMobile ? 36 : 56,
                   rotate: angle + 90,
                   background: "transparent",
                 }}
@@ -344,45 +354,89 @@ function CaseRouletteIntro({
         </motion.div>
 
         {/* Затемнение снизу — поверх иконок, но без blur */}
-        <div className="pointer-events-none absolute inset-0 z-[3] bg-[linear-gradient(180deg,rgba(3,3,3,0)_35%,#030303_96%)]" />
-
         <div
-          className="absolute left-1/2 top-[340px] z-20 -translate-x-1/2"
+          className="pointer-events-none absolute inset-0 z-[3]"
+          style={{
+            background: isMobile
+              ? "linear-gradient(180deg, rgba(3,3,3,0) 20%, rgba(3,3,3,0.28) 35%, rgba(3,3,3,0.88) 53%, #030303 68%)"
+              : "linear-gradient(180deg, rgba(3,3,3,0) 35%, #030303 96%)",
+          }}
+        />
+        <div
+          className="absolute left-1/2 z-20 -translate-x-1/2"
+          style={{ top: isMobile ? 330 : 340 }}
         >
           <div
-            className="h-0 w-0
-      border-l-[28px]
-      border-r-[28px]
-      border-b-[52px]
-      border-l-transparent
-      border-r-transparent
-      border-b-white"
+            className={
+              isMobile
+                ? `
+          h-0 w-0
+          border-l-[22px]
+          border-r-[22px]
+          border-b-[42px]
+          border-l-transparent
+          border-r-transparent
+          border-b-white
+        `
+                : `
+          h-0 w-0
+          border-l-[28px]
+          border-r-[28px]
+          border-b-[52px]
+          border-l-transparent
+          border-r-transparent
+          border-b-white
+        `
+            }
           />
         </div>
 
 
-        <div className="absolute left-1/2 top-[430px] z-[5] flex w-[400px] -translate-x-1/2 flex-col items-center gap-8">
+        <div
+          className="absolute left-1/2 z-[5] flex -translate-x-1/2 flex-col items-center text-center"
+          style={{
+            top: isMobile ? 405 : 430,
+            width: isMobile ? "calc(100vw - 40px)" : 400,
+            gap: isMobile ? 24 : 32,
+          }}
+        >
           <div className="flex w-full flex-col items-center gap-3">
-            <h1 className="w-full text-center text-[32px] font-medium leading-[110%] text-white">
+            <h1
+              className="w-full text-center font-medium leading-[110%] text-white"
+              style={{
+                fontSize: isMobile ? 27 : 32,
+                maxWidth: isMobile ? 320 : 400,
+              }}
+            >
               Designing complex digital products
             </h1>
 
-            <p className="w-[374px] text-center text-[16px] font-normal leading-[110%] text-white/70">
-              Product designer focused on B2B/B2C products, fintech, AI-first tools and scalable user flows
+            <p
+              className="text-center font-normal leading-[115%] text-white/70"
+              style={{
+                width: isMobile ? "100%" : 374,
+                maxWidth: isMobile ? 310 : 374,
+                fontSize: isMobile ? 15 : 16,
+              }}
+            >
+              Product designer focused on B2B/B2C products, fintech, AI-first tools and
+              scalable user flows
             </p>
 
-            {selectedTitle ? (
-              <p className="text-center text-[14px] font-medium leading-[110%] text-white/45">
-                {selectedTitle}
-              </p>
-            ) : null}
+            
           </div>
 
           <motion.button
             type="button"
             onClick={handleSpin}
             disabled={isSpinning}
-            className="flex h-[50px] items-center justify-center rounded-full bg-white px-8 text-[16px] font-medium leading-[110%] text-[#0E0E0E] disabled:pointer-events-none disabled:opacity-80"
+            className="
+    flex h-[50px] items-center justify-center
+    rounded-full bg-white
+    px-8 text-[16px] font-medium leading-[110%] text-[#0E0E0E]
+    disabled:pointer-events-none disabled:opacity-80
+    max-md:h-[54px] max-md:w-full max-md:max-w-[280px]
+  "
             whileHover={isSpinning ? undefined : { scale: 1.04 }}
             whileTap={isSpinning ? undefined : { scale: 0.96 }}
           >
@@ -393,7 +447,13 @@ function CaseRouletteIntro({
         <motion.button
           type="button"
           onClick={onClose}
-          className="absolute right-16 top-16 z-[6] flex h-[52px] w-[52px] items-center justify-center rounded-full bg-white text-[#0E0E0E]"
+          className="absolute z-[6] flex items-center justify-center rounded-full bg-white text-[#0E0E0E]"
+          style={{
+            right: isMobile ? 20 : 64,
+            top: isMobile ? 20 : 64,
+            width: isMobile ? 44 : 52,
+            height: isMobile ? 44 : 52,
+          }}
           aria-label="Close intro"
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
@@ -1240,17 +1300,17 @@ export default function Home() {
   const [activeWorkPreview, setActiveWorkPreview] = useState<WorkPreviewKey | null>(null);
 
   const [mounted, setMounted] = useState(false);
-  const [showLoader, setShowLoader] = useState(false);
-  const [showIntroRoulette, setShowIntroRoulette] = useState(false);
+  const [introPhase, setIntroPhase] =
+    useState<IntroPhase | null>(null);
+
 
   useEffect(() => {
     setMounted(true);
 
-    const loaderWasShown = sessionStorage.getItem("loaderShown") === "true";
-    const introWasShown = sessionStorage.getItem("introRouletteShown") === "true";
+    const introWasShown =
+      sessionStorage.getItem("portfolioIntroShown") === "true";
 
-    setShowLoader(!loaderWasShown);
-    setShowIntroRoulette(loaderWasShown && !introWasShown);
+    setIntroPhase(introWasShown ? "portfolio" : "loading");
   }, []);
 
   const t = T[lang];
@@ -1307,438 +1367,437 @@ export default function Home() {
 
   return (
     <>
-      {mounted && showLoader ? (
+      {mounted && introPhase === "loading" ? (
         <SlotLoader
-          onFinish={() => {
-            sessionStorage.setItem("loaderShown", "true");
-            setShowLoader(false);
-            setShowIntroRoulette(true);
-          }}
+          onFinish={() => setIntroPhase("roulette")}
         />
       ) : null}
 
-      {mounted && showIntroRoulette ? (
+      {mounted && introPhase === "roulette" ? (
         <CaseRouletteIntro
           onClose={() => {
-            sessionStorage.setItem("introRouletteShown", "true");
-            setShowIntroRoulette(false);
+            sessionStorage.setItem("portfolioIntroShown", "true");
+            setIntroPhase("portfolio");
           }}
         />
       ) : null}
 
-      <main
-        className="relative isolate font-sans selection:bg-white/20"
-        style={{
-          width: "100vw",
-          height: isNarrow ? "auto" : "100vh",
-          minHeight: "100vh",
-          maxHeight: isNarrow ? "none" : "100vh",
-          overflowX: "hidden",
-          overflowY: isNarrow ? "auto" : "hidden",
-          ...CANVAS_GRID,
-          color: "#fff",
-        }}
-      >
-        {/* Social — right aligned, ~Figma spacing (12px gap), top 48px */}
-        <div
-          className="pointer-events-auto z-[60] flex gap-3"
-          style={
-            isNarrow
-              ? {
-                position: "relative",
-                width: `${383 * mobileSidebarScale}px`,
-                margin: "0 auto",
-                justifyContent: "space-between",
-                paddingTop: 16,
-                paddingBottom: 12,
-                paddingLeft: 20,
-                paddingRight: 20,
-                boxSizing: "border-box",
-              }
-              : {
-                position: "fixed",
-                top: 48,
-                right: 48,
-              }
-          }
+      {mounted && introPhase === "portfolio" ? (
+
+        <main
+          className="relative isolate font-sans selection:bg-white/20"
+          style={{
+            width: "100vw",
+            height: isNarrow ? "auto" : "100vh",
+            minHeight: "100vh",
+            maxHeight: isNarrow ? "none" : "100vh",
+            overflowX: "hidden",
+            overflowY: isNarrow ? "auto" : "hidden",
+            ...CANVAS_GRID,
+            color: "#fff",
+          }}
         >
-          {SOCIAL_LINKS.map(({ icon, label, href, external, size }) => (
-            <motion.a
-              key={label}
-              href={href}
-              aria-label={label}
-              className="flex items-center justify-center rounded-full text-white"
+          {/* Social — right aligned, ~Figma spacing (12px gap), top 48px */}
+          <div
+            className="pointer-events-auto z-[60] flex gap-3"
+            style={
+              isNarrow
+                ? {
+                  position: "relative",
+                  width: `${383 * mobileSidebarScale}px`,
+                  margin: "0 auto",
+                  justifyContent: "space-between",
+                  paddingTop: 16,
+                  paddingBottom: 12,
+                  paddingLeft: 20,
+                  paddingRight: 20,
+                  boxSizing: "border-box",
+                }
+                : {
+                  position: "fixed",
+                  top: 48,
+                  right: 48,
+                }
+            }
+          >
+            {SOCIAL_LINKS.map(({ icon, label, href, external, size }) => (
+              <motion.a
+                key={label}
+                href={href}
+                aria-label={label}
+                className="flex items-center justify-center rounded-full text-white"
+                style={{
+                  width: 52,
+                  height: 52,
+                  background: "rgba(217,217,217,0.1)",
+                  borderRadius: 100,
+                }}
+                target={external ? "_blank" : undefined}
+                rel={external ? "noreferrer" : undefined}
+                whileHover={{ scale: 1.06 }}
+                whileTap={{ scale: 0.96 }}
+              >
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={icon}
+                  alt=""
+                  width={size}
+                  height={size}
+                  className="block object-contain"
+                  style={{ filter: "brightness(0) invert(1)" }}
+                  draggable={false}
+                />
+              </motion.a>
+            ))}
+          </div>
+          {/* Social — right aligned, ~Figma spacing (12px gap), top 48px */}
+
+
+          <div
+            className="fixed z-[80] flex items-center gap-3"
+            style={{
+              right: isNarrow ? 28 : 48,
+              bottom: isNarrow ? 28 : 48,
+            }}
+          >
+            <motion.button
+              type="button"
+              aria-label={t.switchLang}
+              className="pointer-events-auto flex items-center justify-center rounded-full text-white"
               style={{
                 width: 52,
                 height: 52,
-                background: "rgba(217,217,217,0.1)",
+                background: isNarrow ? "#0F0F0F" : "rgba(217,217,217,0.1)",
                 borderRadius: 100,
+                boxShadow: isNarrow ? "0 12px 32px rgba(0,0,0,0.35)" : undefined,
+                fontSize: 14,
+                fontWeight: 600,
+                lineHeight: "100%",
               }}
-              target={external ? "_blank" : undefined}
-              rel={external ? "noreferrer" : undefined}
-              whileHover={{ scale: 1.06 }}
-              whileTap={{ scale: 0.96 }}
+              onClick={() => {
+                setLang((current) => {
+                  const nextLang = current === "ru" ? "en" : "ru";
+                  sessionStorage.setItem("homeLang", nextLang);
+                  return nextLang;
+                });
+              }}
+              whileHover={isNarrow ? undefined : { scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
             >
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={icon}
-                alt=""
-                width={size}
-                height={size}
-                className="block object-contain"
-                style={{ filter: "brightness(0) invert(1)" }}
-                draggable={false}
-              />
-            </motion.a>
-          ))}
-        </div>
-        {/* Social — right aligned, ~Figma spacing (12px gap), top 48px */}ƒ
+              {lang === "ru" ? "EN" : "RU"}
+            </motion.button>
 
+            <motion.button
+              type="button"
+              aria-label={
+                viewMode === "folders" ? t.showDesktop : t.showFolders
+              }
+              className="pointer-events-auto flex items-center justify-center rounded-full text-white"
+              style={{
+                width: 52,
+                height: 52,
+                background: isNarrow ? "#0F0F0F" : "rgba(217,217,217,0.1)",
+                borderRadius: 100,
+                boxShadow: isNarrow ? "0 12px 32px rgba(0,0,0,0.35)" : undefined,
+              }}
+              onClick={() => {
+                setViewMode((mode) => {
+                  const nextMode = mode === "folders" ? "desktop" : "folders";
+                  sessionStorage.setItem("homeViewMode", nextMode);
+                  return nextMode;
+                });
+              }}
+              whileHover={isNarrow ? undefined : { scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              {viewMode === "folders" ? (
+                <List className="size-[26px]" strokeWidth={1.75} />
+              ) : (
+                <FolderOpen className="size-[25px]" strokeWidth={1.5} />
+              )}
+            </motion.button>
+          </div>
 
-        <div
-          className="fixed z-[80] flex items-center gap-3"
-          style={{
-            right: isNarrow ? 28 : 48,
-            bottom: isNarrow ? 28 : 48,
-          }}
-        >
-          <motion.button
-            type="button"
-            aria-label={t.switchLang}
-            className="pointer-events-auto flex items-center justify-center rounded-full text-white"
+          {/* Folders on canvas */}
+          {!isNarrow && viewMode === "folders" && (
+            <div
+              className="pointer-events-none absolute z-[10]"
+              style={{
+                left: 383 * sidebarScale + 48,
+                right: 48,
+                top: 64,
+                bottom: 88,
+              }}
+            >
+              <div
+                className="pointer-events-none relative h-full"
+                style={{
+                  width: "min(100%, 1160px)",
+                  height: "100%",
+                  margin: "0 auto",
+                }}
+              >
+                {COLLECTIONS.map((year, index) => {
+                  const pos = FOLDER_POSITIONS[year];
+                  const fh = isShortDesktop ? 345 : year === "2023" ? 327 : 345;
+
+                  const shortDesktopStyle = isShortDesktop
+                    ? {
+                      left: `calc(50% - ${(COLLECTIONS.length * 233 + (COLLECTIONS.length - 1) * 72) *
+                        folderAdaptiveScale
+                        }px / 2 + ${index * (233 + 72) * folderAdaptiveScale}px)`,
+                      top: `calc(50% - ${345 * folderAdaptiveScale}px / 2 + 28px)`,
+                      transform: `scale(${folderAdaptiveScale})`,
+                      transformOrigin: "top left",
+                    }
+                    : {
+                      left: `calc(${pos.left} - 200px)`,
+                      top: pos.top,
+                      transform: `scale(${folderAdaptiveScale})`,
+                      transformOrigin: "center center",
+                    };
+
+                  return (
+                    <div
+                      key={year}
+                      className="pointer-events-auto absolute"
+                      style={{
+                        ...shortDesktopStyle,
+                        width: 233,
+                        height: fh,
+                      }}
+                      onMouseEnter={() => setHoverYear(year)}
+                      onMouseLeave={() => setHoverYear((h) => (h === year ? null : h))}
+                    >
+                      <FloatingFolder year={year} isHovered={hoverYear === year} />
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+          {!isNarrow && viewMode === "desktop" && (
+            <DesktopCaseView
+              left={desktopLeft}
+              top={DESKTOP_TOP}
+              language={lang}
+              isMobile={isNarrow}
+            />
+          )}
+          {/* Left sidebar — Figma: 383×800; clip box matches scaled height so it fits in 100vh */}
+          <aside
+            className="z-[50] flex flex-col overflow-hidden"
             style={{
-              width: 52,
-              height: 52,
-              background: isNarrow ? "#0F0F0F" : "rgba(217,217,217,0.1)",
-              borderRadius: 100,
-              boxShadow: isNarrow ? "0 12px 32px rgba(0,0,0,0.35)" : undefined,
-              fontSize: 14,
-              fontWeight: 600,
-              lineHeight: "100%",
-            }}
-            onClick={() => {
-              setLang((current) => {
-                const nextLang = current === "ru" ? "en" : "ru";
-                sessionStorage.setItem("homeLang", nextLang);
-                return nextLang;
-              });
-            }}
-            whileHover={isNarrow ? undefined : { scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-          >
-            {lang === "ru" ? "EN" : "RU"}
-          </motion.button>
-
-          <motion.button
-            type="button"
-            aria-label={
-              viewMode === "folders" ? t.showDesktop : t.showFolders
-            }
-            className="pointer-events-auto flex items-center justify-center rounded-full text-white"
-            style={{
-              width: 52,
-              height: 52,
-              background: isNarrow ? "#0F0F0F" : "rgba(217,217,217,0.1)",
-              borderRadius: 100,
-              boxShadow: isNarrow ? "0 12px 32px rgba(0,0,0,0.35)" : undefined,
-            }}
-            onClick={() => {
-              setViewMode((mode) => {
-                const nextMode = mode === "folders" ? "desktop" : "folders";
-                sessionStorage.setItem("homeViewMode", nextMode);
-                return nextMode;
-              });
-            }}
-            whileHover={isNarrow ? undefined : { scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-          >
-            {viewMode === "folders" ? (
-              <List className="size-[26px]" strokeWidth={1.75} />
-            ) : (
-              <FolderOpen className="size-[25px]" strokeWidth={1.5} />
-            )}
-          </motion.button>
-        </div>
-
-        {/* Folders on canvas */}
-        {!isNarrow && viewMode === "folders" && (
-          <div
-            className="pointer-events-none absolute z-[10]"
-            style={{
-              left: 383 * sidebarScale + 48,
-              right: 48,
-              top: 64,
-              bottom: 88,
+              position: isNarrow ? "relative" : "absolute",
+              left: isNarrow ? undefined : 0,
+              top: isNarrow ? undefined : "50%",
+              bottom: undefined,
+              transform: isNarrow ? undefined : "translateY(-50%)",
+              width: isNarrow ? "100%" : 383 * sidebarScale,
+              height: isNarrow ? "auto" : 800 * sidebarScale,
+              maxHeight: isNarrow ? "none" : 800 * sidebarScale,
+              alignItems: isNarrow ? "center" : undefined,
+              paddingLeft: isNarrow ? 12 : 0,
+              paddingRight: isNarrow ? 12 : 0,
             }}
           >
             <div
-              className="pointer-events-none relative h-full"
+              className="overflow-hidden"
               style={{
-                width: "min(100%, 1160px)",
-                height: "100%",
-                margin: "0 auto",
+                width: isNarrow ? 383 * mobileSidebarScale : 383 * sidebarScale,
+                height: isNarrow ? 800 * mobileSidebarScale : 800 * sidebarScale,
               }}
             >
-              {COLLECTIONS.map((year, index) => {
-                const pos = FOLDER_POSITIONS[year];
-                const fh = isShortDesktop ? 345 : year === "2023" ? 327 : 345;
+              <div
+                className="flex flex-col"
+                style={{
+                  width: 383,
+                  height: 800,
+                  transform: `scale(${isNarrow ? mobileSidebarScale : sidebarScale})`,
+                  padding: 4,
+                  gap: 2,
+                  transformOrigin: "top left",
+                }}
+              >
+                <div
+                  className="relative shrink-0 overflow-hidden"
+                  style={{
+                    width: 375,
+                    height: 196,
+                    minHeight: 196,
+                    flex: 1,
 
-                const shortDesktopStyle = isShortDesktop
-                  ? {
-                    left: `calc(50% - ${(COLLECTIONS.length * 233 + (COLLECTIONS.length - 1) * 72) *
-                      folderAdaptiveScale
-                      }px / 2 + ${index * (233 + 72) * folderAdaptiveScale}px)`,
-                    top: `calc(50% - ${345 * folderAdaptiveScale}px / 2 + 28px)`,
-                    transform: `scale(${folderAdaptiveScale})`,
-                    transformOrigin: "top left",
-                  }
-                  : {
-                    left: `calc(${pos.left} - 200px)`,
-                    top: pos.top,
-                    transform: `scale(${folderAdaptiveScale})`,
-                    transformOrigin: "center center",
-                  };
+                    borderRadius: 40
+                  }}
+                >
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src="/profile/arina.jpg"
+                    alt="Арина Быковская"
+                    className="absolute inset-0 h-full w-full object-cover"
+                    width={375}
+                    height={179}
+                    decoding="async"
+                  />
+                </div>
+
+                <div
+                  className="flex shrink-0 flex-col items-center justify-center bg-white"
+                  style={{
+                    width: 375,
+                    height: 210,
+                    padding: "28px 28px",
+                    borderRadius: 40,
+
+                  }}
+                >
+                  <div
+                    className="flex flex-col items-center text-center"
+                    style={{ gap: 6 }}
+                  >
+
+                    <h1
+                      className="text-center font-medium"
+                      style={{
+                        fontSize: 36,
+                        lineHeight: "130%",
+                        color: "#0F0F0F",
+                        fontWeight: 500,
+                        letterSpacing: "-0.05em",
+                      }}
+                    >
+                      {t.name}
+                    </h1>
+
+                    <p
+                      className="text-center font-medium"
+                      style={{
+                        fontSize: 16,
+                        lineHeight: "100%",
+                        color: "rgba(14, 14, 14, 0.52)",
+                        fontWeight: 500
+                      }}
+                    >
+                      {t.role}
+                    </p>
+                  </div>
+                  <div style={{ height: 28 }} />
+                  <p
+                    className="mx-auto text-center"
+                    style={{
+                      fontSize: 18,
+                      lineHeight: "120%",
+                      color: "rgba(14, 14, 14, 0.6)",
+                      fontWeight: 400,
+                    }}
+                  >
+                    {t.description}
+                  </p>
+
+
+                </div>
+
+                <div
+                  className="flex shrink-0 flex-col justify-between overflow-hidden bg-white"
+                  style={{
+                    width: 375,
+
+                    height: 330,
+                    padding: "28px 40px",
+                    borderRadius: 40,
+                  }}
+                >
+                  <div className="flex flex-col items-center" style={{ gap: 12 }}>
+                    <h2
+                      className="text-center font-medium"
+                      style={{ fontSize: 24, lineHeight: "130%", color: "#0F0F0F" }}
+                    >
+                      {t.worked}
+                    </h2>
+                    <div className="grid w-full grid-cols-3 items-start">
+                      <LogoCell60
+                        src="/logos/ozon.svg"
+                        label="Ozon Tech"
+                        onClick={() => setActiveWorkPreview("ozon")}
+                      />
+                      <LogoCell60
+                        src="/logos/vk.svg"
+                        label="VK"
+                        onClick={() => setActiveWorkPreview("vk")}
+                      />
+                      <LogoCell60
+                        src="/logos/ids.svg"
+                        label="IDS"
+                        onClick={() => setActiveWorkPreview("ids")}
+                      />
+                    </div>
+                  </div>
+                  <div className="flex flex-col items-center" style={{ gap: 12 }}>
+                    <h2
+                      className="text-center font-medium"
+                      style={{ fontSize: 24, lineHeight: "130%", color: "#0F0F0F" }}
+                    >
+                      {t.studied}
+                    </h2>
+                    <div className="grid w-full grid-cols-3 items-start">
+                      <LogoCell60 src="/logos/pragmatica.svg" label="Pragmatica" />
+                      <LogoCell60 src="/logos/itmo.svg" label="ITMO" />
+                      <LogoCell60 src="/logos/mtuci.svg" label="MTUCI" />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </aside>
+
+          {isNarrow && viewMode === "folders" && (
+            <div
+              className="relative z-[20] flex w-full flex-col items-center px-3 pb-8 pt-4"
+              style={{ gap: 14 }}
+            >
+              {COLLECTIONS.map((year) => {
+                const h = 345;
 
                 return (
                   <div
                     key={year}
-                    className="pointer-events-auto absolute"
-                    style={{
-                      ...shortDesktopStyle,
-                      width: 233,
-                      height: fh,
-                    }}
+                    className="relative flex w-full justify-center overflow-visible"
+                    style={{ height: h * mobileFolderScale }}
                     onMouseEnter={() => setHoverYear(year)}
-                    onMouseLeave={() => setHoverYear((h) => (h === year ? null : h))}
+                    onMouseLeave={() =>
+                      setHoverYear((prev) => (prev === year ? null : prev))
+                    }
                   >
-                    <FloatingFolder year={year} isHovered={hoverYear === year} />
+                    <div
+                      style={{
+                        width: 233,
+                        height: h,
+                        transform: `scale(${mobileFolderScale})`,
+                        transformOrigin: "top center",
+                      }}
+                    >
+                      <FloatingFolder year={year} isHovered={hoverYear === year} />
+                    </div>
                   </div>
                 );
               })}
             </div>
-          </div>
-        )}
-        {!isNarrow && viewMode === "desktop" && (
-          <DesktopCaseView
-            left={desktopLeft}
-            top={DESKTOP_TOP}
-            language={lang}
-            isMobile={isNarrow}
-          />
-        )}
-        {/* Left sidebar — Figma: 383×800; clip box matches scaled height so it fits in 100vh */}
-        <aside
-          className="z-[50] flex flex-col overflow-hidden"
-          style={{
-            position: isNarrow ? "relative" : "absolute",
-            left: isNarrow ? undefined : 0,
-            top: isNarrow ? undefined : "50%",
-            bottom: undefined,
-            transform: isNarrow ? undefined : "translateY(-50%)",
-            width: isNarrow ? "100%" : 383 * sidebarScale,
-            height: isNarrow ? "auto" : 800 * sidebarScale,
-            maxHeight: isNarrow ? "none" : 800 * sidebarScale,
-            alignItems: isNarrow ? "center" : undefined,
-            paddingLeft: isNarrow ? 12 : 0,
-            paddingRight: isNarrow ? 12 : 0,
-          }}
-        >
-          <div
-            className="overflow-hidden"
-            style={{
-              width: isNarrow ? 383 * mobileSidebarScale : 383 * sidebarScale,
-              height: isNarrow ? 800 * mobileSidebarScale : 800 * sidebarScale,
-            }}
-          >
-            <div
-              className="flex flex-col"
-              style={{
-                width: 383,
-                height: 800,
-                transform: `scale(${isNarrow ? mobileSidebarScale : sidebarScale})`,
-                padding: 4,
-                gap: 2,
-                transformOrigin: "top left",
-              }}
-            >
-              <div
-                className="relative shrink-0 overflow-hidden"
-                style={{
-                  width: 375,
-                  height: 196,
-                  minHeight: 196,
-                  flex: 1,
+          )}
 
-                  borderRadius: 40
-                }}
-              >
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src="/profile/arina.jpg"
-                  alt="Арина Быковская"
-                  className="absolute inset-0 h-full w-full object-cover"
-                  width={375}
-                  height={179}
-                  decoding="async"
-                />
-              </div>
-
-              <div
-                className="flex shrink-0 flex-col items-center justify-center bg-white"
-                style={{
-                  width: 375,
-                  height: 210,
-                  padding: "28px 28px",
-                  borderRadius: 40,
-
-                }}
-              >
-                <div
-                  className="flex flex-col items-center text-center"
-                  style={{ gap: 6 }}
-                >
-
-                  <h1
-                    className="text-center font-medium"
-                    style={{
-                      fontSize: 36,
-                      lineHeight: "130%",
-                      color: "#0F0F0F",
-                      fontWeight: 500,
-                      letterSpacing: "-0.05em",
-                    }}
-                  >
-                    {t.name}
-                  </h1>
-
-                  <p
-                    className="text-center font-medium"
-                    style={{
-                      fontSize: 16,
-                      lineHeight: "100%",
-                      color: "rgba(14, 14, 14, 0.52)",
-                      fontWeight: 500
-                    }}
-                  >
-                    {t.role}
-                  </p>
-                </div>
-                <div style={{ height: 28 }} />
-                <p
-                  className="mx-auto text-center"
-                  style={{
-                    fontSize: 18,
-                    lineHeight: "120%",
-                    color: "rgba(14, 14, 14, 0.6)",
-                    fontWeight: 400,
-                  }}
-                >
-                  {t.description}
-                </p>
-
-
-              </div>
-
-              <div
-                className="flex shrink-0 flex-col justify-between overflow-hidden bg-white"
-                style={{
-                  width: 375,
-
-                  height: 330,
-                  padding: "28px 40px",
-                  borderRadius: 40,
-                }}
-              >
-                <div className="flex flex-col items-center" style={{ gap: 12 }}>
-                  <h2
-                    className="text-center font-medium"
-                    style={{ fontSize: 24, lineHeight: "130%", color: "#0F0F0F" }}
-                  >
-                    {t.worked}
-                  </h2>
-                  <div className="grid w-full grid-cols-3 items-start">
-                    <LogoCell60
-                      src="/logos/ozon.svg"
-                      label="Ozon Tech"
-                      onClick={() => setActiveWorkPreview("ozon")}
-                    />
-                    <LogoCell60
-                      src="/logos/vk.svg"
-                      label="VK"
-                      onClick={() => setActiveWorkPreview("vk")}
-                    />
-                    <LogoCell60
-                      src="/logos/ids.svg"
-                      label="IDS"
-                      onClick={() => setActiveWorkPreview("ids")}
-                    />
-                  </div>
-                </div>
-                <div className="flex flex-col items-center" style={{ gap: 12 }}>
-                  <h2
-                    className="text-center font-medium"
-                    style={{ fontSize: 24, lineHeight: "130%", color: "#0F0F0F" }}
-                  >
-                    {t.studied}
-                  </h2>
-                  <div className="grid w-full grid-cols-3 items-start">
-                    <LogoCell60 src="/logos/pragmatica.svg" label="Pragmatica" />
-                    <LogoCell60 src="/logos/itmo.svg" label="ITMO" />
-                    <LogoCell60 src="/logos/mtuci.svg" label="MTUCI" />
-                  </div>
-                </div>
-              </div>
+          {isNarrow && viewMode === "desktop" && (
+            <div className="relative z-[20] w-full px-6 pb-10 pt-8">
+              <MobileDesktopCaseView language={lang} />
             </div>
-          </div>
-        </aside>
-
-        {isNarrow && viewMode === "folders" && (
-          <div
-            className="relative z-[20] flex w-full flex-col items-center px-3 pb-8 pt-4"
-            style={{ gap: 14 }}
-          >
-            {COLLECTIONS.map((year) => {
-              const h = 345;
-
-              return (
-                <div
-                  key={year}
-                  className="relative flex w-full justify-center overflow-visible"
-                  style={{ height: h * mobileFolderScale }}
-                  onMouseEnter={() => setHoverYear(year)}
-                  onMouseLeave={() =>
-                    setHoverYear((prev) => (prev === year ? null : prev))
-                  }
-                >
-                  <div
-                    style={{
-                      width: 233,
-                      height: h,
-                      transform: `scale(${mobileFolderScale})`,
-                      transformOrigin: "top center",
-                    }}
-                  >
-                    <FloatingFolder year={year} isHovered={hoverYear === year} />
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        )}
-
-        {isNarrow && viewMode === "desktop" && (
-          <div className="relative z-[20] w-full px-6 pb-10 pt-8">
-            <MobileDesktopCaseView language={lang} />
-          </div>
-        )}
-        {activeWorkPreview ? (
-          <WorkPreviewModal
-            preview={WORK_PREVIEWS[activeWorkPreview]}
-            onClose={() => setActiveWorkPreview(null)}
-            lang={lang}
-          />
-        ) : null}
-      </main>
+          )}
+          {activeWorkPreview ? (
+            <WorkPreviewModal
+              preview={WORK_PREVIEWS[activeWorkPreview]}
+              onClose={() => setActiveWorkPreview(null)}
+              lang={lang}
+            />
+          ) : null}
+        </main>
+      ) : null}
     </>
   );
 }
