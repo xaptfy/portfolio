@@ -251,7 +251,7 @@ const ROULETTE_CASES = [
     id: "otr",
     title: "Banking case",
     href: "/cases/otr",
-    logo: "/logo/otp.svg",
+    logo: "/logo/otr.svg",
   },
   {
     id: "ozon",
