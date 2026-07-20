@@ -27,6 +27,78 @@ const CANVAS_GRID = {
   backgroundSize: "36px 36px",
 } as const;
 
+const LIQUID_GLASS_STYLE = {
+  background: "rgba(244, 244, 244, 0.03)",
+
+
+
+  boxShadow: `
+    inset 0 1px 1px rgba(255,255,255,0.34),
+    inset 1px 0 1px rgba(255,255,255,0.16),
+    inset 0 -1px 1px rgba(255,255,255,0.08),
+    0 14px 36px rgba(0,0,0,0.24)
+  `,
+
+  backdropFilter: "blur(4px) saturate(115%) brightness(108%)",
+  WebkitBackdropFilter: "blur(4px) saturate(115%) brightness(108%)",
+
+  overflow: "hidden",
+} as const;
+
+function LiquidGlass({
+  children,
+  className = "",
+  style,
+}: {
+  children: React.ReactNode;
+  className?: string;
+  style?: React.CSSProperties;
+}) {
+  return (
+    <div
+      className={`${className} overflow-hidden`}
+      style={{
+        ...LIQUID_GLASS_STYLE,
+        ...style,
+      }}
+    >
+      {/* Мягкий свет сверху слева */}
+      <div
+        className="pointer-events-none absolute inset-0 z-0"
+        style={{
+          borderRadius: "inherit",
+          background: `
+            radial-gradient(
+              circle at 12% 4%,
+              rgba(255,255,255,0.12) 0%,
+              rgba(255,255,255,0.04) 24%,
+              transparent 52%
+            ),
+            linear-gradient(
+              135deg,
+              rgba(255,255,255,0.045) 0%,
+              transparent 38%,
+              rgba(255,255,255,0.015) 68%,
+              transparent 100%
+            )
+          `,
+        }}
+      />
+
+      {/* Внутренняя кромка */}
+      <div
+        className="pointer-events-none absolute inset-[1px] z-0"
+        style={{
+          borderRadius: "inherit",
+          boxShadow: "inset 0 0 14px rgba(255,255,255,0.025)",
+        }}
+      />
+
+      {children}
+    </div>
+  );
+}
+
 const T = {
   ru: {
     name: "Арина Быковская",
@@ -193,8 +265,8 @@ const ROULETTE_CASES = [
     title: "VTB",
     href: "/cases/vtb",
     logo: "/logo/vtb.svg",
-  }, 
-   {
+  },
+  {
     id: "vk",
     title: "Pragmatica x VK",
     href: "/cases/pragmatica-vk",
@@ -218,7 +290,7 @@ const ROULETTE_CASES = [
     href: "/cases/itmo",
     logo: "/logo/itmo.svg",
   },
-  
+
   {
     id: "petrix",
     title: "Petrix",
@@ -423,7 +495,7 @@ function CaseRouletteIntro({
               scalable user flows
             </p>
 
-            
+
           </div>
 
           <motion.button
@@ -698,6 +770,112 @@ function LogoCell60({
     >
       {content}
     </button>
+  );
+}
+
+function AnalogClock({
+  city,
+  timeZone,
+  gmt,
+}: {
+  city: string;
+  timeZone: string;
+  gmt: string;
+}) {
+  const [time, setTime] = useState(() => new Date());
+
+  useEffect(() => {
+    const timer = window.setInterval(() => {
+      setTime(new Date());
+    }, 1000);
+
+    return () => window.clearInterval(timer);
+  }, []);
+
+  const parts = new Intl.DateTimeFormat("en-US", {
+    timeZone,
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+    hour12: false,
+  }).formatToParts(time);
+
+  const getPart = (type: "hour" | "minute" | "second") =>
+    Number(parts.find((part) => part.type === type)?.value ?? 0);
+
+  const hours = getPart("hour");
+  const minutes = getPart("minute");
+  const seconds = getPart("second");
+
+  const hourRotation = (hours % 12) * 30 + minutes * 0.5;
+  const minuteRotation = minutes * 6;
+  const secondRotation = seconds * 6;
+
+  const numbers = Array.from({ length: 12 }, (_, index) => index + 1);
+
+  return (
+    <div className="relative z-[1] flex min-w-0 flex-1 flex-col items-center gap-[7px]">
+      <div className="relative size-[90px] shrink-0 rounded-full bg-white">
+        {numbers.map((number) => {
+          const angle = number * 30;
+          const radius = 35;
+          const radians = ((angle - 90) * Math.PI) / 180;
+
+          const x = 45 + Math.cos(radians) * radius;
+          const y = 45 + Math.sin(radians) * radius;
+
+          return (
+            <span
+              key={number}
+              className="absolute flex size-[13px] items-center justify-center text-[9px] font-medium leading-none text-black"
+              style={{
+                left: x - 6.5,
+                top: y - 6.5,
+              }}
+            >
+              {number}
+            </span>
+          );
+        })}
+
+        <span className="absolute left-1/2 top-1/2 z-20 size-[5px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-black" />
+
+        <span
+          className="absolute bottom-1/2 left-1/2 z-10 w-[2px] origin-bottom rounded-full bg-black"
+          style={{
+            height: 22,
+            transform: `translateX(-50%) rotate(${hourRotation}deg)`,
+          }}
+        />
+
+        <span
+          className="absolute bottom-1/2 left-1/2 z-10 w-[1.5px] origin-bottom rounded-full bg-black"
+          style={{
+            height: 30,
+            transform: `translateX(-50%) rotate(${minuteRotation}deg)`,
+          }}
+        />
+
+        <span
+          className="absolute bottom-1/2 left-1/2 z-10 w-px origin-bottom rounded-full bg-[#A80A0D]"
+          style={{
+            height: 30,
+            transform: `translateX(-50%) rotate(${secondRotation}deg)`,
+          }}
+        />
+      </div>
+
+      <div className="flex flex-col items-center gap-[2px] text-center">
+        <span className="text-[12px] font-medium leading-[110%] text-white">
+          {city}
+        </span>
+
+        <div className="flex flex-col text-[10px] font-medium leading-[110%] text-white/60">
+          <span>Today</span>
+          <span>{gmt}</span>
+        </div>
+      </div>
+    </div>
   );
 }
 
@@ -1326,9 +1504,18 @@ export default function Home() {
       setLang(savedLang);
     }
   }, []);
-  const sidebarScale = useSidebarScale(900);
+
   const vw = useViewportWidth();
   const vh = useViewportHeight();
+
+  const SIDEBAR_WIDTH = 344;
+  const SIDEBAR_HEIGHT = 704;
+  const DESKTOP_EDGE = 48;
+
+  const sidebarScale = Math.min(
+    1.08,
+    Math.max(0.72, (vh - DESKTOP_EDGE * 2) / SIDEBAR_HEIGHT)
+  );
 
   const isNarrow = vw < 1024;
   const isShortDesktop = !isNarrow && vh < 650;
@@ -1337,7 +1524,11 @@ export default function Home() {
     ? Math.max(0.5, Math.min(0.66, vh / 950))
     : Math.max(0.72, Math.min(1, vh / 900));
 
-  const mobileSidebarScale = Math.min(1, Math.max(0.64, (vw - 24) / 383));
+  const mobileSidebarScale = Math.min(
+    1,
+    Math.max(0.64, (vw - 24) / SIDEBAR_WIDTH)
+  );
+
   const mobileFolderScale = Math.min(1, Math.max(0.72, (vw - 24) / 260));
 
   const DESKTOP_GAP = 40;
@@ -1346,7 +1537,10 @@ export default function Home() {
   const DESKTOP_CONTENT_WIDTH = 828;
   const DESKTOP_SHIFT_LEFT = 100;
 
-  const desktopStart = 383 * sidebarScale + DESKTOP_GAP;
+  const desktopStart =
+    DESKTOP_EDGE +
+    SIDEBAR_WIDTH * sidebarScale +
+    DESKTOP_GAP;
   const desktopLeft =
     desktopStart +
     Math.max(0, (vw - desktopStart - DESKTOP_CONTENT_WIDTH) / 2) -
@@ -1425,28 +1619,32 @@ export default function Home() {
                 key={label}
                 href={href}
                 aria-label={label}
-                className="flex items-center justify-center rounded-full text-white"
-                style={{
-                  width: 52,
-                  height: 52,
-                  background: "rgba(217,217,217,0.1)",
-                  borderRadius: 100,
-                }}
                 target={external ? "_blank" : undefined}
                 rel={external ? "noreferrer" : undefined}
                 whileHover={{ scale: 1.06 }}
                 whileTap={{ scale: 0.96 }}
+                style={{
+                  width: 52,
+                  height: 52,
+                  display: "block",
+                }}
               >
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={icon}
-                  alt=""
-                  width={size}
-                  height={size}
-                  className="block object-contain"
-                  style={{ filter: "brightness(0) invert(1)" }}
-                  draggable={false}
-                />
+                <LiquidGlass
+                  className="flex h-full w-full items-center justify-center rounded-full"
+                  style={{
+                    borderRadius: 999,
+                  }}
+                >
+                  <img
+                    src={icon}
+                    alt=""
+                    width={size}
+                    height={size}
+                    className="block object-contain"
+                    style={{ filter: "brightness(0) invert(1)" }}
+                    draggable={false}
+                  />
+                </LiquidGlass>
               </motion.a>
             ))}
           </div>
@@ -1463,16 +1661,13 @@ export default function Home() {
             <motion.button
               type="button"
               aria-label={t.switchLang}
-              className="pointer-events-auto flex items-center justify-center rounded-full text-white"
+              className="pointer-events-auto block text-white"
               style={{
                 width: 52,
                 height: 52,
-                background: isNarrow ? "#0F0F0F" : "rgba(217,217,217,0.1)",
-                borderRadius: 100,
-                boxShadow: isNarrow ? "0 12px 32px rgba(0,0,0,0.35)" : undefined,
-                fontSize: 14,
-                fontWeight: 600,
-                lineHeight: "100%",
+                border: "none",
+                padding: 0,
+                background: "transparent",
               }}
               onClick={() => {
                 setLang((current) => {
@@ -1484,7 +1679,23 @@ export default function Home() {
               whileHover={isNarrow ? undefined : { scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
             >
-              {lang === "ru" ? "EN" : "RU"}
+              <LiquidGlass
+                className="flex h-full w-full items-center justify-center rounded-full"
+                style={{
+                  borderRadius: 999,
+                }}
+              >
+                <span
+                  className="relative z-[1]"
+                  style={{
+                    fontSize: 14,
+                    fontWeight: 600,
+                    lineHeight: "100%",
+                  }}
+                >
+                  {lang === "ru" ? "EN" : "RU"}
+                </span>
+              </LiquidGlass>
             </motion.button>
 
             <motion.button
@@ -1492,13 +1703,13 @@ export default function Home() {
               aria-label={
                 viewMode === "folders" ? t.showDesktop : t.showFolders
               }
-              className="pointer-events-auto flex items-center justify-center rounded-full text-white"
+              className="pointer-events-auto block text-white"
               style={{
                 width: 52,
                 height: 52,
-                background: isNarrow ? "#0F0F0F" : "rgba(217,217,217,0.1)",
-                borderRadius: 100,
-                boxShadow: isNarrow ? "0 12px 32px rgba(0,0,0,0.35)" : undefined,
+                border: "none",
+                padding: 0,
+                background: "transparent",
               }}
               onClick={() => {
                 setViewMode((mode) => {
@@ -1510,11 +1721,20 @@ export default function Home() {
               whileHover={isNarrow ? undefined : { scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
             >
-              {viewMode === "folders" ? (
-                <List className="size-[26px]" strokeWidth={1.75} />
-              ) : (
-                <FolderOpen className="size-[25px]" strokeWidth={1.5} />
-              )}
+              <LiquidGlass
+                className="flex h-full w-full items-center justify-center rounded-full"
+                style={{
+                  borderRadius: 999,
+                }}
+              >
+                <span className="relative z-[1] flex items-center justify-center">
+                  {viewMode === "folders" ? (
+                    <List className="size-[26px]" strokeWidth={1.75} />
+                  ) : (
+                    <FolderOpen className="size-[25px]" strokeWidth={1.5} />
+                  )}
+                </span>
+              </LiquidGlass>
             </motion.button>
           </div>
 
@@ -1523,7 +1743,10 @@ export default function Home() {
             <div
               className="pointer-events-none absolute z-[10]"
               style={{
-                left: 383 * sidebarScale + 48,
+                left:
+                  DESKTOP_EDGE +
+                  SIDEBAR_WIDTH * sidebarScale +
+                  DESKTOP_GAP,
                 right: 48,
                 top: 64,
                 bottom: 88,
@@ -1586,17 +1809,22 @@ export default function Home() {
           )}
           {/* Left sidebar — Figma: 383×800; clip box matches scaled height so it fits in 100vh */}
           <aside
-            className="z-[50] flex flex-col overflow-hidden"
+            className="z-[50] overflow-hidden"
             style={{
               position: isNarrow ? "relative" : "absolute",
-              left: isNarrow ? undefined : 0,
+
+              left: isNarrow ? undefined : DESKTOP_EDGE,
               top: isNarrow ? undefined : "50%",
-              bottom: undefined,
               transform: isNarrow ? undefined : "translateY(-50%)",
-              width: isNarrow ? "100%" : 383 * sidebarScale,
-              height: isNarrow ? "auto" : 800 * sidebarScale,
-              maxHeight: isNarrow ? "none" : 800 * sidebarScale,
-              alignItems: isNarrow ? "center" : undefined,
+
+              width: isNarrow
+                ? "100%"
+                : SIDEBAR_WIDTH * sidebarScale,
+
+              height: isNarrow
+                ? "auto"
+                : SIDEBAR_HEIGHT * sidebarScale,
+
               paddingLeft: isNarrow ? 12 : 0,
               paddingRight: isNarrow ? 12 : 0,
             }}
@@ -1604,148 +1832,235 @@ export default function Home() {
             <div
               className="overflow-hidden"
               style={{
-                width: isNarrow ? 383 * mobileSidebarScale : 383 * sidebarScale,
-                height: isNarrow ? 800 * mobileSidebarScale : 800 * sidebarScale,
+                width: isNarrow
+                  ? SIDEBAR_WIDTH * mobileSidebarScale
+                  : SIDEBAR_WIDTH * sidebarScale,
+
+                height: isNarrow
+                  ? SIDEBAR_HEIGHT * mobileSidebarScale
+                  : SIDEBAR_HEIGHT * sidebarScale,
+
+                margin: isNarrow ? "0 auto" : undefined,
               }}
             >
               <div
-                className="flex flex-col"
+                className="relative"
                 style={{
-                  width: 383,
-                  height: 800,
-                  transform: `scale(${isNarrow ? mobileSidebarScale : sidebarScale})`,
-                  padding: 4,
-                  gap: 2,
+                  width: SIDEBAR_WIDTH,
+                  height: SIDEBAR_HEIGHT,
+
+                  transform: `scale(${isNarrow ? mobileSidebarScale : sidebarScale
+                    })`,
+
                   transformOrigin: "top left",
                 }}
               >
+                {/* Photo */}
                 <div
-                  className="relative shrink-0 overflow-hidden"
+                  className="absolute overflow-hidden"
                   style={{
-                    width: 375,
-                    height: 196,
-                    minHeight: 196,
-                    flex: 1,
-
-                    borderRadius: 40
+                    width: 164,
+                    height: 164,
+                    left: 0,
+                    top: 0,
+                    borderRadius: 40,
                   }}
                 >
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
                     src="/profile/arina.jpg"
-                    alt="Арина Быковская"
-                    className="absolute inset-0 h-full w-full object-cover"
-                    width={375}
-                    height={179}
-                    decoding="async"
+                    alt="Arina Bykovskaya"
+                    className="h-full w-full object-cover"
+                    draggable={false}
                   />
                 </div>
 
-                <div
-                  className="flex shrink-0 flex-col items-center justify-center bg-white"
+                {/* Name */}
+                <LiquidGlass
+                  className="absolute flex flex-col justify-center p-4"
                   style={{
-                    width: 375,
-                    height: 210,
-                    padding: "28px 28px",
+                    width: 164,
+                    height: 164,
+                    left: 180,
+                    top: 0,
                     borderRadius: 40,
-
                   }}
                 >
-                  <div
-                    className="flex flex-col items-center text-center"
-                    style={{ gap: 6 }}
-                  >
-
+                  <div className="relative z-[1] flex flex-col items-start gap-2">
                     <h1
-                      className="text-center font-medium"
+                      className="font-medium text-white"
                       style={{
-                        fontSize: 36,
+                        fontSize: 27,
                         lineHeight: "130%",
-                        color: "#0F0F0F",
-                        fontWeight: 500,
-                        letterSpacing: "-0.05em",
+                        letterSpacing: "-0.035em",
                       }}
                     >
-                      {t.name}
+                      {lang === "en" ? (
+                        <>
+                          Arina
+                          <br />
+                          Bykovskaia
+                        </>
+                      ) : (
+                        <>
+                          Арина
+                          <br />
+                          Быковская
+                        </>
+                      )}
                     </h1>
 
                     <p
-                      className="text-center font-medium"
+                      className="font-medium text-white/60"
                       style={{
                         fontSize: 16,
-                        lineHeight: "100%",
-                        color: "rgba(14, 14, 14, 0.52)",
-                        fontWeight: 500
+                        lineHeight: "130%",
                       }}
                     >
-                      {t.role}
+                      Product Designer
                     </p>
                   </div>
-                  <div style={{ height: 28 }} />
-                  <p
-                    className="mx-auto text-center"
-                    style={{
-                      fontSize: 18,
-                      lineHeight: "120%",
-                      color: "rgba(14, 14, 14, 0.6)",
-                      fontWeight: 400,
-                    }}
-                  >
-                    {t.description}
-                  </p>
+                </LiquidGlass>
 
-
-                </div>
-
-                <div
-                  className="flex shrink-0 flex-col justify-between overflow-hidden bg-white"
+                {/* Description */}
+                <LiquidGlass
+                  className="absolute flex items-center p-4"
                   style={{
-                    width: 375,
-
-                    height: 330,
-                    padding: "28px 40px",
+                    width: 344,
+                    height: 164,
+                    left: 0,
+                    top: 180,
                     borderRadius: 40,
                   }}
                 >
-                  <div className="flex flex-col items-center" style={{ gap: 12 }}>
-                    <h2
-                      className="text-center font-medium"
-                      style={{ fontSize: 24, lineHeight: "130%", color: "#0F0F0F" }}
-                    >
-                      {t.worked}
-                    </h2>
-                    <div className="grid w-full grid-cols-3 items-start">
-                      <LogoCell60
-                        src="/logos/ozon.svg"
-                        label="Ozon Tech"
-                        onClick={() => setActiveWorkPreview("ozon")}
+                  <p
+                    className="relative z-[1] text-white/80"
+                    style={{
+                      fontSize: 18,
+                      lineHeight: "150%",
+                      fontWeight: 400,
+                    }}
+                  >
+                    {lang === "en"
+                      ? "I design complex B2B/B2C products: simplify user flows and help interfaces work for metrics"
+                      : "Проектирую сложные B2B/B2C продукты: упрощаю сценарии и помогаю интерфейсам работать на метрики"}
+                  </p>
+                </LiquidGlass>
+
+                {/* Work logos */}
+                <LiquidGlass
+                  className="absolute grid grid-cols-2 grid-rows-2 gap-2 p-4"
+                  style={{
+                    width: 164,
+                    height: 164,
+                    left: 0,
+                    top: 360,
+                    borderRadius: 40,
+                  }}
+                >
+                  <button
+                    type="button"
+                    onClick={() => setActiveWorkPreview("ozon")}
+                    className="relative z-[1] flex size-[62px] items-center justify-center"
+                  >
+                    <img
+                      src="/logos/ozon.svg"
+                      alt="Ozon Tech"
+                      className="max-h-full max-w-full object-contain"
+                    />
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => setActiveWorkPreview("vk")}
+                    className="relative z-[1] flex size-[62px] items-center justify-center"
+                  >
+                    <img
+                      src="/logos/vk.svg"
+                      alt="VK"
+                      className="max-h-full max-w-full object-contain"
+                    />
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => setActiveWorkPreview("ids")}
+                    className="relative z-[1] flex size-[62px] items-center justify-center"
+                  >
+                    <img
+                      src="/logos/ids.svg"
+                      alt="IDS"
+                      className="max-h-full max-w-full object-contain"
+                    />
+                  </button>
+                </LiquidGlass>
+
+                {/* Education logos */}
+                <LiquidGlass
+                  className="absolute p-4"
+                  style={{
+                    width: 164,
+                    height: 164,
+                    left: 180,
+                    top: 360,
+                    borderRadius: 40,
+                  }}
+                >
+                  <div className="relative z-[1] grid h-full grid-cols-2 grid-rows-2 gap-2">
+                    <div className="col-span-2 flex h-[62px] items-center justify-center overflow-hidden rounded-full bg-black">
+                      <img
+                        src="/logos/itmo.svg"
+                        alt="ITMO"
+                        className="max-h-full max-w-[132px] object-contain"
                       />
-                      <LogoCell60
-                        src="/logos/vk.svg"
-                        label="VK"
-                        onClick={() => setActiveWorkPreview("vk")}
+                    </div>
+
+                    <div className="flex size-[62px] items-center justify-center">
+                      <img
+                        src="/logos/pragmatica.svg"
+                        alt="Pragmatica"
+                        className="max-h-full max-w-full object-contain"
                       />
-                      <LogoCell60
-                        src="/logos/ids.svg"
-                        label="IDS"
-                        onClick={() => setActiveWorkPreview("ids")}
+                    </div>
+
+                    <div className="flex size-[62px] items-center justify-center">
+                      <img
+                        src="/logos/mtuci.svg"
+                        alt="MTUCI"
+                        className="max-h-full max-w-full object-contain"
                       />
                     </div>
                   </div>
-                  <div className="flex flex-col items-center" style={{ gap: 12 }}>
-                    <h2
-                      className="text-center font-medium"
-                      style={{ fontSize: 24, lineHeight: "130%", color: "#0F0F0F" }}
-                    >
-                      {t.studied}
-                    </h2>
-                    <div className="grid w-full grid-cols-3 items-start">
-                      <LogoCell60 src="/logos/pragmatica.svg" label="Pragmatica" />
-                      <LogoCell60 src="/logos/itmo.svg" label="ITMO" />
-                      <LogoCell60 src="/logos/mtuci.svg" label="MTUCI" />
-                    </div>
-                  </div>
-                </div>
+                </LiquidGlass>
+
+                {/* Clocks */}
+                <LiquidGlass
+                  className="absolute flex items-center gap-2 px-4 py-3"
+                  style={{
+                    width: 344,
+                    height: 164,
+                    left: 0,
+                    top: 540,
+                    borderRadius: 40,
+                  }}
+                >
+                  <AnalogClock
+                    city="Moscow"
+                    timeZone="Europe/Moscow"
+                    gmt="GMT +3"
+                  />
+
+                  <AnalogClock
+                    city="Yerevan"
+                    timeZone="Asia/Yerevan"
+                    gmt="GMT +4"
+                  />
+
+                  <AnalogClock
+                    city="New York"
+                    timeZone="America/New_York"
+                    gmt="GMT -4"
+                  />
+                </LiquidGlass>
               </div>
             </div>
           </aside>
@@ -1796,8 +2111,9 @@ export default function Home() {
               lang={lang}
             />
           ) : null}
-        </main>
-      ) : null}
+        </main >
+      ) : null
+      }
     </>
   );
 }
