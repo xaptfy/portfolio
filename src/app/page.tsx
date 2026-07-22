@@ -244,7 +244,7 @@ const DESKTOP_CASES: Record<
       href: "/cases/casino",
       color: "#99A5FC",
     },
-  ],
+  ], 
 };
 const ROULETTE_CASES = [
   {
@@ -1154,25 +1154,31 @@ function FolderPreviews({
 }
 
 /** SVG intrinsic dimensions — preserve aspect ratio when sizing */
-const FOLDER_BEFORE = { w: 231, h: 138 } as const;
-const FOLDER_AFTER = { w: 199, h: 178 } as const;
+const FOLDER_BEFORE = { w: 250, h: 150 } as const;
+const FOLDER_AFTER = { w: 216, h: 193 } as const;
 
-const FOLDER_POSITIONS: Record<CollectionYear, { left: string; top: string }> = {
+const FOLDER_POSITIONS: Record<
+  CollectionYear,
+  { left: string; top: string }
+> = {
   "2025": {
-    left: "calc(50% - 233px / 2 - 24.5px)",
-    top: "calc(50% - 345px / 2 - 115.5px)",
+    left: "calc(50% - 233px / 2 - 105px)",
+    top: "calc(50% - 345px / 2 - 125px)",
   },
+
   "2026": {
-    left: "calc(50% - 233px / 2 + 326.5px)",
+    left: "calc(50% - 233px / 2 + 295px)",
     top: "calc(50% - 345px / 2 - 180px)",
   },
+
   "2024": {
-    left: "calc(50% - 232px / 2 + 107px)",
-    top: "calc(50% - 345px / 2 + 161.5px)",
+    left: "calc(50% - 232px / 2 + 35px)",
+    top: "calc(50% - 345px / 2 + 185px)",
   },
+
   "2023": {
-    left: "calc(50% - 233px / 2 + 434.5px)",
-    top: "calc(50% - 327px / 2 + 71.5px)",
+    left: "calc(50% - 233px / 2 + 415px)",
+    top: "calc(50% - 327px / 2 + 85px)",
   },
 };
 
@@ -1381,6 +1387,99 @@ function MobileDesktopCaseView({
         ))}
       </div>
     </motion.div>
+  );
+}
+const FOLDER_FRONT_PATH = `path(
+  "M 18 8
+   L 80 4
+   C 89 4 94 9 97 17
+   C 102 31 112 39 126 39
+   C 140 39 151 30 155 16
+   C 158 7 163 3 171 3
+   L 236 1
+   C 246 1 251 8 250 18
+   L 242 130
+   C 241 141 235 147 224 147
+   L 29 150
+   C 18 150 12 144 11 134
+   L 0 24
+   C -1 14 6 8 18 8
+   Z"
+)`;
+
+
+function LiquidFolderFront() {
+  return (
+    <div
+      className="relative h-full w-full"
+      style={{
+        filter: "drop-shadow(0 18px 34px rgba(0,0,0,0.38))",
+      }}
+    >
+      {/* Светящаяся обводка по форме папки */}
+      <div
+        className="absolute inset-0"
+        style={{
+          clipPath: FOLDER_FRONT_PATH,
+          background:
+            "linear-gradient(145deg, rgba(255,255,255,0.72), rgba(255,255,255,0.16) 48%, rgba(255,255,255,0.34))",
+        }}
+      />
+
+      {/* Основное стекло */}
+      <div
+        className="absolute inset-0 overflow-hidden"
+        style={{
+          clipPath: FOLDER_FRONT_PATH,
+          transform: "scale(0.989)",
+          transformOrigin: "center",
+          background: "rgba(244,244,244,0.14)",
+          backdropFilter: "blur(5px) saturate(125%) brightness(108%)",
+          WebkitBackdropFilter: "blur(5px) saturate(125%) brightness(108%)",
+        }}
+      >
+        {/* Верхний диагональный блик */}
+        <div
+          className="pointer-events-none absolute inset-0"
+          style={{
+            background: `
+              radial-gradient(
+                circle at 16% 2%,
+                rgba(255,255,255,0.26) 0%,
+                rgba(255,255,255,0.09) 24%,
+                transparent 52%
+              ),
+              linear-gradient(
+                145deg,
+                rgba(255,255,255,0.11) 0%,
+                transparent 38%,
+                rgba(255,255,255,0.025) 70%,
+                transparent 100%
+              )
+            `,
+          }}
+        />
+
+        {/* Небольшое затемнение снизу */}
+        <div
+          className="pointer-events-none absolute inset-0"
+          style={{
+            background:
+              "linear-gradient(180deg, transparent 25%, rgba(0,0,0,0.055) 100%)",
+          }}
+        />
+
+        {/* Внутренняя светлая кромка */}
+        <div
+          className="pointer-events-none absolute inset-[2px]"
+          style={{
+            clipPath: FOLDER_FRONT_PATH,
+            boxShadow:
+              "inset 0 1px 1px rgba(255,255,255,0.3), inset 1px 0 1px rgba(255,255,255,0.1)",
+          }}
+        />
+      </div>
+    </div>
   );
 }
 
@@ -1770,7 +1869,7 @@ export default function Home() {
                         folderAdaptiveScale
                         }px / 2 + ${index * (233 + 72) * folderAdaptiveScale}px)`,
                       top: `calc(50% - ${345 * folderAdaptiveScale}px / 2 + 28px)`,
-                      transform: `scale(${folderAdaptiveScale})`,
+                      transform: `scale(${folderAdaptiveScale * 2})`,
                       transformOrigin: "top left",
                     }
                     : {
