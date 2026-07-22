@@ -1,9 +1,10 @@
 "use client";
 
 import Link from "next/link";
-import { Check } from "lucide-react";
+import { Check, House } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { getSupabase } from "@/lib/supabase";
+
 
 
 const DOT_GRID = {
@@ -327,7 +328,9 @@ export default function GamePage() {
       }
 
       if (bricksRef.current.every((brick) => !brick.active)) {
+        loadTopScores();
         setStatus("won");
+        return;
       }
 
       if (ball.y - ball.r > height) {
@@ -335,6 +338,7 @@ export default function GamePage() {
 
 
         loadTopScores();
+
 
         setStatus("lost");
       }
@@ -382,36 +386,36 @@ export default function GamePage() {
   };
   const saveScore = async () => {
     if (!nickname.trim()) return;
-  
+
     setSaving(true);
-  
+
     const supabase = getSupabase();
-  
+
     const { error } = await supabase
       .from("game_scores")
       .insert({
         nickname: nickname.trim(),
         score,
       });
-  
+
     if (!error) {
       setSaved(true);
       await loadTopScores();
       (document.activeElement as HTMLElement)?.blur();
     }
-  
+
     setSaving(false);
   };
 
   const loadTopScores = async () => {
     const supabase = getSupabase();
-  
+
     const { data } = await supabase
       .from("game_scores")
       .select("nickname, score")
       .order("score", { ascending: false })
       .limit(10);
-  
+
     if (data) setTopScores(data);
   };
 
@@ -424,13 +428,43 @@ export default function GamePage() {
 
       <Link
         href="/"
-        className="fixed bottom-8 left-8 z-20 flex size-[52px] items-center justify-center rounded-full border border-white/20 bg-white/10 text-white backdrop-blur transition-transform hover:scale-105 active:scale-95"
         aria-label="Back to home"
+        className="
+    fixed bottom-8 left-8 z-40
+    flex size-[52px] items-center justify-center
+    overflow-hidden rounded-full
+    text-white
+    transition-transform
+    hover:scale-105 active:scale-95
+  "
+        style={{
+          background: "rgba(244, 244, 244, 0.1)",
+          border: "1px solid rgba(255, 255, 255, 0.28)",
+          boxShadow: `
+      inset 0 1px 1px rgba(255,255,255,0.22),
+      inset 1px 0 1px rgba(255,255,255,0.08),
+      inset 0 -1px 1px rgba(255,255,255,0.04),
+      0 12px 30px rgba(0,0,0,0.28)
+    `,
+          backdropFilter: "blur(4px) saturate(115%)",
+          WebkitBackdropFilter: "blur(4px) saturate(115%)",
+        }}
       >
-        <span className="text-[22px] font-medium leading-none">N</span>
-      </Link>
+        <span
+          className="pointer-events-none absolute inset-0 rounded-full"
+          style={{
+            background:
+              "radial-gradient(circle at 20% 12%, rgba(255,255,255,0.14), transparent 48%)",
+          }}
+        />
 
-      {gameStatus === "lost" ? (
+        <House
+          size={22}
+          strokeWidth={1.9}
+          className="relative z-10"
+        />
+      </Link>
+      {gameStatus === "lost" || gameStatus === "won" ? (
         <div className="fixed inset-0 z-30 flex items-center justify-center bg-black/55 backdrop-blur-[12px]">
           <Link
             href="/"
@@ -440,15 +474,20 @@ export default function GamePage() {
               lineHeight: 1,
               fontWeight: 300,
             }}
+            aria-label="Close game result"
           >
             ×
           </Link>
 
-          <div className="flex h-screen w-full max-w-[520px] flex-col items-center overflow-y-auto px-6 pb-12 pt-10 text-center text-white [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-            <div className="flex min-h-screen w-full flex-col items-center justify-center">
+          <div className="flex h-full w-full max-w-[520px] flex-col items-center overflow-y-auto px-6 pb-12 pt-6 text-center text-white [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+            <div className="flex w-full flex-col items-center py-8 md:py-10">
               <div className="mb-6 overflow-hidden rounded-[40px]">
                 <video
-                  src="/game/game-over.mp4"
+                  src={
+                    gameStatus === "won"
+                      ? "/game/you-win.mp4"
+                      : "/game/game-over.mp4"
+                  }
                   className="h-auto w-[280px] object-cover md:w-[360px]"
                   autoPlay
                   loop
@@ -465,7 +504,7 @@ export default function GamePage() {
                   letterSpacing: "-0.04em",
                 }}
               >
-                Game Over
+                {gameStatus === "won" ? "You Win" : "Game Over"}
               </h2>
 
               <div className="mb-6 text-center">
@@ -572,37 +611,6 @@ export default function GamePage() {
                 ))}
               </div>
             </div>
-          </div>
-        </div>
-      ) : null}
-
-      {gameStatus === "won" ? (
-        <div className="fixed inset-0 z-30 flex items-center justify-center bg-black/10 backdrop-blur-[8px]">
-          <div className="flex w-full max-w-[520px] flex-col items-center px-6 text-center text-white">
-            <h2
-              className="mb-12 font-medium"
-              style={{
-                fontSize: "clamp(32px, 4vw, 44px)",
-                lineHeight: "110%",
-                letterSpacing: "-0.04em",
-              }}
-            >
-              You Win
-            </h2>
-
-            <button
-              type="button"
-              onClick={handleRestart}
-              className="mb-6 flex h-[76px] w-full max-w-[400px] items-center justify-center rounded-full bg-white text-[#0F0F0F] transition-transform hover:scale-[1.02] active:scale-[0.98]"
-              style={{
-                fontSize: 28,
-                lineHeight: "110%",
-                fontWeight: 500,
-                letterSpacing: "-0.04em",
-              }}
-            >
-              Play Again
-            </button>
           </div>
         </div>
       ) : null}
