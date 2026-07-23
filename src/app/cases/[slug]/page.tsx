@@ -78,7 +78,7 @@ export const CASES_EN: Record<string, CaseStudy> = {
     title: "Banking case",
     description:
       "Designed an OTP flow for confirming a critical operation in a mobile fintech product.",
-    tags: ["Fintech", "B2C"],
+    tags: ["2026", "Fintech", "B2C"],
     sections: [
       {
         title: "— Context",
@@ -109,7 +109,7 @@ export const CASES_EN: Record<string, CaseStudy> = {
     title: "Pragmatica × VK",
     description:
       "Took part in the Pragmatica × VK design camp: worked on two product cases in sprint format — from concept and presentation to iterations based on mentor feedback.",
-    tags: ["Camp", "B2C"],
+    tags: ["2026", "Camp", "B2C"],
     sections: [
       {
         title: "— VK Pets",
@@ -130,7 +130,7 @@ export const CASES_EN: Record<string, CaseStudy> = {
     title: "Ozon Tech",
     description:
       "Worked as a product designer in the Checkout team: designed order placement flows, geoservices and adjacent product scenarios. Contributed to large visual updates, improved user flows and supported solutions through development.",
-    tags: ["E-commerce", "B2C", "Checkout", "Geo"],
+    tags: ["2025", "E-commerce", "B2C", "Checkout", "Geo"],
     sections: [
       {
         title: "— Ozon Select",
@@ -155,7 +155,7 @@ export const CASES_EN: Record<string, CaseStudy> = {
     slug: "vtb",
     title: "VTB",
     description: "Designed a family finance concept for a banking product.",
-    tags: ["B2C", "Fintech"],
+    tags: ["2025", "B2C", "Fintech"],
     sections: [
       {
         title: "— Concept",
@@ -174,7 +174,7 @@ export const CASES_EN: Record<string, CaseStudy> = {
     slug: "crypto",
     title: "Crypto Broker",
     description: "Designed key flows for buying, exchanging and storing digital assets inside a banking ecosystem.",
-    tags: ["B2C", "Fintech"],
+    tags: ["2025", "B2C", "Fintech"],
     sections: [
       {
         title: "— Product logic",
@@ -192,7 +192,7 @@ export const CASES_EN: Record<string, CaseStudy> = {
     slug: "tender",
     title: "Tenders",
     description: "Designed a B2B service for working with public procurement tenders.",
-    tags: ["B2B"],
+    tags: ["2023","B2B"],
     sections: [
       {
         title: "— Service structure",
@@ -210,7 +210,7 @@ export const CASES_EN: Record<string, CaseStudy> = {
     slug: "seamm",
     title: "Seamm",
     description: "Designed a Product Details screen for a digital fashion startup.",
-    tags: ["B2C"],
+    tags: ["2024", "B2C", "E-commerce", "Gambling", "Geo"],
     sections: [
       {
         title: "— Product details",
@@ -234,7 +234,7 @@ export const CASES_EN: Record<string, CaseStudy> = {
     title: "ITMO",
     layout: "vertical",
     description: "Led a design team working on the redesign of ITMO’s continuing education website.",
-    tags: ["B2C", "Education"],
+    tags: ["2024", "B2C", "Education"],
     sections: [
       {
         title: "— Design leadership",
@@ -252,7 +252,7 @@ export const CASES_EN: Record<string, CaseStudy> = {
     slug: "vk",
     title: "Mail.ru",
     description: "Worked on a redesigned Mail.ru email experience.",
-    tags: ["B2C"],
+    tags: ["2024", "B2C"],
     sections: [
       {
         title: "— Redesign",
@@ -272,7 +272,7 @@ export const CASES_EN: Record<string, CaseStudy> = {
     slug: "casino",
     title: "Casino NDA",
     description: "Designed onboarding and first-game scenarios for an online gaming product.",
-    tags: ["B2C", "NDA"],
+    tags: ["2023", "B2C", "NDA", "Onbording", "Profile"],
     sections: [
       {
         title: "— First user experience",
