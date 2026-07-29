@@ -2,7 +2,7 @@
 
 import SlotLoader from "./components/SlotLoader";
 import { animate, motion, useMotionValue } from "framer-motion";
-import { FolderOpen, List } from "lucide-react";
+import { FolderOpen, List, Play } from "lucide-react";
 import { useEffect, useState } from "react";
 
 
@@ -112,7 +112,7 @@ const T = {
     switchLang: "Switch to English",
   },
   en: {
-    name: "Arina Bykovskaya",
+    name: "Arina Bykovskaia",
     role: "Product Designer",
     description: "I design complex B2B/B2C products: simplify user flows and help interfaces work for metrics",
     worked: "Worked here",
@@ -128,14 +128,14 @@ const PREVIEW_ASSETS: Record<CollectionYear, string[]> = {
   "2023": ["/case-previews/2023/1.png", "/case-previews/2023/2.png"],
   "2024": ["/case-previews/2024/1.png", "/case-previews/2024/2.png", "/case-previews/2024/3.png"],
   "2025": ["/case-previews/2025/1.png", "/case-previews/2025/2.png", "/case-previews/2025/3.png"],
-  "2026": ["/case-previews/2026/1.png", "/case-previews/2026/2.png", "/case-previews/2026/3.png"],
+  "2026": ["/case-previews/2026/1.png", "/case-previews/2026/2.png", "/case-previews/2026/3.png", "/case-previews/2026/4.png",],
 };
 
 const PREVIEW_LINKS: Record<CollectionYear, string[]> = {
   "2023": ["/cases/casino", "/cases/tender"],
   "2024": ["/cases/seamm", "/cases/itmo", "/cases/vk"],
   "2025": ["/cases/crypto", "/cases/ozon-tech", "/cases/vtb"],
-  "2026": ["/cases/otr", "/cases/pragmatica-vk", "/cases/petrix"],
+  "2026": ["/cases/otr", "/cases/pragmatica-vk", "/cases/petrix", "/cases/indrive",],
 };
 
 const DESKTOP_CASES: Record<
@@ -173,6 +173,14 @@ const DESKTOP_CASES: Record<
       },
       href: "/cases/petrix",
       color: "#E774BF",
+    },
+    {
+      title: {
+        ru: "inDrive Delivery",
+        en: "inDrive Delivery",
+      },
+      href: "/cases/indrive",
+      color: "#B6FF00",
     },
   ],
   "2025": [
@@ -244,7 +252,7 @@ const DESKTOP_CASES: Record<
       href: "/cases/casino",
       color: "#99A5FC",
     },
-  ], 
+  ],
 };
 const ROULETTE_CASES = [
   {
@@ -302,6 +310,12 @@ const ROULETTE_CASES = [
     title: "Tender B2B",
     href: "/cases/tender",
     logo: "/logo/tender.svg",
+  },
+  {
+    id: "indrive",
+    title: "inDrive Delivery",
+    href: "/cases/indrive",
+    logo: "/logo/indrive.svg",
   },
 ] as const;
 
@@ -1060,52 +1074,83 @@ function FolderPreviews({
         },
       ]
       : year === "2024"
-        ? [
-          {
-            x: isHovered ? -136 : -42,
-            rotate: isHovered ? 0 : -7,
-            y: isHovered ? -40 : 46,
-            width: isHovered ? 64 : 68,
-            scale: isHovered ? 1.18 : 1,
-          },
-          {
-            x: 0,
-            rotate: 0,
-            y: isHovered ? -40 : 36,
-            width: isHovered ? 118 : 108,
-            scale: isHovered ? 1.5 : 1,
-          },
-          {
-            x: isHovered ? 136 : 42,
-            rotate: isHovered ? 0 : 7,
-            y: isHovered ? -40 : 46,
-            width: isHovered ? 64 : 68,
-            scale: isHovered ? 1.18 : 1,
-          },
-        ]
-        : [
-          {
-            x: isHovered ? -118 : -42,
-            rotate: isHovered ? 0 : -7,
-            y: isHovered ? -40 : 46,
-            width: isHovered ? 76 : 72,
-            scale: isHovered ? 1.18 : 1,
-          },
-          {
-            x: 0,
-            rotate: 0,
-            y: isHovered ? -40 : 36,
-            width: isHovered ? 76 : 72,
-            scale: isHovered ? 1.18 : 1,
-          },
-          {
-            x: isHovered ? 118 : 42,
-            rotate: isHovered ? 0 : 7,
-            y: isHovered ? -40 : 46,
-            width: isHovered ? 76 : 72,
-            scale: isHovered ? 1.18 : 1,
-          },
-        ];
+  ? [
+      {
+        x: isHovered ? -136 : -42,
+        rotate: isHovered ? 0 : -7,
+        y: isHovered ? -40 : 46,
+        width: isHovered ? 64 : 68,
+        scale: isHovered ? 1.18 : 1,
+      },
+      {
+        x: 0,
+        rotate: 0,
+        y: isHovered ? -40 : 36,
+        width: isHovered ? 118 : 108,
+        scale: isHovered ? 1.5 : 1,
+      },
+      {
+        x: isHovered ? 136 : 42,
+        rotate: isHovered ? 0 : 7,
+        y: isHovered ? -40 : 46,
+        width: isHovered ? 64 : 68,
+        scale: isHovered ? 1.18 : 1,
+      },
+    ]
+    : year === "2026"
+    ? [
+        {
+          x: isHovered ? -150 : -48,
+          rotate: isHovered ? 0 : -9,
+          y: isHovered ? -40 : 48,
+          width: isHovered ? 64 : 66,
+          scale: isHovered ? 1.12 : 1,
+        },
+        {
+          x: isHovered ? -50 : -16,
+          rotate: isHovered ? 0 : -3,
+          y: isHovered ? -40 : 38,
+          width: isHovered ? 64 : 70,
+          scale: isHovered ? 1.12 : 1,
+        },
+        {
+          x: isHovered ? 50 : 16,
+          rotate: isHovered ? 0 : 3,
+          y: isHovered ? -40 : 38,
+          width: isHovered ? 64 : 70,
+          scale: isHovered ? 1.12 : 1,
+        },
+        {
+          x: isHovered ? 150 : 48,
+          rotate: isHovered ? 0 : 9,
+          y: isHovered ? -40 : 48,
+          width: isHovered ? 64 : 66,
+          scale: isHovered ? 1.12 : 1,
+        },
+      ]
+    : [
+        {
+          x: isHovered ? -118 : -42,
+          rotate: isHovered ? 0 : -7,
+          y: isHovered ? -40 : 46,
+          width: isHovered ? 76 : 72,
+          scale: isHovered ? 1.18 : 1,
+        },
+        {
+          x: 0,
+          rotate: 0,
+          y: isHovered ? -40 : 36,
+          width: isHovered ? 76 : 72,
+          scale: isHovered ? 1.18 : 1,
+        },
+        {
+          x: isHovered ? 118 : 42,
+          rotate: isHovered ? 0 : 7,
+          y: isHovered ? -40 : 46,
+          width: isHovered ? 76 : 72,
+          scale: isHovered ? 1.18 : 1,
+        },
+      ];
 
 
   return (
@@ -1797,6 +1842,32 @@ export default function Home() {
               </LiquidGlass>
             </motion.button>
 
+            <motion.a
+              href="/game"
+              aria-label={lang === "ru" ? "Играть" : "Play game"}
+              className="pointer-events-auto block text-white"
+              style={{
+                width: 52,
+                height: 52,
+                textDecoration: "none",
+              }}
+              whileHover={isNarrow ? undefined : { scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              <LiquidGlass
+                className="relative flex h-full w-full items-center justify-center rounded-full"
+                style={{
+                  borderRadius: 999,
+                }}
+              >
+                <Play
+                  className="relative z-[1] size-[23px]"
+                  strokeWidth={1.8}
+                  fill="none"
+                />
+              </LiquidGlass>
+            </motion.a>
+
             <motion.button
               type="button"
               aria-label={
@@ -1967,7 +2038,7 @@ export default function Home() {
                 >
                   <img
                     src="/profile/arina.jpg"
-                    alt="Arina Bykovskaya"
+                    alt="Arina Bykovskaia"
                     className="h-full w-full object-cover"
                     draggable={false}
                   />

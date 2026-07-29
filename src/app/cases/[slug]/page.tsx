@@ -3,7 +3,17 @@
 import { AnimatePresence, motion } from "framer-motion";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { use, useEffect, useMemo, useState } from "react";
+import {
+  use,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type WheelEvent,
+} from "react";
+import LiquidGlass from "../../components/LiquidGlass";
+import { House, Send } from "lucide-react";
+
 
 const ease = [0.22, 1, 0.36, 1] as const;
 type Lang = "ru" | "en";
@@ -18,20 +28,20 @@ export type CaseImageVariant = "regular" | "wide";
 export type CaseImageEntry =
   | string
   | {
-      src: string;
-      variant?: CaseImageVariant;
-    };
+    src: string;
+    variant?: CaseImageVariant;
+  };
 
 export type CaseLayout = "default" | "vertical";
 
 export type CaseStudy = {
-    slug: string;
-    title: string;
-    description: string;
-    tags: string[];
-    sections: CaseSection[];
-    images: CaseImageEntry[];
-    layout?: CaseLayout;
+  slug: string;
+  title: string;
+  description: string;
+  tags: string[];
+  sections: CaseSection[];
+  images: CaseImageEntry[];
+  layout?: CaseLayout;
 };
 
 const CASE_IMAGES = {
@@ -68,6 +78,41 @@ const CASE_IMAGES = {
     { src: "/cases/ozon-tech/7.png", variant: "regular" },
     { src: "/cases/ozon-tech/8.png", variant: "regular" },
     { src: "/cases/ozon-tech/9.png", variant: "regular" },
+  ] satisfies CaseImageEntry[],
+
+  petrix: [
+    { src: "/cases/petrix/1.mp4", variant: "wide" },
+    { src: "/cases/petrix/2.mp4", variant: "wide" },
+    { src: "/cases/petrix/3.mp4", variant: "wide" },
+    { src: "/cases/petrix/0.png", variant: "wide" },
+    { src: "/cases/petrix/4.mp4", variant: "wide" },
+    { src: "/cases/petrix/5.mp4", variant: "wide" },
+    { src: "/cases/petrix/14.png", variant: "wide" },
+    { src: "/cases/petrix/15.png", variant: "wide" },
+    { src: "/cases/petrix/16.png", variant: "wide" },
+    { src: "/cases/petrix/17.png", variant: "wide" },
+    { src: "/cases/petrix/18.png", variant: "wide" },
+    { src: "/cases/petrix/6.mp4", variant: "wide" },
+    { src: "/cases/petrix/7.png", variant: "wide" },
+    { src: "/cases/petrix/8.png", variant: "wide" },
+    { src: "/cases/petrix/9.png", variant: "wide" },
+    { src: "/cases/petrix/10.png", variant: "wide" },
+    { src: "/cases/petrix/11.png", variant: "wide" },
+    { src: "/cases/petrix/12.png", variant: "wide" },
+    { src: "/cases/petrix/13.png", variant: "wide" },
+    { src: "/cases/petrix/19.png", variant: "wide" },
+  ] satisfies CaseImageEntry[],
+
+  indrive: [
+    { src: "/cases/indrive/0.png", variant: "wide" },
+    { src: "/cases/indrive/1.png", variant: "wide" },
+    { src: "/cases/indrive/2.png", variant: "wide" },
+    { src: "/cases/indrive/3.png", variant: "wide" },
+    { src: "/cases/indrive/4.png", variant: "wide" },
+    { src: "/cases/indrive/5.png", variant: "wide" },
+    { src: "/cases/indrive/6.png", variant: "wide" },
+    { src: "/cases/indrive/7.png", variant: "wide" },
+
   ] satisfies CaseImageEntry[],
 };
 
@@ -148,7 +193,73 @@ export const CASES_EN: Record<string, CaseStudy> = {
           "Contributed to improving the pickup point selection scenario on the map. Worked on list readability, geodata logic and navigation between the map and pickup point cards.",
       },
     ],
-    images: CASE_IMAGES.ozonTech, 
+    images: CASE_IMAGES.ozonTech,
+  },
+  "petrix": {
+    slug: "petrix",
+    title: "Petrix",
+    description:
+      "Designed a digital service for monitoring pets’ health indicators and activity using smart devices.",
+    tags: ["2026", "PetTech", "B2C", "Study", "AI"],
+    sections: [
+      {
+        title: "— Context",
+        text:
+          "Pet owners receive a large amount of fragmented information about their pet’s health and activity. The goal was to bring data from smart devices into one clear and accessible product.",
+      },
+      {
+        title: "— Research",
+        text:
+          "Studied pet owners’ routines, concerns and expectations from health monitoring products. Defined the most important indicators, recurring scenarios and moments when the product should draw attention to changes.",
+      },
+      {
+        title: "— Product solution",
+        text:
+          "The developed interface helps users understand the data without requiring special medical knowledge. Additionally, there is functionality with a veterinarian and AI. ",
+      },
+      {
+        title: "— Result",
+        text:
+          "Created a scalable mobile product concept that combines monitoring, interpretation and recommendations in one experience. The solution supports multiple pets and different types of smart devices.",
+      },
+    ],
+    images: CASE_IMAGES.petrix,
+  },
+
+  "indrive": {
+    slug: "indrive",
+    title: "InDrive Delivery",
+    description:
+      "Redesigned the courier delivery order flow to make order creation clearer, faster and more scalable.",
+    tags: ["2026", "Delivery", "B2C", "Test"],
+    sections: [
+      {
+        title: "— Problem",
+        text:
+          "Users frequently dropped off after entering pickup and destination addresses. The existing flow did not clearly distinguish required information from optional details and became harder to scale as new delivery features were added.",
+      },
+      {
+        title: "— Research",
+        text:
+          "Analyzed the existing journey, competitor products and user concerns related to delivery. Conducted surveys and identified key barriers: uncertainty about mandatory fields, delivery price, courier type and order status.",
+      },
+      {
+        title: "— Hypothesis",
+        text:
+          "A clearer order structure, visible progress and separation of basic and additional details could reduce cognitive load and help more users reach courier matching.",
+      },
+      {
+        title: "— Solution",
+        text:
+          "Redesigned the order form around addresses, delivery time, package details, recipient information, courier selection and price. Added a review step and prepared the flow for scheduled delivery and delivery protection.",
+      },
+      {
+        title: "— Metrics",
+        text:
+          "The proposed solution can be evaluated through order completion rate, share of users reaching courier matching, time to create an order, cancellation rate and support contact rate.",
+      },
+    ],
+    images: CASE_IMAGES.indrive,
   },
 
   "vtb": {
@@ -192,7 +303,7 @@ export const CASES_EN: Record<string, CaseStudy> = {
     slug: "tender",
     title: "Tenders",
     description: "Designed a B2B service for working with public procurement tenders.",
-    tags: ["2023","B2B"],
+    tags: ["2023", "B2B"],
     sections: [
       {
         title: "— Service structure",
@@ -324,19 +435,19 @@ function CollapsibleWhatIDidCard({
   sections: CaseSection[];
   lang: Lang;
 }) {
-    const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(false);
 
   return (
     <div
-  className="flex w-full min-h-0 shrink flex-col"
-  style={{
-    maxWidth: 428,
-    gap: 16,
-    borderRadius: 36,
-    background: "#FFFFFF",
-    padding: 28,
-    maxHeight: "100%",
-  }}
+      className="flex w-full min-h-0 shrink flex-col"
+      style={{
+        maxWidth: 428,
+        gap: 16,
+        borderRadius: 36,
+        background: "#FFFFFF",
+        padding: 28,
+        maxHeight: "100%",
+      }}
 
     >
       <button
@@ -360,17 +471,17 @@ function CollapsibleWhatIDidCard({
       <AnimatePresence initial={false}>
         {open ? (
           <motion.div
-          key="sections"
-          initial={{ height: 0, opacity: 0 }}
-          animate={{ height: "auto", opacity: 1 }}
-          exit={{ height: 0, opacity: 0 }}
-          transition={{ duration: 0.4, ease }}
-          className="min-h-0 overflow-y-auto [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
-          style={{
-            maxHeight: "calc(100vh - 400px)",
-            paddingBottom: 56,
-          }}
-        >
+            key="sections"
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: "auto", opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.4, ease }}
+            className="min-h-0 overflow-y-auto [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
+            style={{
+              maxHeight: "calc(100vh - 400px)",
+              paddingBottom: 56,
+            }}
+          >
             <div style={{ gap: 24 }} className="flex flex-col pb-px pt-px">
               {sections.map((s, i) => (
                 <div key={i} className="flex flex-col gap-2">
@@ -410,10 +521,34 @@ export default function CasePage({ params }: { params: Promise<{ slug: string }>
   }, [slug, lang]);
 
   if (!data) {
-  notFound();
+    notFound();
   }
 
+  const images = data.images ?? [];
+
   const isVerticalCase = slug === "itmo" || data.layout === "vertical";
+
+  const screenshotsRef = useRef<HTMLDivElement>(null);
+
+  const handleMouseWheel = (event: WheelEvent<HTMLDivElement>) => {
+    if (isVerticalCase) return;
+
+    // deltaMode === 0 — обычно тачпад / плавный pixel-scroll.
+    // Его вообще не трогаем.
+    if (event.deltaMode === 0) return;
+
+    const container = screenshotsRef.current;
+
+    if (!container) return;
+    if (container.scrollWidth <= container.clientWidth) return;
+
+    event.preventDefault();
+
+    container.scrollBy({
+      left: event.deltaY * 24,
+      behavior: "smooth",
+    });
+  };
 
   return (
     <main
@@ -428,17 +563,17 @@ export default function CasePage({ params }: { params: Promise<{ slug: string }>
           style={{ borderRadius: 44, padding: 4 }}
         >
           <div
-  className="relative flex min-h-0 shrink-0 flex-col justify-between overflow-hidden lg:h-full"
-style={{
-    width: "100%",
-    maxWidth: 436,
-    minHeight: 792,
-    flex: "1 1 auto",
-    borderRadius: 40,
-    background: "rgba(255,255,255,0.1)",
-    padding: "28px 4px 4px",
-  }}
->
+            className="relative flex min-h-0 shrink-0 flex-col justify-between overflow-hidden lg:h-full"
+            style={{
+              width: "100%",
+              maxWidth: 436,
+              minHeight: 792,
+              flex: "1 1 auto",
+              borderRadius: 40,
+              background: "rgba(255,255,255,0.1)",
+              padding: "28px 4px 4px",
+            }}
+          >
             <Link
               href="/"
               aria-label={lang === "ru" ? "Вернуться на главную" : "Back to home"}
@@ -454,7 +589,7 @@ style={{
                 {data.description}
               </p>
               <div className="flex flex-wrap justify-center gap-2 px-2">
-              {data.tags.map((t: string) => (
+                {data.tags.map((t: string) => (
                   <span
                     key={t}
                     className="rounded-[100px] font-normal text-white"
@@ -472,24 +607,31 @@ style={{
             </div>
 
             <div className="relative z-[2] flex w-full flex-col items-center px-px pb-[2px]">
-            <CollapsibleWhatIDidCard sections={data.sections} lang={lang} />
+              <CollapsibleWhatIDidCard sections={data.sections} lang={lang} />
             </div>
           </div>
         </section>
 
         <section className="flex w-full min-w-0 flex-col overflow-hidden lg:h-full lg:min-h-0 lg:flex-1">
-  <div
-    role="region"
-    aria-label="Screenshots"
-    className={
-      isVerticalCase
-        ? "flex h-full min-h-0 w-full min-w-0 flex-col items-stretch gap-4 overflow-y-auto overflow-x-hidden pb-2 pt-2 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
-        : "flex h-[94dvh] min-h-[546px] w-full min-w-0 snap-x snap-mandatory flex-row flex-nowrap items-end justify-start gap-2 overflow-x-auto overflow-y-hidden px-0 pb-2 pt-4 [scrollbar-width:none] [-ms-overflow-style:none] [-webkit-overflow-scrolling:touch] touch-pan-x [&::-webkit-scrollbar]:hidden lg:h-full lg:min-h-0 lg:pt-11"
-    }
-  >
-            {data.images.map((raw: CaseImageEntry, idx: number) => {
+          <div
+            ref={screenshotsRef}
+            onWheel={handleMouseWheel}
+            role="region"
+            aria-label="Screenshots"
+            className={
+              isVerticalCase
+                ? "flex h-full min-h-0 w-full min-w-0 flex-col items-stretch gap-4 overflow-y-auto overflow-x-hidden pb-2 pt-2 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
+                : "flex h-[94dvh] min-h-[546px] w-full min-w-0 snap-x snap-mandatory flex-row flex-nowrap items-end justify-start gap-2 overflow-x-auto overflow-y-hidden px-0 pb-2 pt-4 [scrollbar-width:none] [-ms-overflow-style:none] [-webkit-overflow-scrolling:touch] touch-pan-x [&::-webkit-scrollbar]:hidden lg:h-full lg:min-h-0 lg:pt-11"
+            }
+          >
+            {images.map((raw: CaseImageEntry, idx: number) => {
               const { src, variant } = normalizedCaseImage(raw);
               const isWide = variant === "wide";
+
+              const isVideo =
+                src.endsWith(".mp4") ||
+                src.endsWith(".webm") ||
+                src.endsWith(".mov");
 
               return (
                 <figure
@@ -505,58 +647,138 @@ style={{
                   }
                 >
                   {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src={src}
-                    alt={`${data.title} — скриншот ${idx + 1}`}
-                    width={isWide ? 1640 : 344}
-                    height={isWide ? 720 : 748}
-                    className={
-                      isWide
-                        ? isVerticalCase
-                          ? "m-0 h-auto w-full rounded-none bg-transparent object-contain"
-                          : "m-0 h-full w-auto max-w-none rounded-[40px] bg-transparent object-contain"
-                        : isVerticalCase
-                          ? "h-auto w-full rounded-[40px] object-cover"
-                          : "h-full w-auto max-w-none rounded-[40px] object-contain"
-                    }
-                    loading={idx === 0 ? "eager" : "lazy"}
-                    draggable={false}
-                  />
+                  {isVideo ? (
+                    <video
+                      src={src}
+                      aria-label={`${data.title} — видео ${idx + 1}`}
+                      autoPlay
+                      muted
+                      loop
+                      playsInline
+                      preload="metadata"
+                      draggable={false}
+                      className={
+                        isWide
+                          ? isVerticalCase
+                            ? "m-0 h-auto w-full rounded-none bg-transparent object-contain"
+                            : "m-0 h-full w-auto max-w-none rounded-[40px] bg-transparent object-contain"
+                          : isVerticalCase
+                            ? "h-auto w-full rounded-[40px] object-cover"
+                            : "h-full w-auto max-w-none rounded-[40px] object-contain"
+                      }
+                    />
+                  ) : (
+                    <img
+                      src={src}
+                      alt={`${data.title} — скриншот ${idx + 1}`}
+                      width={isWide ? 1640 : 344}
+                      height={isWide ? 720 : 748}
+                      className={
+                        isWide
+                          ? isVerticalCase
+                            ? "m-0 h-auto w-full rounded-none bg-transparent object-contain"
+                            : "m-0 h-full w-auto max-w-none rounded-[40px] bg-transparent object-contain"
+                          : isVerticalCase
+                            ? "h-auto w-full rounded-[40px] object-cover"
+                            : "h-full w-auto max-w-none rounded-[40px] object-contain"
+                      }
+                      loading={idx === 0 ? "eager" : "lazy"}
+                      draggable={false}
+                    />
+                  )}
                 </figure>
               );
             })}
           </div>
         </section>
       </div>
-      <div
-  className="fixed bottom-8 right-8 z-[80] flex items-center gap-3"
->
-  <motion.button
-    type="button"
-    aria-label={lang === "ru" ? "Switch to English" : "Переключить на русский"}
-    className="pointer-events-auto flex items-center justify-center rounded-full text-white"
-    style={{
-      width: 52,
-      height: 52,
-      background: "rgba(217,217,217,0.1)",
-      borderRadius: 100,
-      fontSize: 14,
-      fontWeight: 600,
-      lineHeight: "100%",
-    }}
-    onClick={() => {
-      setLang((current) => {
-        const nextLang = current === "ru" ? "en" : "ru";
-        sessionStorage.setItem("homeLang", nextLang);
-        return nextLang;
-      });
-    }}
-    whileHover={{ scale: 1.05 }}
-    whileTap={{ scale: 0.95 }}
-  >
-    {lang === "ru" ? "EN" : "RU"}
-  </motion.button>
-</div>
+      <div className="fixed bottom-8 right-8 z-[80] flex items-center gap-3">
+
+        {/* HOME */}
+        <motion.div
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+        >
+          <Link href="/">
+            <LiquidGlass
+              className="flex items-center justify-center rounded-full text-white"
+              style={{
+                width: 52,
+                height: 52,
+                borderRadius: 999,
+                background: "rgba(15,15,15,.52)",
+                border: "1px solid rgba(255,255,255,.28)",
+              }}
+            >
+              <House size={22} strokeWidth={2} />
+            </LiquidGlass>
+          </Link>
+        </motion.div>
+
+        {/* TELEGRAM */}
+        <motion.a
+          href="https://t.me/xaptfy"
+          target="_blank"
+          rel="noopener noreferrer"
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+        >
+          <LiquidGlass
+            className="flex items-center justify-center rounded-full text-white"
+            style={{
+              width: 52,
+              height: 52,
+              borderRadius: 999,
+              background: "rgba(15,15,15,.52)",
+              border: "1px solid rgba(255,255,255,.28)",
+            }}
+          >
+            <img
+              src="/icons/telegram.svg"
+              alt="Telegram"
+              width={22}
+              height={22}
+            />
+          </LiquidGlass>
+        </motion.a>
+
+        {/* LANGUAGE */}
+        <motion.button
+          type="button"
+          aria-label={
+            lang === "ru"
+              ? "Switch to English"
+              : "Переключить на русский"
+          }
+          className="pointer-events-auto"
+          onClick={() => {
+            setLang((current) => {
+              const nextLang = current === "ru" ? "en" : "ru";
+              sessionStorage.setItem("homeLang", nextLang);
+              return nextLang;
+            });
+          }}
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+        >
+          <LiquidGlass
+            className="flex items-center justify-center rounded-full text-white"
+            style={{
+              width: 52,
+              height: 52,
+              borderRadius: 999,
+              fontSize: 14,
+              fontWeight: 600,
+              lineHeight: "100%",
+              background: "rgba(15,15,15,.52)",
+              border: "1px solid rgba(255,255,255,.28)",
+            }}
+          >
+            {lang === "ru" ? "EN" : "RU"}
+          </LiquidGlass>
+        </motion.button>
+
+      </div>
     </main>
   );
 }
