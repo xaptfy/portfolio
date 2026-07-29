@@ -1,6 +1,6 @@
 "use client";
 
-import { AnimatePresence, motion } from "framer-motion";
+import { motion } from "framer-motion";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import {
@@ -200,7 +200,7 @@ export const CASES_EN: Record<string, CaseStudy> = {
     slug: "ozon-tech",
     title: "Ozon Tech",
     description:
-      "Worked as a product designer in the Checkout team: designed order placement flows, geoservices and adjacent product scenarios. Contributed to large visual updates, improved user flows and supported solutions through development.",
+      "Worked as a Product Designer in the Checkout team, designing order placement, geolocation and adjacent customer scenarios across several platforms.",
     tags: ["2025", "E-commerce", "B2C", "Checkout", "Geo"],
     sections: [
       {
@@ -291,12 +291,12 @@ export const CASES_EN: Record<string, CaseStudy> = {
   "vtb": {
     slug: "vtb",
     title: "VTB",
-    description: "Designed a family finance concept for a banking product.",
+    description: "Designed a family finance concept that connects shared accounts, child profiles, savings goals and cashback within one banking experience.",
     tags: ["2025", "B2C", "Fintech"],
     sections: [
       {
         title: "— Problem",
-        text: "Traditional banking products are designed for individuals, while family finances involve several people, roles and access levels. Users may not always understand who owns the money, who can spend it and which information is shared. At the same time, family accounts, child profiles, savings goals and cashback often exist as disconnected features.",
+        text: "Traditional banking products are designed for individuals, while family finances involve several people, roles and access levels. Users may not understand who owns the money, who can spend it and which information is shared.",
       },
       {
         title: "— Goal",
@@ -304,19 +304,19 @@ export const CASES_EN: Record<string, CaseStudy> = {
       },
       {
         title: "— Solution",
-        text: "I connected family accounts, child profiles, savings goals and cashback into one consistent system. I separated personal and shared money, made permissions visible before users confirmed important actions and designed different access models for adults and children.",
+        text: "I connected previously separate family features into one system, separated personal and shared money and designed different access models for adults and children.",
       },
       {
         title: "— Key decisions",
-        text: "Family membership does not automatically provide access to personal money. Permissions are explained within the relevant scenario rather than hidden in settings. The child profile uses a separate control model instead of copying an adult account, while shared goals show individual contributions without exposing unrelated personal finances.",
+        text: "Family membership does not automatically provide access to personal funds. Permissions and consequences are explained within the relevant scenario, while shared goals remain transparent without exposing unrelated personal finances.",
       },
       {
         title: "— Target metrics",
-        text: "The concept was designed to improve family-group creation conversion, invitation acceptance, activation of family products and usage of shared goals and child accounts. Another target was to reduce support requests related to access and ownership.",
+        text: "The concept was designed to improve family-group creation, invitation acceptance, activation of family products and usage of child accounts and shared goals.",
       },
       {
         title: "— Outcome",
-        text: "I transformed isolated family features into one scalable financial ecosystem, created a consistent role-and-permission model and covered the core flows and critical edge cases.",
+        text: "Created a scalable family-banking model with consistent roles and permissions, covering the core financial scenarios and critical edge cases.",
       },
     ],
     images: [
@@ -348,12 +348,28 @@ export const CASES_EN: Record<string, CaseStudy> = {
   "tender": {
     slug: "tender",
     title: "Tenders",
-    description: "Designed a B2B service for working with public procurement tenders.",
+    description: "Designed a B2B platform that helps companies search, evaluate and manage public procurement tenders within one workflow.",
     tags: ["2023", "B2B"],
     sections: [
       {
-        title: "— Service structure",
-        text: "Designed the core product logic: tender catalog, filters, tender card, statuses, personal account and key work scenarios.",
+        title: "— Problem",
+        text: "Tender platforms contain large amounts of complex information, strict requirements and time-sensitive actions. Users need to quickly understand whether a tender is relevant, assess the risks and coordinate the application process.",
+      },
+      {
+        title: "— Solution",
+        text: "I structured the tender workflow around the main business tasks: search and filtering, tender evaluation, document review, deadline tracking and application management.",
+      },
+      {
+        title: "— Key decisions",
+        text: "I prioritised decision-critical information, reduced unnecessary navigation and designed the interface to support dense data without losing hierarchy or readability.",
+      },
+      {
+        title: "— Target metrics",
+        text: "The redesign was intended to reduce the time required to find and evaluate a relevant tender, increase conversion to application and lower the number of missed deadlines and incomplete submissions.",
+      },
+      {
+        title: "— Outcome",
+        text: "Created an end-to-end B2B workflow that turns fragmented procurement information into a clearer and more manageable process.",
       },
     ],
     images: [
@@ -481,7 +497,6 @@ function CollapsibleWhatIDidCard({
   sections: CaseSection[];
   lang: Lang;
 }) {
-  const [open, setOpen] = useState(false);
 
   return (
     <div
@@ -496,58 +511,39 @@ function CollapsibleWhatIDidCard({
       }}
 
     >
-      <button
-        type="button"
-        className="flex w-full cursor-pointer items-center justify-between gap-4 text-left"
-        aria-expanded={open}
-        style={{ padding: 0, border: "none", background: "transparent" }}
-        onClick={() => setOpen((p) => !p)}
+      <div
+        className="min-h-0 overflow-y-auto [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
+        style={{
+          maxHeight: "calc(100vh - 400px)",
+          paddingBottom: 56,
+        }}
       >
-        <span
-          className="font-medium text-[#0F0F0F]"
-          style={{ fontSize: 24, lineHeight: "130%", fontWeight: 500 }}
-        >
-          {lang === "ru" ? "Что сделала?" : "What I did"}
-        </span>
-        <span className="text-xl font-medium leading-none text-[#0F0F0F]" aria-hidden>
-          {open ? "−" : "+"}
-        </span>
-      </button>
+        <div style={{ gap: 24 }} className="flex flex-col pb-px pt-px">
+          {sections.map((s, i) => (
+            <div key={i} className="flex flex-col gap-2">
+              <p
+                className="font-medium text-[#0F0F0F]"
+                style={{ fontSize: 20, lineHeight: "130%" }}
+              >
+                {s.title}
+              </p>
 
-      <AnimatePresence initial={false}>
-        {open ? (
-          <motion.div
-            key="sections"
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: "auto", opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.4, ease }}
-            className="min-h-0 overflow-y-auto [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
-            style={{
-              maxHeight: "calc(100vh - 400px)",
-              paddingBottom: 56,
-            }}
-          >
-            <div style={{ gap: 24 }} className="flex flex-col pb-px pt-px">
-              {sections.map((s, i) => (
-                <div key={i} className="flex flex-col gap-2">
-                  <p className="font-medium text-[#0F0F0F]" style={{ fontSize: 20, lineHeight: "130%" }}>
-                    {s.title}
-                  </p>
-                  {s.subtitle ? (
-                    <p className="font-medium text-[#0F0F0F]" style={{ fontSize: 18, lineHeight: "130%" }}>
-                      {s.subtitle}
-                    </p>
-                  ) : null}
-                  <p className="font-medium" style={{ fontSize: 18, lineHeight: "130%", color: "rgba(14, 14, 14, 0.5)", fontWeight: 400, }}>
-                    {s.text}
-                  </p>
-                </div>
-              ))}
+              <p
+                className="font-medium"
+                style={{
+                  fontSize: 18,
+                  lineHeight: "130%",
+                  color: "rgba(14,14,14,.5)",
+                  fontWeight: 400,
+                }}
+              >
+                {s.text}
+              </p>
             </div>
-          </motion.div>
-        ) : null}
-      </AnimatePresence>
+          ))}
+        </div>
+      </div>
+
     </div>
   );
 }
