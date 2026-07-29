@@ -14,12 +14,12 @@ import {
 import LiquidGlass from "../../components/LiquidGlass";
 import { House, Send } from "lucide-react";
 
-
 const ease = [0.22, 1, 0.36, 1] as const;
 type Lang = "ru" | "en";
 
 export type CaseSection = {
   title: string;
+  subtitle?: string;
   text: string;
 };
 
@@ -153,18 +153,44 @@ export const CASES_EN: Record<string, CaseStudy> = {
     slug: "pragmatica-vk",
     title: "Pragmatica × VK",
     description:
-      "Took part in the Pragmatica × VK design camp: worked on two product cases in sprint format — from concept and presentation to iterations based on mentor feedback.",
-    tags: ["2026", "Camp", "B2C"],
+      "During the Pragmatica × VK product sprint, I redesigned two existing products: a music streaming service and a social platform for pet owners.",
+    tags: ["2026", "Concept", "B2C"],
     sections: [
       {
-        title: "— VK Pets",
+        title: "— Problem",
         text:
-          "Redesigned 4 key screens of the VK Pets section: reworked the structure, visual language and user scenarios to make the service feel more consistent within the VK ecosystem.",
+          "The existing products solved core user needs but offered few new reasons to return. Content scenarios were functional but lacked connection and personalization. The challenge was to increase engagement without making familiar actions more complex.",
       },
       {
-        title: "— Music Player Through Eras",
+        title: "— Goal",
         text:
-          "Designed a mini app that brings the aesthetics of vinyl, cassette players and iPod Classic into a modern interface. The concept preserves the emotional feel of retro devices while using familiar contemporary UI patterns.",
+          "Encourage deeper content discovery and repeat usage. Introduce new emotional and practical use cases. Create product mechanics that could improve engagement and retention.",
+      },
+      {
+        title: "— Solution",
+        subtitle: "Music service",
+        text:
+          "Connected recommendations, personal collections and playback into one continuous flow. Added contextual selections and quick access to artists, the queue and related content. Strengthened the visual identity while preserving familiar listening mechanics.",
+      },
+      {
+        subtitle: "Platform for pet owners",
+        text: "Separated the owner account from individual pet profiles. Added support for multiple pets and shared-care scenarios. Combined social content, useful recommendations and connections between pet profiles.",
+        title: ""
+      },
+      {
+        title: "— Key decisions",
+        subtitle: "",
+        text: "Preserved familiar core actions while expanding the scenarios around them. Used personalization as the foundation for content discovery. Connected emotional engagement with practical product value. Designed both concepts to support further development without rebuilding the core architecture."
+      },
+      {
+        title: "— Target metrics",
+        subtitle: "",
+        text: "Conversion from content views to target actions. Average session duration and depth. Number of saves, follows and social interactions. Seven-day and thirty-day retention."
+      },
+      {
+        title: "— Outcome",
+        subtitle: "",
+        text: "Developed two end-to-end redesign concepts for existing products. Designed the key user flows and interactive prototypes. Refined the solutions based on expert feedback. Defined product hypotheses and metrics for further validation."
       },
     ],
     images: CASE_IMAGES.pragmaticaVk,
@@ -269,8 +295,28 @@ export const CASES_EN: Record<string, CaseStudy> = {
     tags: ["2025", "B2C", "Fintech"],
     sections: [
       {
-        title: "— Concept",
-        text: "Worked on family account scenarios, shared goals, child profile and cashback category selection inside a banking app.",
+        title: "— Problem",
+        text: "Traditional banking products are designed for individuals, while family finances involve several people, roles and access levels. Users may not always understand who owns the money, who can spend it and which information is shared. At the same time, family accounts, child profiles, savings goals and cashback often exist as disconnected features.",
+      },
+      {
+        title: "— Goal",
+        text: "The goal was to make shared finances more transparent and predictable, increase adoption of family products and reduce confusion around roles, permissions and ownership.",
+      },
+      {
+        title: "— Solution",
+        text: "I connected family accounts, child profiles, savings goals and cashback into one consistent system. I separated personal and shared money, made permissions visible before users confirmed important actions and designed different access models for adults and children.",
+      },
+      {
+        title: "— Key decisions",
+        text: "Family membership does not automatically provide access to personal money. Permissions are explained within the relevant scenario rather than hidden in settings. The child profile uses a separate control model instead of copying an adult account, while shared goals show individual contributions without exposing unrelated personal finances.",
+      },
+      {
+        title: "— Target metrics",
+        text: "The concept was designed to improve family-group creation conversion, invitation acceptance, activation of family products and usage of shared goals and child accounts. Another target was to reduce support requests related to access and ownership.",
+      },
+      {
+        title: "— Outcome",
+        text: "I transformed isolated family features into one scalable financial ecosystem, created a consistent role-and-permission model and covered the core flows and critical edge cases.",
       },
     ],
     images: [
@@ -488,6 +534,11 @@ function CollapsibleWhatIDidCard({
                   <p className="font-medium text-[#0F0F0F]" style={{ fontSize: 20, lineHeight: "130%" }}>
                     {s.title}
                   </p>
+                  {s.subtitle ? (
+                    <p className="font-medium text-[#0F0F0F]" style={{ fontSize: 18, lineHeight: "130%" }}>
+                      {s.subtitle}
+                    </p>
+                  ) : null}
                   <p className="font-medium" style={{ fontSize: 18, lineHeight: "130%", color: "rgba(14, 14, 14, 0.5)", fontWeight: 400, }}>
                     {s.text}
                   </p>
