@@ -199,7 +199,7 @@ export const CASES_EN: Record<string, CaseStudy> = {
     slug: "ozon-tech",
     title: "Ozon Tech",
     description:
-      "Worked as a Product Designer in the Checkout team, designing order placement, geolocation and adjacent customer scenarios across several platforms.",
+      "I owned the design of Ozon’s Geo and Checkout domains across iOS, Android, web and mobile web, while also working as a cross-domain product designer and leading end-to-end buyer journeys across multiple teams and product areas — from location selection and delivery setup to checkout and order placement.",
     tags: ["2025", "E-commerce", "B2C", "Checkout", "Geo"],
     sections: [
       {
@@ -208,14 +208,19 @@ export const CASES_EN: Record<string, CaseStudy> = {
           "Adapted around 1,000 checkout and geoservices screens to a new visual system. Updated tokens, forms and components, checked interface consistency and supported implementation during development.",
       },
       {
-        title: "— Tips for pickup point staff",
+        title: "— Geo",
         text:
-          "Worked on the tipping mechanic for pickup point staff inside the user journey. Defined entry points, states, limitations and integration logic within the checkout flow.",
+          "I was the product designer responsible for the Geo domain. I owned location-related experiences across the buyer journey, including address selection and management, delivery locations, pickup points and the integration of Geo scenarios into Checkout.",
       },
       {
-        title: "— Pickup points on the map",
+        title: "— Checkout",
         text:
-          "Contributed to improving the pickup point selection scenario on the map. Worked on list readability, geodata logic and navigation between the map and pickup point cards.",
+          "I designed core Checkout scenarios across iOS, Android, web and mobile web, working with product, analytics and engineering from problem definition through implementation.",
+      },
+      {
+        title: "— Cross-domain initiatives",
+        text:
+          "I led design work on scenarios that crossed team and domain boundaries. I aligned interaction models, requirements and edge cases across Geo, Checkout, Delivery and adjacent product teams to keep the buyer journey consistent.",
       },
     ],
     images: CASE_IMAGES.ozonTech,
@@ -225,7 +230,7 @@ export const CASES_EN: Record<string, CaseStudy> = {
     title: "Petrix",
     description:
       "Designed a digital service for monitoring pets’ health indicators and activity using smart devices.",
-    tags: ["2026", "PetTech", "B2C", "Study", "AI"],
+    tags: ["2026", "PetTech", "B2C", "Master's degree", "AI"],
     sections: [
       {
         title: "— Context",
