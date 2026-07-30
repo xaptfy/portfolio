@@ -167,15 +167,14 @@ export const CASES_EN: Record<string, CaseStudy> = {
           "Encourage deeper content discovery and repeat usage. Introduce new emotional and practical use cases. Create product mechanics that could improve engagement and retention.",
       },
       {
-        title: "— Solution",
-        subtitle: "Music service",
+        title: "— Solution. Music service",
         text:
           "Connected recommendations, personal collections and playback into one continuous flow. Added contextual selections and quick access to artists, the queue and related content. Strengthened the visual identity while preserving familiar listening mechanics.",
       },
       {
-        subtitle: "Platform for pet owners",
+        title: "— Solution. Pet service",
         text: "Separated the owner account from individual pet profiles. Added support for multiple pets and shared-care scenarios. Combined social content, useful recommendations and connections between pet profiles.",
-        title: ""
+        
       },
       {
         title: "— Key decisions",
