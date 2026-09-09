@@ -14,7 +14,7 @@ export default function SlotLoader({ onFinish }: SlotLoaderProps) {
   useEffect(() => {
     const appearTimer = window.setTimeout(() => {
       setIsVisible(true);
-    }, 1000);
+    }, 50);
 
     const spinInterval = window.setInterval(() => {
       setNumbers([
@@ -22,17 +22,17 @@ export default function SlotLoader({ onFinish }: SlotLoaderProps) {
         Math.floor(Math.random() * 10),
         Math.floor(Math.random() * 10),
       ]);
-    }, 70);
+    }, 55);
 
     const stopTimer = window.setTimeout(() => {
       window.clearInterval(spinInterval);
       setNumbers([0, 0, 0]);
       setIsFinal(true);
-    }, 2800);
+    }, 850);
 
     const finishTimer = window.setTimeout(() => {
       onFinish();
-    }, 4800);
+    }, 1200);
 
     return () => {
       window.clearTimeout(appearTimer);

@@ -7,7 +7,12 @@ import { useEffect, useState } from "react";
 
 
 type HomeViewMode = "folders" | "desktop";
-type CollectionYear = "2023" | "2024" | "2025" | "2026";
+type CollectionCategory = "ecommerce" | "fintech" | "other";
+const CATEGORY_LABELS: Record<CollectionCategory, string> = {
+  ecommerce: "E-commerce",
+  fintech: "Fintech",
+  other: "Other",
+};
 type Lang = "ru" | "en";
 type IntroPhase = "loading" | "roulette" | "portfolio";
 type CaseImageEntry =
@@ -124,22 +129,50 @@ const T = {
   },
 } as const;
 
-const PREVIEW_ASSETS: Record<CollectionYear, string[]> = {
-  "2023": ["/case-previews/2023/1.png", "/case-previews/2023/2.png"],
-  "2024": ["/case-previews/2024/1.png", "/case-previews/2024/2.png", "/case-previews/2024/3.png"],
-  "2025": ["/case-previews/2025/1.png", "/case-previews/2025/2.png", "/case-previews/2025/3.png"],
-  "2026": ["/case-previews/2026/1.png", "/case-previews/2026/2.png", "/case-previews/2026/3.png", "/case-previews/2026/4.png",],
+const PREVIEW_ASSETS: Record<CollectionCategory, string[]> = {
+  ecommerce: [
+    "/case-previews/2025/2.png", // Ozon
+    "/case-previews/2026/4.png", // inDrive
+    "/case-previews/2024/1.png", // Seamm
+  ],
+
+  fintech: [
+    "/case-previews/2025/3.png", // VTB
+    "/case-previews/2026/1.png", // OTR
+    "/case-previews/2025/1.png", // Crypto
+  ],
+
+  other: [
+    "/case-previews/2026/2.png", // Pragmatica
+    "/case-previews/2026/3.png", // Petrix
+    "/case-previews/2024/2.png", // ITMO
+    "/case-previews/2023/2.png", // Tender
+  ],
 };
 
-const PREVIEW_LINKS: Record<CollectionYear, string[]> = {
-  "2023": ["/cases/casino", "/cases/tender"],
-  "2024": ["/cases/seamm", "/cases/itmo", "/cases/vk"],
-  "2025": ["/cases/crypto", "/cases/ozon-tech", "/cases/vtb"],
-  "2026": ["/cases/otr", "/cases/pragmatica-vk", "/cases/petrix", "/cases/indrive",],
+const PREVIEW_LINKS: Record<CollectionCategory, string[]> = {
+  ecommerce: [
+    "/cases/ozon-tech",
+    "/cases/indrive",
+    "/cases/seamm",
+  ],
+
+  fintech: [
+    "/cases/vtb",
+    "/cases/otr",
+    "/cases/crypto",
+  ],
+
+  other: [
+    "/cases/pragmatica-vk",
+    "/cases/petrix",
+    "/cases/itmo",
+    "/cases/tender",
+  ],
 };
 
 const DESKTOP_CASES: Record<
-  CollectionYear,
+  CollectionCategory,
   {
     title: {
       ru: string;
@@ -149,106 +182,70 @@ const DESKTOP_CASES: Record<
     color: string;
   }[]
 > = {
-  "2026": [
+  ecommerce: [
     {
-      title: {
-        ru: "OTP-верификация",
-        en: "Banking case",
-      },
-      href: "/cases/otr",
-      color: "#FFFFFF",
-    },
-    {
-      title: {
-        ru: "Pragmatica x VK",
-        en: "Pragmatica x VK",
-      },
-      href: "/cases/pragmatica-vk",
-      color: "#3B82F6",
-    },
-    {
-      title: {
-        ru: "Petrix",
-        en: "Petrix",
-      },
-      href: "/cases/petrix",
-      color: "#E774BF",
-    },
-    {
-      title: {
-        ru: "inDrive Delivery",
-        en: "inDrive Delivery",
-      },
-      href: "/cases/indrive",
-      color: "#B6FF00",
-    },
-  ],
-  "2025": [
-    {
-      title: {
-        ru: "Ozon Tech",
-        en: "Ozon Tech",
-      },
+      title: { ru: "Ozon Tech", en: "Ozon Tech" },
       href: "/cases/ozon-tech",
       color: "#005BFE",
     },
     {
-      title: {
-        ru: "Криптоброкер",
-        en: "Crypto Broker",
-      },
-      href: "/cases/crypto",
-      color: "#7AEB86",
+      title: { ru: "inDrive Delivery", en: "inDrive Delivery" },
+      href: "/cases/indrive",
+      color: "#B6FF00",
     },
     {
-      title: {
-        ru: "ВТБ",
-        en: "VTB",
-      },
+      title: { ru: "Seamm", en: "Seamm" },
+      href: "/cases/seamm",
+      color: "#29E1BB",
+    },
+  ],
+
+  fintech: [
+    {
+      title: { ru: "ВТБ", en: "VTB" },
       href: "/cases/vtb",
       color: "#0066FF",
     },
     {
-      title: {
-        ru: "Тендеры",
-        en: "Tenders",
-      },
-      href: "/cases/tender",
-      color: "#C8D0FF",
+      title: { ru: "OTP-верификация", en: "Banking case" },
+      href: "/cases/otr",
+      color: "#FFFFFF",
+    },
+    {
+      title: { ru: "Криптоброкер", en: "Crypto Broker" },
+      href: "/cases/crypto",
+      color: "#7AEB86",
     },
   ],
-  "2024": [
+
+  other: [
     {
-      title: {
-        ru: "Seamm",
-        en: "Seamm",
-      },
-      href: "/cases/seamm",
-      color: "#29E1BB",
+      title: { ru: "Pragmatica x VK", en: "Pragmatica x VK" },
+      href: "/cases/pragmatica-vk",
+      color: "#3B82F6",
     },
     {
-      title: {
-        ru: "ITMO",
-        en: "ITMO",
-      },
+      title: { ru: "Petrix", en: "Petrix" },
+      href: "/cases/petrix",
+      color: "#E774BF",
+    },
+    {
+      title: { ru: "ITMO", en: "ITMO" },
       href: "/cases/itmo",
       color: "#D7FF25",
     },
     {
-      title: {
-        ru: "Mail.ru",
-        en: "Mail.ru",
-      },
+      title: { ru: "Тендеры", en: "Tenders" },
+      href: "/cases/tender",
+      color: "#C8D0FF",
+    },
+    {
+      title: { ru: "Mail.ru", en: "Mail.ru" },
       href: "/cases/vk",
       color: "#6197FF",
     },
-  ],
-  "2023": [
     {
-      title: {
-        ru: "Казино NDA",
-        en: "Casino NDA",
-      },
+      title: { ru: "Казино NDA", en: "Casino NDA" },
       href: "/cases/casino",
       color: "#99A5FC",
     },
@@ -1037,67 +1034,18 @@ function FolderPreviews({
   lift,
   isHovered,
 }: {
-  year: CollectionYear;
+  year: CollectionCategory;
   lift: number;
   isHovered: boolean;
 }) {
   const assets = PREVIEW_ASSETS[year];
   const links = PREVIEW_LINKS[year];
   const previewSize = 1.25;
+
   const isSingle = assets.length === 1;
 
-  const slots = isSingle
-    ? [
-      {
-        x: 0,
-        rotate: 0,
-        y: isHovered ? -40 : 42,
-        width: isHovered ? 172 : 176,
-        scale: isHovered ? 1.18 : 1,
-      },
-    ]
-    : year === "2023"
-      ? [
-        {
-          x: isHovered ? -78 : -34,
-          rotate: isHovered ? 0 : -3,
-          y: isHovered ? -40 : 44,
-          width: isHovered ? 124 : 104,
-          scale: isHovered ? 1.12 : 1,
-        },
-        {
-          x: isHovered ? 78 : 34,
-          rotate: isHovered ? 0 : 3,
-          y: isHovered ? -40 : 44,
-          width: isHovered ? 124 : 104,
-          scale: isHovered ? 1.12 : 1,
-        },
-      ]
-      : year === "2024"
-  ? [
-      {
-        x: isHovered ? -136 : -42,
-        rotate: isHovered ? 0 : -7,
-        y: isHovered ? -40 : 46,
-        width: isHovered ? 64 : 68,
-        scale: isHovered ? 1.18 : 1,
-      },
-      {
-        x: 0,
-        rotate: 0,
-        y: isHovered ? -40 : 36,
-        width: isHovered ? 118 : 108,
-        scale: isHovered ? 1.5 : 1,
-      },
-      {
-        x: isHovered ? 136 : 42,
-        rotate: isHovered ? 0 : 7,
-        y: isHovered ? -40 : 46,
-        width: isHovered ? 64 : 68,
-        scale: isHovered ? 1.18 : 1,
-      },
-    ]
-    : year === "2026"
+  const slots =
+  assets.length === 4
     ? [
         {
           x: isHovered ? -150 : -48,
@@ -1171,7 +1119,12 @@ function FolderPreviews({
             aria-label={`Open case ${year}-${i + 1}`}
             className="absolute bottom-0 left-1/2"
             style={{
-              marginLeft: -(slot.width * previewSize) / 2,
+              marginLeft:
+              -(
+                slot.width *
+                previewSize *
+                (year === "other" && (i === 2 || i === 3) ? 1.35 : 1)
+              ) / 2,
               transformOrigin: "bottom center",
               pointerEvents: isHovered ? "auto" : "none",
             }}
@@ -1188,7 +1141,12 @@ function FolderPreviews({
               src={src}
               alt=""
               className="block h-auto max-w-none drop-shadow-[0_8px_22px_rgba(0,0,0,0.4)]"
-              style={{ width: slot.width * previewSize }}
+              style={{
+                width:
+                  year === "other" && (i === 2 || i === 3)
+                    ? slot.width * previewSize * 1.35
+                    : slot.width * previewSize,
+              }}
               draggable={false}
             />
           </motion.a>
@@ -1203,27 +1161,22 @@ const FOLDER_BEFORE = { w: 250, h: 150 } as const;
 const FOLDER_AFTER = { w: 216, h: 193 } as const;
 
 const FOLDER_POSITIONS: Record<
-  CollectionYear,
+  CollectionCategory,
   { left: string; top: string }
 > = {
-  "2025": {
-    left: "calc(50% - 233px / 2 - 105px)",
-    top: "calc(50% - 345px / 2 - 125px)",
+  ecommerce: {
+    left: "calc(50% - 233px / 2 - 40px)",
+    top: "calc(50% - 345px / 2 - 220px)",
   },
 
-  "2026": {
-    left: "calc(50% - 233px / 2 + 295px)",
-    top: "calc(50% - 345px / 2 - 180px)",
+  fintech: {
+    left: "calc(50% - 233px / 2 + 400px)",
+    top: "calc(50% - 345px / 2 - 70px)",
   },
 
-  "2024": {
-    left: "calc(50% - 232px / 2 + 35px)",
-    top: "calc(50% - 345px / 2 + 185px)",
-  },
-
-  "2023": {
-    left: "calc(50% - 233px / 2 + 415px)",
-    top: "calc(50% - 327px / 2 + 85px)",
+  other: {
+    left: "calc(50% - 233px / 2 + 120px)",
+    top: "calc(50% - 345px / 2 + 160px)",
   },
 };
 
@@ -1272,8 +1225,11 @@ function DesktopCaseView({
   language: "ru" | "en";
   isMobile: boolean;
 }) {
-
-  const years: CollectionYear[] = ["2026", "2025", "2024", "2023"];
+  const categories: CollectionCategory[] = [
+    "ecommerce",
+    "fintech",
+    "other",
+  ];
 
   return (
     <motion.div
@@ -1288,8 +1244,12 @@ function DesktopCaseView({
       transition={{ duration: 0.35, ease }}
     >
       <div className="flex w-full flex-col" style={{ gap: 40 }}>
-        {years.map((year) => (
-          <section key={year} className="flex w-full flex-col" style={{ gap: 24 }}>
+        {categories.map((category) => (
+          <section
+            key={category}
+            className="flex w-full flex-col"
+            style={{ gap: 24 }}
+          >
             <div className="flex w-full flex-col" style={{ gap: 6 }}>
               <div className="flex h-[18px] items-center px-4">
                 <p
@@ -1300,7 +1260,7 @@ function DesktopCaseView({
                     color: "#9B9B9A",
                   }}
                 >
-                  {year}
+                  {CATEGORY_LABELS[category]}
                 </p>
               </div>
 
@@ -1310,8 +1270,11 @@ function DesktopCaseView({
               />
             </div>
 
-            <div className="flex flex-wrap items-start" style={{ gap: 14 }}>
-              {DESKTOP_CASES[year].map((item) => (
+            <div
+              className="flex flex-wrap items-start"
+              style={{ gap: 14 }}
+            >
+              {DESKTOP_CASES[category].map((item) => (
                 <motion.a
                   key={item.href}
                   href={item.href}
@@ -1351,7 +1314,11 @@ function MobileDesktopCaseView({
 }: {
   language: Lang;
 }) {
-  const years: CollectionYear[] = ["2026", "2025", "2024", "2023"];
+  const categories: CollectionCategory[] = [
+    "ecommerce",
+    "fintech",
+    "other",
+  ];
 
   return (
     <motion.div
@@ -1361,8 +1328,12 @@ function MobileDesktopCaseView({
       transition={{ duration: 0.35, ease }}
     >
       <div className="flex w-full flex-col" style={{ gap: 40 }}>
-        {years.map((year) => (
-          <section key={year} className="flex w-full flex-col" style={{ gap: 20 }}>
+        {categories.map((category) => (
+          <section
+            key={category}
+            className="flex w-full flex-col"
+            style={{ gap: 20 }}
+          >
             <div className="flex w-full flex-col" style={{ gap: 8 }}>
               <div className="flex h-[18px] items-center px-1">
                 <p
@@ -1373,7 +1344,7 @@ function MobileDesktopCaseView({
                     color: "#9B9B9A",
                   }}
                 >
-                  {year}
+                  {CATEGORY_LABELS[category]}
                 </p>
               </div>
 
@@ -1391,7 +1362,7 @@ function MobileDesktopCaseView({
                 columnGap: 14,
               }}
             >
-              {DESKTOP_CASES[year].map((item) => (
+              {DESKTOP_CASES[category].map((item) => (
                 <motion.a
                   key={item.href}
                   href={item.href}
@@ -1409,7 +1380,12 @@ function MobileDesktopCaseView({
                       height: 112,
                     }}
                   >
-                    <div style={{ transform: "scale(1.55)", transformOrigin: "center" }}>
+                    <div
+                      style={{
+                        transform: "scale(1.55)",
+                        transformOrigin: "center",
+                      }}
+                    >
                       <DesktopFileIcon color={item.color} />
                     </div>
                   </div>
@@ -1434,6 +1410,7 @@ function MobileDesktopCaseView({
     </motion.div>
   );
 }
+
 const FOLDER_FRONT_PATH = `path(
   "M 18 8
    L 80 4
@@ -1532,10 +1509,10 @@ function FloatingFolder({
   year,
   isHovered,
 }: {
-  year: CollectionYear;
+  year: CollectionCategory;
   isHovered: boolean;
 }) {
-  const h = year === "2023" ? 327 : 345;
+  const h = 345;
   const previewLift = 0;
   const scale = isHovered ? 1.02 : 1;
 
@@ -1613,10 +1590,10 @@ function FloatingFolder({
   );
 }
 
-const COLLECTIONS: CollectionYear[] = ["2026", "2025", "2024", "2023"];
+const COLLECTIONS: CollectionCategory[] = ["ecommerce", "fintech", "other"];
 
 export default function Home() {
-  const [hoverYear, setHoverYear] = useState<CollectionYear | null>(null);
+  const [hoverYear, setHoverYear] = useState<CollectionCategory | null>(null);
   const [viewMode, setViewMode] = useState<HomeViewMode>("folders");
   const [lang, setLang] = useState<Lang>("en");
   const [activeWorkPreview, setActiveWorkPreview] = useState<WorkPreviewKey | null>(null);
@@ -1705,35 +1682,39 @@ export default function Home() {
 
   return (
     <>
-      {mounted && introPhase === "loading" ? (
-        <SlotLoader
-          onFinish={() => setIntroPhase("roulette")}
-        />
-      ) : null}
+      {mounted && introPhase === "loading" && (
+  <SlotLoader
+    onFinish={() => setIntroPhase("roulette")}
+  />
+)}
 
-      {mounted && introPhase === "roulette" ? (
-        <CaseRouletteIntro
-          onClose={() => {
-            sessionStorage.setItem("portfolioIntroShown", "true");
-            setIntroPhase("portfolio");
-          }}
-        />
-      ) : null}
+{mounted && introPhase === "roulette" && (
+  <CaseRouletteIntro
+    onClose={() => {
+      sessionStorage.setItem("portfolioIntroShown", "true");
+      setIntroPhase("portfolio");
+    }}
+  />
+)}
 
       {mounted && introPhase === "portfolio" ? (
 
-        <main
-          className="relative isolate font-sans selection:bg-white/20"
-          style={{
-            width: "100vw",
-            height: isNarrow ? "auto" : "100vh",
-            minHeight: "100vh",
-            maxHeight: isNarrow ? "none" : "100vh",
-            overflowX: "hidden",
-            overflowY: isNarrow ? "auto" : "hidden",
-            ...CANVAS_GRID,
-            color: "#fff",
-          }}
+<main
+className="relative isolate font-sans selection:bg-white/20"
+style={{
+  width: "100vw",
+  height: isNarrow ? "auto" : "100vh",
+  minHeight: "100vh",
+  maxHeight: isNarrow ? "none" : "100vh",
+  overflowX: "hidden",
+  overflowY: isNarrow ? "auto" : "hidden",
+  ...CANVAS_GRID,
+  color: "#fff",
+
+  opacity: introPhase === "portfolio" ? 1 : 0,
+  pointerEvents: introPhase === "portfolio" ? "auto" : "none",
+  transition: "opacity 250ms ease",
+}}
         >
           {/* Social — right aligned, ~Figma spacing (12px gap), top 48px */}
           <div
@@ -1932,7 +1913,7 @@ export default function Home() {
               >
                 {COLLECTIONS.map((year, index) => {
                   const pos = FOLDER_POSITIONS[year];
-                  const fh = isShortDesktop ? 345 : year === "2023" ? 327 : 345;
+                  const fh = 345;
 
                   const shortDesktopStyle = isShortDesktop
                     ? {
