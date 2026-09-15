@@ -381,15 +381,14 @@ function CaseRouletteIntro({
   };
 
   return (
-    <motion.section
-      className="fixed inset-0 z-[300] flex items-center justify-center overflow-hidden bg-[#030303] font-sans"
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-    >
-      <div className="relative h-full w-full overflow-hidden md:h-[800px] md:w-[1200px]">
-        {/* Blur / затемнение — теперь ПОД иконками */}
-        <div className="pointer-events-none absolute inset-0 z-0 bg-black/55 backdrop-blur-[10px]" />
-        <div className="pointer-events-none absolute inset-0 z-[1] bg-[linear-gradient(180deg,rgba(3,3,3,0)_29.69%,#030303_95%)]" />
+<motion.section
+  className="fixed inset-0 z-[300] flex items-center justify-center overflow-hidden bg-[#030303] font-sans"
+  initial={false}
+  animate={{ opacity: 1 }}
+>
+  <div className="relative h-full w-full overflow-hidden md:h-[800px] md:w-[1200px]">
+    <div className="pointer-events-none absolute inset-0 z-0 bg-[#030303]" />
+
 
         {/* Иконки — теперь НАД блюром */}
         <motion.div
@@ -1116,7 +1115,7 @@ function FolderPreviews({
           <motion.a
             key={src}
             href={links[i] ?? "#"}
-            aria-label={`Open case ${year}-${i + 1}`}
+            aria-label={`Open case ${CATEGORY_LABELS[year]}-${i + 1}`}
             className="absolute bottom-0 left-1/2"
             style={{
               marginLeft:
@@ -1582,7 +1581,7 @@ function FloatingFolder({
               letterSpacing: "-0.05em",
             }}
           >
-            {year}
+            {CATEGORY_LABELS[year]}
           </p>
         </div>
       </div>
