@@ -7,11 +7,13 @@ import { useEffect, useState } from "react";
 
 
 type HomeViewMode = "folders" | "desktop";
-type CollectionCategory = "ecommerce" | "fintech" | "other";
+type CollectionCategory = "ecommerce" | "fintech" | "other" | "concepts";
 const CATEGORY_LABELS: Record<CollectionCategory, string> = {
   ecommerce: "E-commerce",
   fintech: "Fintech",
   other: "Other",
+  concepts: "Concepts",
+
 };
 type Lang = "ru" | "en";
 type IntroPhase = "loading" | "roulette" | "portfolio";
@@ -148,6 +150,11 @@ const PREVIEW_ASSETS: Record<CollectionCategory, string[]> = {
     "/case-previews/2024/2.png", // ITMO
     "/case-previews/2023/2.png", // Tender
   ],
+  concepts: [
+    "/case-previews/concept/Action%20Sheet.png",
+    "/case-previews/concept/Action%20Sheet-1.png",
+    "/case-previews/concept/Action%20Sheet-2.png",
+  ],
 };
 
 const PREVIEW_LINKS: Record<CollectionCategory, string[]> = {
@@ -169,6 +176,30 @@ const PREVIEW_LINKS: Record<CollectionCategory, string[]> = {
     "/cases/itmo",
     "/cases/tender",
   ],
+  concepts: [
+    "/cases/concepts",
+    "/cases/concepts",
+    "/cases/concepts",
+  ],
+};
+
+const PREVIEW_IMAGE_SIZES: Record<
+  string,
+  { width: number; height: number }
+> = {
+  "/case-previews/2023/2.png": { width: 4904, height: 2992 },
+  "/case-previews/2024/1.png": { width: 360, height: 736 },
+  "/case-previews/2024/2.png": { width: 1148, height: 840 },
+  "/case-previews/2025/1.png": { width: 360, height: 736 },
+  "/case-previews/2025/2.png": { width: 360, height: 736 },
+  "/case-previews/2025/3.png": { width: 360, height: 736 },
+  "/case-previews/2026/1.png": { width: 1800, height: 3680 },
+  "/case-previews/2026/2.png": { width: 360, height: 740 },
+  "/case-previews/2026/3.png": { width: 1800, height: 3680 },
+  "/case-previews/2026/4.png": { width: 900, height: 1840 },
+  "/case-previews/concept/Action%20Sheet.png": { width: 1350, height: 2760 },
+  "/case-previews/concept/Action%20Sheet-1.png": { width: 1350, height: 2760 },
+  "/case-previews/concept/Action%20Sheet-2.png": { width: 1350, height: 2760 },
 };
 
 const DESKTOP_CASES: Record<
@@ -248,6 +279,13 @@ const DESKTOP_CASES: Record<
       title: { ru: "Казино NDA", en: "Casino NDA" },
       href: "/cases/casino",
       color: "#99A5FC",
+    },
+  ],
+  concepts: [
+    {
+      title: { ru: "Concepts", en: "Concepts" },
+      href: "/cases/concepts",
+      color: "#C8D0FF",
     },
   ],
 };
@@ -381,13 +419,13 @@ function CaseRouletteIntro({
   };
 
   return (
-<motion.section
-  className="fixed inset-0 z-[300] flex items-center justify-center overflow-hidden bg-[#030303] font-sans"
-  initial={false}
-  animate={{ opacity: 1 }}
->
-  <div className="relative h-full w-full overflow-hidden md:h-[800px] md:w-[1200px]">
-    <div className="pointer-events-none absolute inset-0 z-0 bg-[#030303]" />
+    <motion.section
+      className="fixed inset-0 z-[300] flex items-center justify-center overflow-hidden bg-[#030303] font-sans"
+      initial={false}
+      animate={{ opacity: 1 }}
+    >
+      <div className="relative h-full w-full overflow-hidden md:h-[800px] md:w-[1200px]">
+        <div className="pointer-events-none absolute inset-0 z-0 bg-[#030303]" />
 
 
         {/* Иконки — теперь НАД блюром */}
@@ -1040,64 +1078,56 @@ function FolderPreviews({
   const assets = PREVIEW_ASSETS[year];
   const links = PREVIEW_LINKS[year];
   const previewSize = 1.25;
+  const expandedGap = year === "other" ? 28 : 26;
+  const expandedScale = 1.5;
 
-  const isSingle = assets.length === 1;
-
-  const slots =
-  assets.length === 4
+  const fanSlots = assets.length === 4
     ? [
-        {
-          x: isHovered ? -150 : -48,
-          rotate: isHovered ? 0 : -9,
-          y: isHovered ? -40 : 48,
-          width: isHovered ? 64 : 66,
-          scale: isHovered ? 1.12 : 1,
-        },
-        {
-          x: isHovered ? -50 : -16,
-          rotate: isHovered ? 0 : -3,
-          y: isHovered ? -40 : 38,
-          width: isHovered ? 64 : 70,
-          scale: isHovered ? 1.12 : 1,
-        },
-        {
-          x: isHovered ? 50 : 16,
-          rotate: isHovered ? 0 : 3,
-          y: isHovered ? -40 : 38,
-          width: isHovered ? 64 : 70,
-          scale: isHovered ? 1.12 : 1,
-        },
-        {
-          x: isHovered ? 150 : 48,
-          rotate: isHovered ? 0 : 9,
-          y: isHovered ? -40 : 48,
-          width: isHovered ? 64 : 66,
-          scale: isHovered ? 1.12 : 1,
-        },
+        { x: -48, rotate: -9, y: 48, width: 66, scale: 1 },
+        { x: -16, rotate: -3, y: 38, width: 70, scale: 1 },
+        { x: 16, rotate: 3, y: 38, width: 70, scale: 1 },
+        { x: 48, rotate: 9, y: 48, width: 66, scale: 1 },
       ]
     : [
-        {
-          x: isHovered ? -118 : -42,
-          rotate: isHovered ? 0 : -7,
-          y: isHovered ? -40 : 46,
-          width: isHovered ? 76 : 72,
-          scale: isHovered ? 1.18 : 1,
-        },
-        {
-          x: 0,
-          rotate: 0,
-          y: isHovered ? -40 : 36,
-          width: isHovered ? 76 : 72,
-          scale: isHovered ? 1.18 : 1,
-        },
-        {
-          x: isHovered ? 118 : 42,
-          rotate: isHovered ? 0 : 7,
-          y: isHovered ? -40 : 46,
-          width: isHovered ? 76 : 72,
-          scale: isHovered ? 1.18 : 1,
-        },
+        { x: -42, rotate: -7, y: 46, width: 72, scale: 1 },
+        { x: 0, rotate: 0, y: 36, width: 72, scale: 1 },
+        { x: 42, rotate: 7, y: 46, width: 72, scale: 1 },
       ];
+
+  const expandedWidths = assets.map((src, index) => {
+    const imageSize = PREVIEW_IMAGE_SIZES[src];
+    const isDesktopOtherPreview = year === "other" && index >= 2;
+    const isLandscapePreview = Boolean(imageSize && imageSize.width > imageSize.height);
+    const targetHeight = isDesktopOtherPreview || isLandscapePreview ? 108 : 172;
+
+    if ((isDesktopOtherPreview || isLandscapePreview) && imageSize) {
+      const widthFromHeight = targetHeight * (imageSize.width / imageSize.height);
+      return Math.max(178, widthFromHeight);
+    }
+
+    return assets.length === 4 ? 112 : 142;
+  });
+
+  const expandedTotalWidth =
+    expandedWidths.reduce((total, width) => total + width, 0) +
+    expandedGap * Math.max(0, expandedWidths.length - 1);
+
+  let expandedLeft = -expandedTotalWidth / 2;
+
+  const expandedSlots = expandedWidths.map((renderedWidth) => {
+    const x = expandedLeft + renderedWidth / 2;
+    expandedLeft += renderedWidth + expandedGap;
+
+    return {
+      x,
+      rotate: 0,
+      y: -40,
+      width: renderedWidth / (previewSize * expandedScale),
+      scale: expandedScale,
+    };
+  });
+
+  const slots = isHovered ? expandedSlots : fanSlots;
 
 
   return (
@@ -1110,6 +1140,8 @@ function FolderPreviews({
       {assets.map((src, i) => {
         const slot = slots[i];
         if (!slot) return null;
+        const widthMultiplier =
+          !isHovered && year === "other" && (i === 2 || i === 3) ? 1.35 : 1;
 
         return (
           <motion.a
@@ -1119,11 +1151,11 @@ function FolderPreviews({
             className="absolute bottom-0 left-1/2"
             style={{
               marginLeft:
-              -(
-                slot.width *
-                previewSize *
-                (year === "other" && (i === 2 || i === 3) ? 1.35 : 1)
-              ) / 2,
+                -(
+                  slot.width *
+                  previewSize *
+                  widthMultiplier
+                ) / 2,
               transformOrigin: "bottom center",
               pointerEvents: isHovered ? "auto" : "none",
             }}
@@ -1141,10 +1173,7 @@ function FolderPreviews({
               alt=""
               className="block h-auto max-w-none drop-shadow-[0_8px_22px_rgba(0,0,0,0.4)]"
               style={{
-                width:
-                  year === "other" && (i === 2 || i === 3)
-                    ? slot.width * previewSize * 1.35
-                    : slot.width * previewSize,
+                width: slot.width * previewSize * widthMultiplier,
               }}
               draggable={false}
             />
@@ -1164,18 +1193,23 @@ const FOLDER_POSITIONS: Record<
   { left: string; top: string }
 > = {
   ecommerce: {
-    left: "calc(50% - 233px / 2 - 40px)",
-    top: "calc(50% - 345px / 2 - 220px)",
+    left: "calc(50% - 233px / 2 - 95px)",
+    top: "calc(50% - 345px / 2 - 120px)",
   },
 
   fintech: {
-    left: "calc(50% - 233px / 2 + 400px)",
-    top: "calc(50% - 345px / 2 - 70px)",
+    left: "calc(50% - 233px / 2 + 285px)",
+    top: "calc(50% - 345px / 2 - 120px)",
+  },
+
+  concepts: {
+    left: "calc(50% - 233px / 2 - 55px)",
+    top: "calc(50% - 345px / 2 + 125px)",
   },
 
   other: {
-    left: "calc(50% - 233px / 2 + 120px)",
-    top: "calc(50% - 345px / 2 + 160px)",
+    left: "calc(50% - 233px / 2 + 325px)",
+    top: "calc(50% - 345px / 2 + 125px)",
   },
 };
 
@@ -1513,7 +1547,7 @@ function FloatingFolder({
 }) {
   const h = 345;
   const previewLift = 0;
-  const scale = isHovered ? 1.02 : 1;
+  const scale = isHovered ? 0.94 : 0.90;
 
   return (
     <motion.div
@@ -1589,7 +1623,7 @@ function FloatingFolder({
   );
 }
 
-const COLLECTIONS: CollectionCategory[] = ["ecommerce", "fintech", "other"];
+const COLLECTIONS: CollectionCategory[] = ["ecommerce", "fintech", "concepts", "other"];
 
 export default function Home() {
   const [hoverYear, setHoverYear] = useState<CollectionCategory | null>(null);
@@ -1682,38 +1716,38 @@ export default function Home() {
   return (
     <>
       {mounted && introPhase === "loading" && (
-  <SlotLoader
-    onFinish={() => setIntroPhase("roulette")}
-  />
-)}
+        <SlotLoader
+          onFinish={() => setIntroPhase("roulette")}
+        />
+      )}
 
-{mounted && introPhase === "roulette" && (
-  <CaseRouletteIntro
-    onClose={() => {
-      sessionStorage.setItem("portfolioIntroShown", "true");
-      setIntroPhase("portfolio");
-    }}
-  />
-)}
+      {mounted && introPhase === "roulette" && (
+        <CaseRouletteIntro
+          onClose={() => {
+            sessionStorage.setItem("portfolioIntroShown", "true");
+            setIntroPhase("portfolio");
+          }}
+        />
+      )}
 
       {mounted && introPhase === "portfolio" ? (
 
-<main
-className="relative isolate font-sans selection:bg-white/20"
-style={{
-  width: "100vw",
-  height: isNarrow ? "auto" : "100vh",
-  minHeight: "100vh",
-  maxHeight: isNarrow ? "none" : "100vh",
-  overflowX: "hidden",
-  overflowY: isNarrow ? "auto" : "hidden",
-  ...CANVAS_GRID,
-  color: "#fff",
+        <main
+          className="relative isolate font-sans selection:bg-white/20"
+          style={{
+            width: "100vw",
+            height: isNarrow ? "auto" : "100vh",
+            minHeight: "100vh",
+            maxHeight: isNarrow ? "none" : "100vh",
+            overflowX: "hidden",
+            overflowY: isNarrow ? "auto" : "hidden",
+            ...CANVAS_GRID,
+            color: "#fff",
 
-  opacity: introPhase === "portfolio" ? 1 : 0,
-  pointerEvents: introPhase === "portfolio" ? "auto" : "none",
-  transition: "opacity 250ms ease",
-}}
+            opacity: introPhase === "portfolio" ? 1 : 0,
+            pointerEvents: introPhase === "portfolio" ? "auto" : "none",
+            transition: "opacity 250ms ease",
+          }}
         >
           {/* Social — right aligned, ~Figma spacing (12px gap), top 48px */}
           <div
@@ -1776,7 +1810,7 @@ style={{
 
 
           <div
-            className="fixed z-[80] flex items-center gap-3"
+            className="fixed z-[60] flex items-center gap-3"
             style={{
               right: isNarrow ? 28 : 48,
               bottom: isNarrow ? 28 : 48,
@@ -1888,10 +1922,20 @@ style={{
             </motion.button>
           </div>
 
+          <motion.div
+            className="pointer-events-none fixed inset-0 z-[70] bg-black"
+            initial={false}
+            animate={{
+              opacity:
+                !isNarrow && viewMode === "folders" && hoverYear ? 0.48 : 0,
+            }}
+            transition={{ duration: 0.3, ease: "easeInOut" }}
+          />
+
           {/* Folders on canvas */}
           {!isNarrow && viewMode === "folders" && (
             <div
-              className="pointer-events-none absolute z-[10]"
+              className="pointer-events-none absolute"
               style={{
                 left:
                   DESKTOP_EDGE +
@@ -1910,17 +1954,24 @@ style={{
                   margin: "0 auto",
                 }}
               >
-                {COLLECTIONS.map((year, index) => {
+                {COLLECTIONS.map((year) => {
                   const pos = FOLDER_POSITIONS[year];
                   const fh = 345;
+                  const isRightColumn = year === "fintech" || year === "other";
+                  const isBottomRow = year === "concepts" || year === "other";
+                  const shortDesktopRowOffset = Math.max(
+                    80,
+                    Math.min(
+                      115,
+                      (vh - 152 - fh * folderAdaptiveScale) / 2
+                    )
+                  );
 
                   const shortDesktopStyle = isShortDesktop
                     ? {
-                      left: `calc(50% - ${(COLLECTIONS.length * 233 + (COLLECTIONS.length - 1) * 72) *
-                        folderAdaptiveScale
-                        }px / 2 + ${index * (233 + 72) * folderAdaptiveScale}px)`,
-                      top: `calc(50% - ${345 * folderAdaptiveScale}px / 2 + 28px)`,
-                      transform: `scale(${folderAdaptiveScale * 2})`,
+                      left: `calc(50% - ${233 * folderAdaptiveScale}px / 2 ${isRightColumn ? "+" : "-"} 240px)`,
+                      top: `calc(50% - ${fh * folderAdaptiveScale}px / 2 ${isBottomRow ? "+" : "-"} ${shortDesktopRowOffset}px)`,
+                      transform: `scale(${folderAdaptiveScale})`,
                       transformOrigin: "top left",
                     }
                     : {
@@ -1938,6 +1989,7 @@ style={{
                         ...shortDesktopStyle,
                         width: 233,
                         height: fh,
+                        zIndex: hoverYear === year ? 80 : 10,
                       }}
                       onMouseEnter={() => setHoverYear(year)}
                       onMouseLeave={() => setHoverYear((h) => (h === year ? null : h))}

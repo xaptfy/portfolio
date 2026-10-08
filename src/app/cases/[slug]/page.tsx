@@ -114,6 +114,29 @@ const CASE_IMAGES = {
     { src: "/cases/indrive/7.png", variant: "wide" },
 
   ] satisfies CaseImageEntry[],
+
+  concepts: [
+    { src: "/concept/0.png", variant: "regular" },
+    { src: "/concept/1.png", variant: "regular" },
+    { src: "/concept/2.png", variant: "regular" },
+    { src: "/concept/3.png", variant: "wide" },
+    { src: "/concept/1.mp4", variant: "wide" },
+    { src: "/concept/2.mov", variant: "wide" },
+    { src: "/concept/4.png", variant: "regular" },
+    { src: "/concept/5.png", variant: "regular" },
+    { src: "/concept/6.png", variant: "regular" },
+    { src: "/concept/7.png", variant: "regular" },
+    { src: "/concept/8.png", variant: "regular" },
+    { src: "/concept/9.png", variant: "regular" },
+    { src: "/concept/10.png", variant: "regular" },
+    { src: "/concept/11.png", variant: "regular" },
+    { src: "/concept/12.png", variant: "regular" },
+    { src: "/concept/13.png", variant: "regular" },
+    { src: "/concept/14.png", variant: "regular" },
+    { src: "/concept/15.png", variant: "regular" },
+    { src: "/concept/16.png", variant: "regular" },
+    { src: "/concept/17.png", variant: "regular" },
+  ] satisfies CaseImageEntry[],
 };
 
 
@@ -290,6 +313,27 @@ export const CASES_EN: Record<string, CaseStudy> = {
       },
     ],
     images: CASE_IMAGES.indrive,
+  },
+
+  "concepts": {
+    slug: "concepts",
+    title: "Concepts",
+    description:
+      "A collection of exploratory interface concepts, product screens and motion fragments.",
+    tags: ["Concepts", "UI", "Motion"],
+    sections: [
+      {
+        title: "— Collection",
+        text:
+          "Selected standalone screens and interaction ideas from experimental product concepts.",
+      },
+      {
+        title: "— Format",
+        text:
+          "The gallery combines static screens and short motion previews so the concepts can stay lightweight and easy to scan.",
+      },
+    ],
+    images: CASE_IMAGES.concepts,
   },
 
   "vtb": {
