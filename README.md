@@ -1,36 +1,105 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Arina Bykovskaia Portfolio
+
+An interactive product design portfolio built with Next.js, React, Framer Motion, and a carefully tuned glassy desktop interface.
+
+The site presents product design cases as a playful personal operating system: animated folders, hover previews, a desktop/list switcher, case galleries, motion assets, language switching, and a small arcade-style game.
+
+## Highlights
+
+- Animated 2x2 case folder grid with large hover previews.
+- Liquid-glass visual system for cards, folders, buttons, and controls.
+- Case pages with horizontal screenshot galleries, vertical layouts, and video support.
+- Separate Concepts collection for exploratory screens and motion fragments.
+- Intro roulette experience that sends visitors into a random case.
+- RU/EN language toggle for the home UI.
+- Responsive mobile layout with preserved content hierarchy.
+- Tiny game route with Supabase-backed score support.
+
+## Stack
+
+- Next.js 16 App Router
+- React 19
+- TypeScript
+- Tailwind CSS 4
+- Framer Motion
+- Lucide React
+- Supabase client
+- Vercel Analytics
+
+## Project Structure
+
+```txt
+src/app/page.tsx                 Home page, folder grid, desktop mode, intro flow
+src/app/cases/[slug]/page.tsx    Dynamic case pages and case data
+src/app/game/page.tsx            Portfolio mini-game
+src/app/components/              Shared visual components
+src/lib/supabase.ts              Supabase client setup
+public/case-previews/            Folder preview artwork
+public/concept/                  Concepts gallery assets
+public/cases/                    Case study media
+public/folders/                  Folder SVG layers
+public/icons/                    Social/action icons
+public/logo/                     Roulette and brand icons
+```
 
 ## Getting Started
 
-First, run the development server:
+Install dependencies:
+
+```bash
+npm install
+```
+
+Run the development server:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open `http://localhost:3000`.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Scripts
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+npm run dev      # Start local development server
+npm run build    # Create production build
+npm run start    # Start production server
+npm run lint     # Run ESLint
+```
 
-## Learn More
+## Environment
 
-To learn more about Next.js, take a look at the following resources:
+The app can run without Supabase for the core portfolio experience. Supabase is used by the game/score flow when the relevant environment variables are configured in `.env.local`.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```bash
+NEXT_PUBLIC_SUPABASE_URL=
+NEXT_PUBLIC_SUPABASE_ANON_KEY=
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Content Notes
 
-## Deploy on Vercel
+Case metadata and galleries live in `src/app/cases/[slug]/page.tsx`.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Home folder previews are configured in `src/app/page.tsx`:
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- `PREVIEW_ASSETS`
+- `PREVIEW_LINKS`
+- `PREVIEW_IMAGE_SIZES`
+- `DESKTOP_CASES`
+
+When adding new preview images, include their real dimensions in `PREVIEW_IMAGE_SIZES` so hover spacing stays accurate and previews do not overlap.
+
+## Build Check
+
+Before publishing changes:
+
+```bash
+npm run build
+```
+
+For stricter TypeScript validation:
+
+```bash
+npx tsc --noEmit
+```
+

@@ -1,9 +1,9 @@
 "use client";
 
 import SlotLoader from "./components/SlotLoader";
-import { animate, motion, useMotionValue } from "framer-motion";
+import { AnimatePresence, animate, motion, useMotionValue } from "framer-motion";
 import { FolderOpen, List, Play } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState, type PointerEvent } from "react";
 
 
 type HomeViewMode = "folders" | "desktop";
@@ -211,6 +211,7 @@ const DESKTOP_CASES: Record<
     };
     href: string;
     color: string;
+    previewKey?: WorkPreviewKey;
   }[]
 > = {
   ecommerce: [
@@ -218,16 +219,19 @@ const DESKTOP_CASES: Record<
       title: { ru: "Ozon Tech", en: "Ozon Tech" },
       href: "/cases/ozon-tech",
       color: "#005BFE",
+      previewKey: "ozon",
     },
     {
       title: { ru: "inDrive Delivery", en: "inDrive Delivery" },
       href: "/cases/indrive",
       color: "#B6FF00",
+      previewKey: "indrive",
     },
     {
       title: { ru: "Seamm", en: "Seamm" },
       href: "/cases/seamm",
       color: "#29E1BB",
+      previewKey: "seamm",
     },
   ],
 
@@ -236,16 +240,19 @@ const DESKTOP_CASES: Record<
       title: { ru: "ВТБ", en: "VTB" },
       href: "/cases/vtb",
       color: "#0066FF",
+      previewKey: "vtb",
     },
     {
       title: { ru: "OTP-верификация", en: "Banking case" },
       href: "/cases/otr",
       color: "#FFFFFF",
+      previewKey: "otr",
     },
     {
       title: { ru: "Криптоброкер", en: "Crypto Broker" },
       href: "/cases/crypto",
       color: "#7AEB86",
+      previewKey: "crypto",
     },
   ],
 
@@ -254,31 +261,37 @@ const DESKTOP_CASES: Record<
       title: { ru: "Pragmatica x VK", en: "Pragmatica x VK" },
       href: "/cases/pragmatica-vk",
       color: "#3B82F6",
+      previewKey: "pragmaticaVk",
     },
     {
       title: { ru: "Petrix", en: "Petrix" },
       href: "/cases/petrix",
       color: "#E774BF",
+      previewKey: "petrix",
     },
     {
       title: { ru: "ITMO", en: "ITMO" },
       href: "/cases/itmo",
       color: "#D7FF25",
+      previewKey: "itmo",
     },
     {
       title: { ru: "Тендеры", en: "Tenders" },
       href: "/cases/tender",
       color: "#C8D0FF",
+      previewKey: "tender",
     },
     {
       title: { ru: "Mail.ru", en: "Mail.ru" },
       href: "/cases/vk",
       color: "#6197FF",
+      previewKey: "vk",
     },
     {
       title: { ru: "Казино NDA", en: "Casino NDA" },
       href: "/cases/casino",
       color: "#99A5FC",
+      previewKey: "ids",
     },
   ],
   concepts: [
@@ -286,6 +299,7 @@ const DESKTOP_CASES: Record<
       title: { ru: "Concepts", en: "Concepts" },
       href: "/cases/concepts",
       color: "#C8D0FF",
+      previewKey: "concepts",
     },
   ],
 };
@@ -619,7 +633,20 @@ const SOCIAL_LINKS = [
   },
 ] as const;
 
-type WorkPreviewKey = "ozon" | "vk" | "ids";
+type WorkPreviewKey =
+  | "ozon"
+  | "indrive"
+  | "seamm"
+  | "vtb"
+  | "otr"
+  | "crypto"
+  | "pragmaticaVk"
+  | "petrix"
+  | "itmo"
+  | "tender"
+  | "vk"
+  | "ids"
+  | "concepts";
 
 const WORK_PREVIEWS: Record<
   WorkPreviewKey,
@@ -676,6 +703,183 @@ const WORK_PREVIEWS: Record<
     ],
   },
 
+  indrive: {
+    title: {
+      ru: "inDrive Delivery",
+      en: "inDrive Delivery",
+    },
+    description: {
+      ru: "Редизайн флоу заказа курьерской доставки: понятная структура, меньше трения и больше готовности к масштабированию.",
+      en: "Redesigned the courier delivery order flow to make order creation clearer, faster and more scalable.",
+    },
+    tags: ["B2C", "Delivery"],
+    href: "/cases/indrive",
+    sections: [],
+    images: [
+      { src: "/cases/indrive/0.png", variant: "wide" },
+      { src: "/cases/indrive/1.png", variant: "wide" },
+      { src: "/cases/indrive/2.png", variant: "wide" },
+      { src: "/cases/indrive/3.png", variant: "wide" },
+    ],
+  },
+
+  seamm: {
+    title: {
+      ru: "Seamm",
+      en: "Seamm",
+    },
+    description: {
+      ru: "Экран Product Details для digital fashion: ключевые действия, AR-примерка и управление цифровым ассетом.",
+      en: "Designed a Product Details screen for digital fashion, including key actions, AR try-on and digital asset management.",
+    },
+    tags: ["B2C", "E-commerce"],
+    href: "/cases/seamm",
+    sections: [],
+    images: [
+      { src: "/cases/seamm/1.png", variant: "regular" },
+      { src: "/cases/seamm/2.png", variant: "regular" },
+      { src: "/cases/seamm/3.png", variant: "regular" },
+      { src: "/cases/seamm/4.png", variant: "regular" },
+    ],
+  },
+
+  vtb: {
+    title: {
+      ru: "ВТБ",
+      en: "VTB",
+    },
+    description: {
+      ru: "Концепт семейных финансов: общие счета, детские профили, цели накопления и понятные роли внутри банковского продукта.",
+      en: "Designed a family finance concept with shared accounts, child profiles, savings goals and clear permission models.",
+    },
+    tags: ["B2C", "Fintech"],
+    href: "/cases/vtb",
+    sections: [],
+    images: [
+      { src: "/cases/vtb/1.png", variant: "regular" },
+      { src: "/cases/vtb/2.png", variant: "regular" },
+      { src: "/cases/vtb/3.png", variant: "regular" },
+      { src: "/cases/vtb/4.png", variant: "regular" },
+    ],
+  },
+
+  otr: {
+    title: {
+      ru: "OTP-верификация",
+      en: "Banking case",
+    },
+    description: {
+      ru: "Флоу подтверждения критической операции: ввод кода, ожидание SMS, ошибки, лимиты и блокировки.",
+      en: "Designed an OTP confirmation flow with code entry, SMS waiting, resend logic, errors, limits and blocking states.",
+    },
+    tags: ["B2C", "Fintech"],
+    href: "/cases/otr",
+    sections: [],
+    images: [
+      { src: "/cases/otr/1.png", variant: "regular" },
+      { src: "/cases/otr/2.png", variant: "regular" },
+      { src: "/cases/otr/3.png", variant: "regular" },
+      { src: "/cases/otr/4.png", variant: "regular" },
+    ],
+  },
+
+  crypto: {
+    title: {
+      ru: "Криптоброкер",
+      en: "Crypto Broker",
+    },
+    description: {
+      ru: "Ключевые сценарии покупки, обмена и хранения цифровых активов внутри банковской экосистемы.",
+      en: "Designed core flows for buying, exchanging and storing digital assets inside a banking ecosystem.",
+    },
+    tags: ["B2C", "Fintech"],
+    href: "/cases/crypto",
+    sections: [],
+    images: [
+      { src: "/cases/crypto/1.png", variant: "regular" },
+      { src: "/cases/crypto/2.png", variant: "regular" },
+      { src: "/cases/crypto/3.png", variant: "regular" },
+    ],
+  },
+
+  pragmaticaVk: {
+    title: {
+      ru: "Pragmatica x VK",
+      en: "Pragmatica x VK",
+    },
+    description: {
+      ru: "Два продуктовых концепта для VK: музыкальный сервис и социальная платформа для владельцев питомцев.",
+      en: "Two product concepts for VK: a music streaming service and a social platform for pet owners.",
+    },
+    tags: ["B2C", "Concept"],
+    href: "/cases/pragmatica-vk",
+    sections: [],
+    images: [
+      { src: "/cases/pragmatica-vk/1.png", variant: "regular" },
+      { src: "/cases/pragmatica-vk/2.png", variant: "regular" },
+      { src: "/cases/pragmatica-vk/3.png", variant: "regular" },
+      { src: "/cases/pragmatica-vk/4.png", variant: "regular" },
+    ],
+  },
+
+  petrix: {
+    title: {
+      ru: "Petrix",
+      en: "Petrix",
+    },
+    description: {
+      ru: "Сервис мониторинга здоровья питомцев со smart-девайсами, AI-подсказками и ветеринарными сценариями.",
+      en: "A pet health monitoring service with smart-device data, AI guidance and veterinarian scenarios.",
+    },
+    tags: ["B2C", "PetTech", "AI"],
+    href: "/cases/petrix",
+    sections: [],
+    images: [
+      { src: "/cases/petrix/1.mp4", variant: "wide" },
+      { src: "/cases/petrix/2.mp4", variant: "wide" },
+      { src: "/cases/petrix/0.png", variant: "wide" },
+      { src: "/cases/petrix/7.png", variant: "wide" },
+    ],
+  },
+
+  itmo: {
+    title: {
+      ru: "ITMO",
+      en: "ITMO",
+    },
+    description: {
+      ru: "Редизайн сайта дополнительного образования ИТМО с фокусом на структуру, навигацию и управляемость контента.",
+      en: "Led the redesign of ITMO's continuing education website, focusing on structure, navigation and content clarity.",
+    },
+    tags: ["B2C", "Education"],
+    href: "/cases/itmo",
+    sections: [],
+    images: [
+      { src: "/cases/itmo/1.png", variant: "wide" },
+      { src: "/cases/itmo/2.png", variant: "wide" },
+      { src: "/cases/itmo/3.png", variant: "wide" },
+    ],
+  },
+
+  tender: {
+    title: {
+      ru: "Тендеры",
+      en: "Tenders",
+    },
+    description: {
+      ru: "B2B-платформа для поиска, оценки и ведения тендеров в одном рабочем процессе.",
+      en: "A B2B platform for searching, evaluating and managing public procurement tenders in one workflow.",
+    },
+    tags: ["B2B"],
+    href: "/cases/tender",
+    sections: [],
+    images: [
+      { src: "/cases/tender/1.png", variant: "wide" },
+      { src: "/cases/tender/2.png", variant: "wide" },
+      { src: "/cases/tender/3.png", variant: "wide" },
+    ],
+  },
+
   vk: {
     title: {
       ru: "Mail.ru",
@@ -728,6 +932,26 @@ const WORK_PREVIEWS: Record<
       },
     ],
     images: ["/cases/casino/1.png"],
+  },
+
+  concepts: {
+    title: {
+      ru: "Concepts",
+      en: "Concepts",
+    },
+    description: {
+      ru: "Коллекция экспериментальных экранов, интерфейсных идей и коротких motion-фрагментов.",
+      en: "A collection of exploratory interface concepts, product screens and motion fragments.",
+    },
+    tags: ["UI", "Motion"],
+    href: "/cases/concepts",
+    sections: [],
+    images: [
+      { src: "/concept/00.png", variant: "regular" },
+      { src: "/concept/0.png", variant: "regular" },
+      { src: "/concept/1.png", variant: "regular" },
+      { src: "/concept/3.png", variant: "wide" },
+    ],
   },
 };
 
@@ -936,13 +1160,38 @@ function WorkPreviewModal({
   onClose: () => void;
   lang: Lang;
 }) {
+  const previewRef = useRef<HTMLDivElement>(null);
+  const openedAtRef = useRef(Date.now());
+
+  const handlePointerMove = (event: PointerEvent<HTMLDivElement>) => {
+    const rect = previewRef.current?.getBoundingClientRect();
+    if (!rect || Date.now() - openedAtRef.current < 180) return;
+
+    const padding = 8;
+    const isInsidePreview =
+      event.clientX >= rect.left - padding &&
+      event.clientX <= rect.right + padding &&
+      event.clientY >= rect.top - padding &&
+      event.clientY <= rect.bottom + padding;
+
+    if (!isInsidePreview) {
+      onClose();
+    }
+  };
 
   return (
-    <div
+    <motion.div
       className="fixed inset-0 z-[200] flex items-center justify-center bg-[#0F0F0F]/55 px-6 backdrop-blur-[10px]"
       onClick={onClose}
+      onPointerMove={handlePointerMove}
+      onPointerLeave={onClose}
+      initial={{ opacity: 0, backdropFilter: "blur(0px)" }}
+      animate={{ opacity: 1, backdropFilter: "blur(10px)" }}
+      exit={{ opacity: 0, backdropFilter: "blur(0px)" }}
+      transition={{ duration: 0.32, ease }}
     >
-      <div
+      <motion.div
+        ref={previewRef}
         onClick={(event) => event.stopPropagation()}
         className="
           relative flex w-full max-w-[948px]
@@ -952,6 +1201,10 @@ function WorkPreviewModal({
           max-md:flex-col
         "
         style={{ borderRadius: 44 }}
+        initial={{ opacity: 0, y: 26, scale: 0.96 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        exit={{ opacity: 0, y: 18, scale: 0.97 }}
+        transition={{ duration: 0.42, ease }}
       >
         <button
           type="button"
@@ -1045,24 +1298,47 @@ function WorkPreviewModal({
             const src = typeof item === "string" ? item : item.src;
             const variant =
               typeof item === "string" ? "regular" : item.variant ?? "regular";
+            const isVideo =
+              src.endsWith(".mp4") ||
+              src.endsWith(".webm") ||
+              src.endsWith(".mov");
 
             return (
-              <img
-                key={src}
-                src={src}
-                alt={`${preview.title} preview ${index + 1}`}
-                className={
-                  variant === "wide"
-                    ? "h-full w-auto max-w-none shrink-0 rounded-[24px] object-contain"
-                    : "h-full w-auto shrink-0 rounded-[24px] object-contain"
-                }
-                draggable={false}
-              />
+              isVideo ? (
+                <video
+                  key={src}
+                  src={src}
+                  aria-label={`${preview.title[lang]} preview ${index + 1}`}
+                  autoPlay
+                  muted
+                  loop
+                  playsInline
+                  preload="metadata"
+                  className={
+                    variant === "wide"
+                      ? "h-full w-auto max-w-none shrink-0 rounded-[24px] object-contain"
+                      : "h-full w-auto shrink-0 rounded-[24px] object-contain"
+                  }
+                  draggable={false}
+                />
+              ) : (
+                <img
+                  key={src}
+                  src={src}
+                  alt={`${preview.title[lang]} preview ${index + 1}`}
+                  className={
+                    variant === "wide"
+                      ? "h-full w-auto max-w-none shrink-0 rounded-[24px] object-contain"
+                      : "h-full w-auto shrink-0 rounded-[24px] object-contain"
+                  }
+                  draggable={false}
+                />
+              )
             );
           })}
         </a>
-      </div>
-    </div>
+      </motion.div>
+    </motion.div>
   );
 }
 
@@ -1252,11 +1528,13 @@ function DesktopCaseView({
   top,
   language,
   isMobile,
+  onPreview,
 }: {
   left: number;
   top: number;
   language: "ru" | "en";
   isMobile: boolean;
+  onPreview: (previewKey: WorkPreviewKey) => void;
 }) {
   const categories: CollectionCategory[] = [
     "ecommerce",
@@ -1311,6 +1589,12 @@ function DesktopCaseView({
                 <motion.a
                   key={item.href}
                   href={item.href}
+                  onMouseEnter={() => {
+                    if (item.previewKey) onPreview(item.previewKey);
+                  }}
+                  onFocus={() => {
+                    if (item.previewKey) onPreview(item.previewKey);
+                  }}
                   className="flex flex-col items-center gap-3 px-2 text-center"
                   style={{
                     width: 95,
@@ -2007,6 +2291,7 @@ export default function Home() {
               top={DESKTOP_TOP}
               language={lang}
               isMobile={isNarrow}
+              onPreview={setActiveWorkPreview}
             />
           )}
           {/* Left sidebar — Figma: 383×800; clip box matches scaled height so it fits in 100vh */}
@@ -2306,13 +2591,16 @@ export default function Home() {
               <MobileDesktopCaseView language={lang} />
             </div>
           )}
-          {activeWorkPreview ? (
-            <WorkPreviewModal
-              preview={WORK_PREVIEWS[activeWorkPreview]}
-              onClose={() => setActiveWorkPreview(null)}
-              lang={lang}
-            />
-          ) : null}
+          <AnimatePresence>
+            {activeWorkPreview ? (
+              <WorkPreviewModal
+                key={activeWorkPreview}
+                preview={WORK_PREVIEWS[activeWorkPreview]}
+                onClose={() => setActiveWorkPreview(null)}
+                lang={lang}
+              />
+            ) : null}
+          </AnimatePresence>
         </main >
       ) : null
       }

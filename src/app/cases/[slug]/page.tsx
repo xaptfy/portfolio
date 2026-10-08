@@ -116,6 +116,7 @@ const CASE_IMAGES = {
   ] satisfies CaseImageEntry[],
 
   concepts: [
+    { src: "/concept/00.png", variant: "regular" },
     { src: "/concept/0.png", variant: "regular" },
     { src: "/concept/1.png", variant: "regular" },
     { src: "/concept/2.png", variant: "regular" },
