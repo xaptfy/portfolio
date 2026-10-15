@@ -92,7 +92,6 @@ const CASE_IMAGES = {
     { src: "/cases/petrix/16.png", variant: "wide" },
     { src: "/cases/petrix/17.png", variant: "wide" },
     { src: "/cases/petrix/18.png", variant: "wide" },
-    { src: "/cases/petrix/6.mp4", variant: "wide" },
     { src: "/cases/petrix/7.png", variant: "wide" },
     { src: "/cases/petrix/8.png", variant: "wide" },
     { src: "/cases/petrix/9.png", variant: "wide" },
